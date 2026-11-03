@@ -28,3 +28,6 @@ RPG de Pokémon em navegador (PWA), estilo Game Boy, para jogar com amigos.
 
 ## Aviso
 Pokémon e seus nomes são marcas da Nintendo, Game Freak e Creatures Inc. Este é um projeto de fãs, privado, sem afiliação nem fins lucrativos.
+
+## Extração de dados
+O fluxo **Extrair dados** (aba *Actions* do GitHub) roda `scripts/extract.js`, que usa a PokéAPI como fonte principal e o pokemondb.net como conferência (no máximo 1 requisição a cada 4 s). Rode primeiro com a faixa `1-3` para testar, depois `1-151` (Etapa A, Geração 1). O resultado vai para `data/*.json` e um relatório em `data/extraction-report.json`.
