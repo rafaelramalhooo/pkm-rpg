@@ -147,5 +147,7616 @@
     "evolves_from": "ivysaur",
     "evolves_to": [],
     "arco_liberacao": 1
+  },
+  {
+    "id": 4,
+    "name": "charmander",
+    "display_name": "Charmander",
+    "types": [
+      "fire"
+    ],
+    "base_stats": {
+      "hp": 39,
+      "attack": 52,
+      "defense": 43,
+      "sp_attack": 60,
+      "sp_defense": 50,
+      "speed": 65
+    },
+    "abilities": [
+      {
+        "name": "blaze",
+        "hidden": false
+      },
+      {
+        "name": "solar-power",
+        "hidden": true
+      }
+    ],
+    "height_dm": 6,
+    "weight_hg": 85,
+    "capture_rate": 45,
+    "base_experience": 62,
+    "growth_rate": "medium-slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "charmeleon",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 16
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 5,
+    "name": "charmeleon",
+    "display_name": "Charmeleon",
+    "types": [
+      "fire"
+    ],
+    "base_stats": {
+      "hp": 58,
+      "attack": 64,
+      "defense": 58,
+      "sp_attack": 80,
+      "sp_defense": 65,
+      "speed": 80
+    },
+    "abilities": [
+      {
+        "name": "blaze",
+        "hidden": false
+      },
+      {
+        "name": "solar-power",
+        "hidden": true
+      }
+    ],
+    "height_dm": 11,
+    "weight_hg": 190,
+    "capture_rate": 45,
+    "base_experience": 142,
+    "growth_rate": "medium-slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "charmander",
+    "evolves_to": [
+      {
+        "species": "charizard",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 36
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 6,
+    "name": "charizard",
+    "display_name": "Charizard",
+    "types": [
+      "fire",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 78,
+      "attack": 84,
+      "defense": 78,
+      "sp_attack": 109,
+      "sp_defense": 85,
+      "speed": 100
+    },
+    "abilities": [
+      {
+        "name": "blaze",
+        "hidden": false
+      },
+      {
+        "name": "solar-power",
+        "hidden": true
+      }
+    ],
+    "height_dm": 17,
+    "weight_hg": 905,
+    "capture_rate": 45,
+    "base_experience": 240,
+    "growth_rate": "medium-slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "charmeleon",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 7,
+    "name": "squirtle",
+    "display_name": "Squirtle",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 44,
+      "attack": 48,
+      "defense": 65,
+      "sp_attack": 50,
+      "sp_defense": 64,
+      "speed": 43
+    },
+    "abilities": [
+      {
+        "name": "torrent",
+        "hidden": false
+      },
+      {
+        "name": "rain-dish",
+        "hidden": true
+      }
+    ],
+    "height_dm": 5,
+    "weight_hg": 90,
+    "capture_rate": 45,
+    "base_experience": 63,
+    "growth_rate": "medium-slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "water1"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "wartortle",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 16
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 8,
+    "name": "wartortle",
+    "display_name": "Wartortle",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 59,
+      "attack": 63,
+      "defense": 80,
+      "sp_attack": 65,
+      "sp_defense": 80,
+      "speed": 58
+    },
+    "abilities": [
+      {
+        "name": "torrent",
+        "hidden": false
+      },
+      {
+        "name": "rain-dish",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 225,
+    "capture_rate": 45,
+    "base_experience": 142,
+    "growth_rate": "medium-slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "water1"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "squirtle",
+    "evolves_to": [
+      {
+        "species": "blastoise",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 36
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 9,
+    "name": "blastoise",
+    "display_name": "Blastoise",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 79,
+      "attack": 83,
+      "defense": 100,
+      "sp_attack": 85,
+      "sp_defense": 105,
+      "speed": 78
+    },
+    "abilities": [
+      {
+        "name": "torrent",
+        "hidden": false
+      },
+      {
+        "name": "rain-dish",
+        "hidden": true
+      }
+    ],
+    "height_dm": 16,
+    "weight_hg": 855,
+    "capture_rate": 45,
+    "base_experience": 239,
+    "growth_rate": "medium-slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "water1"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "wartortle",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 10,
+    "name": "caterpie",
+    "display_name": "Caterpie",
+    "types": [
+      "bug"
+    ],
+    "base_stats": {
+      "hp": 45,
+      "attack": 30,
+      "defense": 35,
+      "sp_attack": 20,
+      "sp_defense": 20,
+      "speed": 45
+    },
+    "abilities": [
+      {
+        "name": "shield-dust",
+        "hidden": false
+      },
+      {
+        "name": "run-away",
+        "hidden": true
+      }
+    ],
+    "height_dm": 3,
+    "weight_hg": 29,
+    "capture_rate": 255,
+    "base_experience": 39,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "metapod",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 7
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 11,
+    "name": "metapod",
+    "display_name": "Metapod",
+    "types": [
+      "bug"
+    ],
+    "base_stats": {
+      "hp": 50,
+      "attack": 20,
+      "defense": 55,
+      "sp_attack": 25,
+      "sp_defense": 25,
+      "speed": 30
+    },
+    "abilities": [
+      {
+        "name": "shed-skin",
+        "hidden": false
+      }
+    ],
+    "height_dm": 7,
+    "weight_hg": 99,
+    "capture_rate": 120,
+    "base_experience": 72,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "caterpie",
+    "evolves_to": [
+      {
+        "species": "butterfree",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 10
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 12,
+    "name": "butterfree",
+    "display_name": "Butterfree",
+    "types": [
+      "bug",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 45,
+      "defense": 50,
+      "sp_attack": 90,
+      "sp_defense": 80,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "compound-eyes",
+        "hidden": false
+      },
+      {
+        "name": "tinted-lens",
+        "hidden": true
+      }
+    ],
+    "height_dm": 11,
+    "weight_hg": 320,
+    "capture_rate": 45,
+    "base_experience": 178,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "metapod",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 13,
+    "name": "weedle",
+    "display_name": "Weedle",
+    "types": [
+      "bug",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 35,
+      "defense": 30,
+      "sp_attack": 20,
+      "sp_defense": 20,
+      "speed": 50
+    },
+    "abilities": [
+      {
+        "name": "shield-dust",
+        "hidden": false
+      },
+      {
+        "name": "run-away",
+        "hidden": true
+      }
+    ],
+    "height_dm": 3,
+    "weight_hg": 32,
+    "capture_rate": 255,
+    "base_experience": 39,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "kakuna",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 7
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 14,
+    "name": "kakuna",
+    "display_name": "Kakuna",
+    "types": [
+      "bug",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 45,
+      "attack": 25,
+      "defense": 50,
+      "sp_attack": 25,
+      "sp_defense": 25,
+      "speed": 35
+    },
+    "abilities": [
+      {
+        "name": "shed-skin",
+        "hidden": false
+      }
+    ],
+    "height_dm": 6,
+    "weight_hg": 100,
+    "capture_rate": 120,
+    "base_experience": 72,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "weedle",
+    "evolves_to": [
+      {
+        "species": "beedrill",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 10
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 15,
+    "name": "beedrill",
+    "display_name": "Beedrill",
+    "types": [
+      "bug",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 90,
+      "defense": 40,
+      "sp_attack": 45,
+      "sp_defense": 80,
+      "speed": 75
+    },
+    "abilities": [
+      {
+        "name": "swarm",
+        "hidden": false
+      },
+      {
+        "name": "sniper",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 295,
+    "capture_rate": 45,
+    "base_experience": 178,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "kakuna",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 16,
+    "name": "pidgey",
+    "display_name": "Pidgey",
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 45,
+      "defense": 40,
+      "sp_attack": 35,
+      "sp_defense": 35,
+      "speed": 56
+    },
+    "abilities": [
+      {
+        "name": "keen-eye",
+        "hidden": false
+      },
+      {
+        "name": "tangled-feet",
+        "hidden": false
+      },
+      {
+        "name": "big-pecks",
+        "hidden": true
+      }
+    ],
+    "height_dm": 3,
+    "weight_hg": 18,
+    "capture_rate": 255,
+    "base_experience": 50,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "pidgeotto",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 18
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 17,
+    "name": "pidgeotto",
+    "display_name": "Pidgeotto",
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 63,
+      "attack": 60,
+      "defense": 55,
+      "sp_attack": 50,
+      "sp_defense": 50,
+      "speed": 71
+    },
+    "abilities": [
+      {
+        "name": "keen-eye",
+        "hidden": false
+      },
+      {
+        "name": "tangled-feet",
+        "hidden": false
+      },
+      {
+        "name": "big-pecks",
+        "hidden": true
+      }
+    ],
+    "height_dm": 11,
+    "weight_hg": 300,
+    "capture_rate": 120,
+    "base_experience": 122,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "pidgey",
+    "evolves_to": [
+      {
+        "species": "pidgeot",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 36
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 18,
+    "name": "pidgeot",
+    "display_name": "Pidgeot",
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 83,
+      "attack": 80,
+      "defense": 75,
+      "sp_attack": 70,
+      "sp_defense": 70,
+      "speed": 101
+    },
+    "abilities": [
+      {
+        "name": "keen-eye",
+        "hidden": false
+      },
+      {
+        "name": "tangled-feet",
+        "hidden": false
+      },
+      {
+        "name": "big-pecks",
+        "hidden": true
+      }
+    ],
+    "height_dm": 15,
+    "weight_hg": 395,
+    "capture_rate": 45,
+    "base_experience": 216,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "pidgeotto",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 19,
+    "name": "rattata",
+    "display_name": "Rattata",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 30,
+      "attack": 56,
+      "defense": 35,
+      "sp_attack": 25,
+      "sp_defense": 35,
+      "speed": 72
+    },
+    "abilities": [
+      {
+        "name": "run-away",
+        "hidden": false
+      },
+      {
+        "name": "guts",
+        "hidden": false
+      },
+      {
+        "name": "hustle",
+        "hidden": true
+      }
+    ],
+    "height_dm": 3,
+    "weight_hg": 35,
+    "capture_rate": 255,
+    "base_experience": 51,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "raticate",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 20
+          },
+          {
+            "trigger": "level-up",
+            "min_level": 20,
+            "time_of_day": "night"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 20,
+    "name": "raticate",
+    "display_name": "Raticate",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 55,
+      "attack": 81,
+      "defense": 60,
+      "sp_attack": 50,
+      "sp_defense": 70,
+      "speed": 97
+    },
+    "abilities": [
+      {
+        "name": "run-away",
+        "hidden": false
+      },
+      {
+        "name": "guts",
+        "hidden": false
+      },
+      {
+        "name": "hustle",
+        "hidden": true
+      }
+    ],
+    "height_dm": 7,
+    "weight_hg": 185,
+    "capture_rate": 127,
+    "base_experience": 145,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "rattata",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 21,
+    "name": "spearow",
+    "display_name": "Spearow",
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 60,
+      "defense": 30,
+      "sp_attack": 31,
+      "sp_defense": 31,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "keen-eye",
+        "hidden": false
+      },
+      {
+        "name": "sniper",
+        "hidden": true
+      }
+    ],
+    "height_dm": 3,
+    "weight_hg": 20,
+    "capture_rate": 255,
+    "base_experience": 52,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "fearow",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 20
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 22,
+    "name": "fearow",
+    "display_name": "Fearow",
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 90,
+      "defense": 65,
+      "sp_attack": 61,
+      "sp_defense": 61,
+      "speed": 100
+    },
+    "abilities": [
+      {
+        "name": "keen-eye",
+        "hidden": false
+      },
+      {
+        "name": "sniper",
+        "hidden": true
+      }
+    ],
+    "height_dm": 12,
+    "weight_hg": 380,
+    "capture_rate": 90,
+    "base_experience": 155,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "spearow",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 23,
+    "name": "ekans",
+    "display_name": "Ekans",
+    "types": [
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 35,
+      "attack": 60,
+      "defense": 44,
+      "sp_attack": 40,
+      "sp_defense": 54,
+      "speed": 55
+    },
+    "abilities": [
+      {
+        "name": "intimidate",
+        "hidden": false
+      },
+      {
+        "name": "shed-skin",
+        "hidden": false
+      },
+      {
+        "name": "unnerve",
+        "hidden": true
+      }
+    ],
+    "height_dm": 20,
+    "weight_hg": 69,
+    "capture_rate": 255,
+    "base_experience": 58,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "arbok",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 22
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 24,
+    "name": "arbok",
+    "display_name": "Arbok",
+    "types": [
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 95,
+      "defense": 69,
+      "sp_attack": 65,
+      "sp_defense": 79,
+      "speed": 80
+    },
+    "abilities": [
+      {
+        "name": "intimidate",
+        "hidden": false
+      },
+      {
+        "name": "shed-skin",
+        "hidden": false
+      },
+      {
+        "name": "unnerve",
+        "hidden": true
+      }
+    ],
+    "height_dm": 35,
+    "weight_hg": 650,
+    "capture_rate": 90,
+    "base_experience": 157,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "ekans",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 25,
+    "name": "pikachu",
+    "display_name": "Pikachu",
+    "types": [
+      "electric"
+    ],
+    "base_stats": {
+      "hp": 35,
+      "attack": 55,
+      "defense": 40,
+      "sp_attack": 50,
+      "sp_defense": 50,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "static",
+        "hidden": false
+      },
+      {
+        "name": "lightning-rod",
+        "hidden": true
+      }
+    ],
+    "height_dm": 4,
+    "weight_hg": 60,
+    "capture_rate": 190,
+    "base_experience": 112,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground",
+      "fairy"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "pichu",
+    "evolves_to": [
+      {
+        "species": "raichu",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "thunder-stone"
+          },
+          {
+            "trigger": "use-item",
+            "item": "thunder-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 26,
+    "name": "raichu",
+    "display_name": "Raichu",
+    "types": [
+      "electric"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 90,
+      "defense": 55,
+      "sp_attack": 90,
+      "sp_defense": 80,
+      "speed": 110
+    },
+    "abilities": [
+      {
+        "name": "static",
+        "hidden": false
+      },
+      {
+        "name": "lightning-rod",
+        "hidden": true
+      }
+    ],
+    "height_dm": 8,
+    "weight_hg": 300,
+    "capture_rate": 75,
+    "base_experience": 218,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground",
+      "fairy"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "pikachu",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 27,
+    "name": "sandshrew",
+    "display_name": "Sandshrew",
+    "types": [
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 50,
+      "attack": 75,
+      "defense": 85,
+      "sp_attack": 20,
+      "sp_defense": 30,
+      "speed": 40
+    },
+    "abilities": [
+      {
+        "name": "sand-veil",
+        "hidden": false
+      },
+      {
+        "name": "sand-rush",
+        "hidden": true
+      }
+    ],
+    "height_dm": 6,
+    "weight_hg": 120,
+    "capture_rate": 255,
+    "base_experience": 60,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "sandslash",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 22
+          },
+          {
+            "trigger": "use-item",
+            "item": "ice-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 28,
+    "name": "sandslash",
+    "display_name": "Sandslash",
+    "types": [
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 75,
+      "attack": 100,
+      "defense": 110,
+      "sp_attack": 45,
+      "sp_defense": 55,
+      "speed": 65
+    },
+    "abilities": [
+      {
+        "name": "sand-veil",
+        "hidden": false
+      },
+      {
+        "name": "sand-rush",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 295,
+    "capture_rate": 90,
+    "base_experience": 158,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "sandshrew",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 29,
+    "name": "nidoran-f",
+    "display_name": "Nidoran♀",
+    "types": [
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 55,
+      "attack": 47,
+      "defense": 52,
+      "sp_attack": 40,
+      "sp_defense": 40,
+      "speed": 41
+    },
+    "abilities": [
+      {
+        "name": "poison-point",
+        "hidden": false
+      },
+      {
+        "name": "rivalry",
+        "hidden": false
+      },
+      {
+        "name": "hustle",
+        "hidden": true
+      }
+    ],
+    "height_dm": 4,
+    "weight_hg": 70,
+    "capture_rate": 235,
+    "base_experience": 55,
+    "growth_rate": "medium-slow",
+    "gender_rate": 8,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "nidorina",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 16
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 30,
+    "name": "nidorina",
+    "display_name": "Nidorina",
+    "types": [
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 70,
+      "attack": 62,
+      "defense": 67,
+      "sp_attack": 55,
+      "sp_defense": 55,
+      "speed": 56
+    },
+    "abilities": [
+      {
+        "name": "poison-point",
+        "hidden": false
+      },
+      {
+        "name": "rivalry",
+        "hidden": false
+      },
+      {
+        "name": "hustle",
+        "hidden": true
+      }
+    ],
+    "height_dm": 8,
+    "weight_hg": 200,
+    "capture_rate": 120,
+    "base_experience": 128,
+    "growth_rate": "medium-slow",
+    "gender_rate": 8,
+    "base_happiness": 70,
+    "egg_groups": [
+      "no-eggs"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "nidoran-f",
+    "evolves_to": [
+      {
+        "species": "nidoqueen",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "moon-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 31,
+    "name": "nidoqueen",
+    "display_name": "Nidoqueen",
+    "types": [
+      "poison",
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 90,
+      "attack": 92,
+      "defense": 87,
+      "sp_attack": 75,
+      "sp_defense": 85,
+      "speed": 76
+    },
+    "abilities": [
+      {
+        "name": "poison-point",
+        "hidden": false
+      },
+      {
+        "name": "rivalry",
+        "hidden": false
+      },
+      {
+        "name": "sheer-force",
+        "hidden": true
+      }
+    ],
+    "height_dm": 13,
+    "weight_hg": 600,
+    "capture_rate": 45,
+    "base_experience": 227,
+    "growth_rate": "medium-slow",
+    "gender_rate": 8,
+    "base_happiness": 70,
+    "egg_groups": [
+      "no-eggs"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "nidorina",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 32,
+    "name": "nidoran-m",
+    "display_name": "Nidoran♂",
+    "types": [
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 46,
+      "attack": 57,
+      "defense": 40,
+      "sp_attack": 40,
+      "sp_defense": 40,
+      "speed": 50
+    },
+    "abilities": [
+      {
+        "name": "poison-point",
+        "hidden": false
+      },
+      {
+        "name": "rivalry",
+        "hidden": false
+      },
+      {
+        "name": "hustle",
+        "hidden": true
+      }
+    ],
+    "height_dm": 5,
+    "weight_hg": 90,
+    "capture_rate": 235,
+    "base_experience": 55,
+    "growth_rate": "medium-slow",
+    "gender_rate": 0,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "nidorino",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 16
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 33,
+    "name": "nidorino",
+    "display_name": "Nidorino",
+    "types": [
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 61,
+      "attack": 72,
+      "defense": 57,
+      "sp_attack": 55,
+      "sp_defense": 55,
+      "speed": 65
+    },
+    "abilities": [
+      {
+        "name": "poison-point",
+        "hidden": false
+      },
+      {
+        "name": "rivalry",
+        "hidden": false
+      },
+      {
+        "name": "hustle",
+        "hidden": true
+      }
+    ],
+    "height_dm": 9,
+    "weight_hg": 195,
+    "capture_rate": 120,
+    "base_experience": 128,
+    "growth_rate": "medium-slow",
+    "gender_rate": 0,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "nidoran-m",
+    "evolves_to": [
+      {
+        "species": "nidoking",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "moon-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 34,
+    "name": "nidoking",
+    "display_name": "Nidoking",
+    "types": [
+      "poison",
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 81,
+      "attack": 102,
+      "defense": 77,
+      "sp_attack": 85,
+      "sp_defense": 75,
+      "speed": 85
+    },
+    "abilities": [
+      {
+        "name": "poison-point",
+        "hidden": false
+      },
+      {
+        "name": "rivalry",
+        "hidden": false
+      },
+      {
+        "name": "sheer-force",
+        "hidden": true
+      }
+    ],
+    "height_dm": 14,
+    "weight_hg": 620,
+    "capture_rate": 45,
+    "base_experience": 227,
+    "growth_rate": "medium-slow",
+    "gender_rate": 0,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "nidorino",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 35,
+    "name": "clefairy",
+    "display_name": "Clefairy",
+    "types": [
+      "fairy"
+    ],
+    "base_stats": {
+      "hp": 70,
+      "attack": 45,
+      "defense": 48,
+      "sp_attack": 60,
+      "sp_defense": 65,
+      "speed": 35
+    },
+    "abilities": [
+      {
+        "name": "cute-charm",
+        "hidden": false
+      },
+      {
+        "name": "magic-guard",
+        "hidden": false
+      },
+      {
+        "name": "friend-guard",
+        "hidden": true
+      }
+    ],
+    "height_dm": 6,
+    "weight_hg": 75,
+    "capture_rate": 150,
+    "base_experience": 113,
+    "growth_rate": "fast",
+    "gender_rate": 6,
+    "base_happiness": 140,
+    "egg_groups": [
+      "fairy"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "cleffa",
+    "evolves_to": [
+      {
+        "species": "clefable",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "moon-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 36,
+    "name": "clefable",
+    "display_name": "Clefable",
+    "types": [
+      "fairy"
+    ],
+    "base_stats": {
+      "hp": 95,
+      "attack": 70,
+      "defense": 73,
+      "sp_attack": 95,
+      "sp_defense": 90,
+      "speed": 60
+    },
+    "abilities": [
+      {
+        "name": "cute-charm",
+        "hidden": false
+      },
+      {
+        "name": "magic-guard",
+        "hidden": false
+      },
+      {
+        "name": "unaware",
+        "hidden": true
+      }
+    ],
+    "height_dm": 13,
+    "weight_hg": 400,
+    "capture_rate": 25,
+    "base_experience": 217,
+    "growth_rate": "fast",
+    "gender_rate": 6,
+    "base_happiness": 140,
+    "egg_groups": [
+      "fairy"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "clefairy",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 37,
+    "name": "vulpix",
+    "display_name": "Vulpix",
+    "types": [
+      "fire"
+    ],
+    "base_stats": {
+      "hp": 38,
+      "attack": 41,
+      "defense": 40,
+      "sp_attack": 50,
+      "sp_defense": 65,
+      "speed": 65
+    },
+    "abilities": [
+      {
+        "name": "flash-fire",
+        "hidden": false
+      },
+      {
+        "name": "drought",
+        "hidden": true
+      }
+    ],
+    "height_dm": 6,
+    "weight_hg": 99,
+    "capture_rate": 190,
+    "base_experience": 60,
+    "growth_rate": "medium",
+    "gender_rate": 6,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "ninetales",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "fire-stone"
+          },
+          {
+            "trigger": "use-item",
+            "item": "ice-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 38,
+    "name": "ninetales",
+    "display_name": "Ninetales",
+    "types": [
+      "fire"
+    ],
+    "base_stats": {
+      "hp": 73,
+      "attack": 76,
+      "defense": 75,
+      "sp_attack": 81,
+      "sp_defense": 100,
+      "speed": 100
+    },
+    "abilities": [
+      {
+        "name": "flash-fire",
+        "hidden": false
+      },
+      {
+        "name": "drought",
+        "hidden": true
+      }
+    ],
+    "height_dm": 11,
+    "weight_hg": 199,
+    "capture_rate": 75,
+    "base_experience": 177,
+    "growth_rate": "medium",
+    "gender_rate": 6,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "vulpix",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 39,
+    "name": "jigglypuff",
+    "display_name": "Jigglypuff",
+    "types": [
+      "normal",
+      "fairy"
+    ],
+    "base_stats": {
+      "hp": 115,
+      "attack": 45,
+      "defense": 20,
+      "sp_attack": 45,
+      "sp_defense": 25,
+      "speed": 20
+    },
+    "abilities": [
+      {
+        "name": "cute-charm",
+        "hidden": false
+      },
+      {
+        "name": "competitive",
+        "hidden": false
+      },
+      {
+        "name": "friend-guard",
+        "hidden": true
+      }
+    ],
+    "height_dm": 5,
+    "weight_hg": 55,
+    "capture_rate": 170,
+    "base_experience": 95,
+    "growth_rate": "fast",
+    "gender_rate": 6,
+    "base_happiness": 70,
+    "egg_groups": [
+      "fairy"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "igglybuff",
+    "evolves_to": [
+      {
+        "species": "wigglytuff",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "moon-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 40,
+    "name": "wigglytuff",
+    "display_name": "Wigglytuff",
+    "types": [
+      "normal",
+      "fairy"
+    ],
+    "base_stats": {
+      "hp": 140,
+      "attack": 70,
+      "defense": 45,
+      "sp_attack": 85,
+      "sp_defense": 50,
+      "speed": 45
+    },
+    "abilities": [
+      {
+        "name": "cute-charm",
+        "hidden": false
+      },
+      {
+        "name": "competitive",
+        "hidden": false
+      },
+      {
+        "name": "frisk",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 120,
+    "capture_rate": 50,
+    "base_experience": 196,
+    "growth_rate": "fast",
+    "gender_rate": 6,
+    "base_happiness": 70,
+    "egg_groups": [
+      "fairy"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "jigglypuff",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 41,
+    "name": "zubat",
+    "display_name": "Zubat",
+    "types": [
+      "poison",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 45,
+      "defense": 35,
+      "sp_attack": 30,
+      "sp_defense": 40,
+      "speed": 55
+    },
+    "abilities": [
+      {
+        "name": "inner-focus",
+        "hidden": false
+      },
+      {
+        "name": "infiltrator",
+        "hidden": true
+      }
+    ],
+    "height_dm": 8,
+    "weight_hg": 75,
+    "capture_rate": 255,
+    "base_experience": 49,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "golbat",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 22
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 42,
+    "name": "golbat",
+    "display_name": "Golbat",
+    "types": [
+      "poison",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 75,
+      "attack": 80,
+      "defense": 70,
+      "sp_attack": 65,
+      "sp_defense": 75,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "inner-focus",
+        "hidden": false
+      },
+      {
+        "name": "infiltrator",
+        "hidden": true
+      }
+    ],
+    "height_dm": 16,
+    "weight_hg": 550,
+    "capture_rate": 90,
+    "base_experience": 159,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "zubat",
+    "evolves_to": [
+      {
+        "species": "crobat",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_happiness": 160
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 43,
+    "name": "oddish",
+    "display_name": "Oddish",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 45,
+      "attack": 50,
+      "defense": 55,
+      "sp_attack": 75,
+      "sp_defense": 65,
+      "speed": 30
+    },
+    "abilities": [
+      {
+        "name": "chlorophyll",
+        "hidden": false
+      },
+      {
+        "name": "run-away",
+        "hidden": true
+      }
+    ],
+    "height_dm": 5,
+    "weight_hg": 54,
+    "capture_rate": 255,
+    "base_experience": 64,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "gloom",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 21
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 44,
+    "name": "gloom",
+    "display_name": "Gloom",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 65,
+      "defense": 70,
+      "sp_attack": 85,
+      "sp_defense": 75,
+      "speed": 40
+    },
+    "abilities": [
+      {
+        "name": "chlorophyll",
+        "hidden": false
+      },
+      {
+        "name": "stench",
+        "hidden": true
+      }
+    ],
+    "height_dm": 8,
+    "weight_hg": 86,
+    "capture_rate": 120,
+    "base_experience": 138,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "oddish",
+    "evolves_to": [
+      {
+        "species": "vileplume",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "leaf-stone"
+          }
+        ]
+      },
+      {
+        "species": "bellossom",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "sun-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 45,
+    "name": "vileplume",
+    "display_name": "Vileplume",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 75,
+      "attack": 80,
+      "defense": 85,
+      "sp_attack": 110,
+      "sp_defense": 90,
+      "speed": 50
+    },
+    "abilities": [
+      {
+        "name": "chlorophyll",
+        "hidden": false
+      },
+      {
+        "name": "effect-spore",
+        "hidden": true
+      }
+    ],
+    "height_dm": 12,
+    "weight_hg": 186,
+    "capture_rate": 45,
+    "base_experience": 221,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "gloom",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 46,
+    "name": "paras",
+    "display_name": "Paras",
+    "types": [
+      "bug",
+      "grass"
+    ],
+    "base_stats": {
+      "hp": 35,
+      "attack": 70,
+      "defense": 55,
+      "sp_attack": 45,
+      "sp_defense": 55,
+      "speed": 25
+    },
+    "abilities": [
+      {
+        "name": "effect-spore",
+        "hidden": false
+      },
+      {
+        "name": "dry-skin",
+        "hidden": false
+      },
+      {
+        "name": "damp",
+        "hidden": true
+      }
+    ],
+    "height_dm": 3,
+    "weight_hg": 54,
+    "capture_rate": 190,
+    "base_experience": 57,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug",
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "parasect",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 24
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 47,
+    "name": "parasect",
+    "display_name": "Parasect",
+    "types": [
+      "bug",
+      "grass"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 95,
+      "defense": 80,
+      "sp_attack": 60,
+      "sp_defense": 80,
+      "speed": 30
+    },
+    "abilities": [
+      {
+        "name": "effect-spore",
+        "hidden": false
+      },
+      {
+        "name": "dry-skin",
+        "hidden": false
+      },
+      {
+        "name": "damp",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 295,
+    "capture_rate": 75,
+    "base_experience": 142,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug",
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "paras",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 48,
+    "name": "venonat",
+    "display_name": "Venonat",
+    "types": [
+      "bug",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 55,
+      "defense": 50,
+      "sp_attack": 40,
+      "sp_defense": 55,
+      "speed": 45
+    },
+    "abilities": [
+      {
+        "name": "compound-eyes",
+        "hidden": false
+      },
+      {
+        "name": "tinted-lens",
+        "hidden": false
+      },
+      {
+        "name": "run-away",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 300,
+    "capture_rate": 190,
+    "base_experience": 61,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "venomoth",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 31
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 49,
+    "name": "venomoth",
+    "display_name": "Venomoth",
+    "types": [
+      "bug",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 70,
+      "attack": 65,
+      "defense": 60,
+      "sp_attack": 90,
+      "sp_defense": 75,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "shield-dust",
+        "hidden": false
+      },
+      {
+        "name": "tinted-lens",
+        "hidden": false
+      },
+      {
+        "name": "wonder-skin",
+        "hidden": true
+      }
+    ],
+    "height_dm": 15,
+    "weight_hg": 125,
+    "capture_rate": 75,
+    "base_experience": 158,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "venonat",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 50,
+    "name": "diglett",
+    "display_name": "Diglett",
+    "types": [
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 10,
+      "attack": 55,
+      "defense": 25,
+      "sp_attack": 35,
+      "sp_defense": 45,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "name": "sand-veil",
+        "hidden": false
+      },
+      {
+        "name": "arena-trap",
+        "hidden": false
+      },
+      {
+        "name": "sand-force",
+        "hidden": true
+      }
+    ],
+    "height_dm": 2,
+    "weight_hg": 8,
+    "capture_rate": 255,
+    "base_experience": 53,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "dugtrio",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 26
+          },
+          {
+            "trigger": "level-up",
+            "min_level": 26
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 51,
+    "name": "dugtrio",
+    "display_name": "Dugtrio",
+    "types": [
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 35,
+      "attack": 100,
+      "defense": 50,
+      "sp_attack": 50,
+      "sp_defense": 70,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "name": "sand-veil",
+        "hidden": false
+      },
+      {
+        "name": "arena-trap",
+        "hidden": false
+      },
+      {
+        "name": "sand-force",
+        "hidden": true
+      }
+    ],
+    "height_dm": 7,
+    "weight_hg": 333,
+    "capture_rate": 50,
+    "base_experience": 149,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "diglett",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 52,
+    "name": "meowth",
+    "display_name": "Meowth",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 45,
+      "defense": 35,
+      "sp_attack": 40,
+      "sp_defense": 40,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "pickup",
+        "hidden": false
+      },
+      {
+        "name": "technician",
+        "hidden": false
+      },
+      {
+        "name": "unnerve",
+        "hidden": true
+      }
+    ],
+    "height_dm": 4,
+    "weight_hg": 42,
+    "capture_rate": 255,
+    "base_experience": 58,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "persian",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 28
+          },
+          {
+            "trigger": "level-up",
+            "min_happiness": 160
+          }
+        ]
+      },
+      {
+        "species": "perrserker",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 28
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 53,
+    "name": "persian",
+    "display_name": "Persian",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 70,
+      "defense": 60,
+      "sp_attack": 65,
+      "sp_defense": 65,
+      "speed": 115
+    },
+    "abilities": [
+      {
+        "name": "limber",
+        "hidden": false
+      },
+      {
+        "name": "technician",
+        "hidden": false
+      },
+      {
+        "name": "unnerve",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 320,
+    "capture_rate": 90,
+    "base_experience": 154,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "meowth",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 54,
+    "name": "psyduck",
+    "display_name": "Psyduck",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 50,
+      "attack": 52,
+      "defense": 48,
+      "sp_attack": 65,
+      "sp_defense": 50,
+      "speed": 55
+    },
+    "abilities": [
+      {
+        "name": "damp",
+        "hidden": false
+      },
+      {
+        "name": "cloud-nine",
+        "hidden": false
+      },
+      {
+        "name": "swift-swim",
+        "hidden": true
+      }
+    ],
+    "height_dm": 8,
+    "weight_hg": 196,
+    "capture_rate": 190,
+    "base_experience": 64,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "golduck",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 33
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 55,
+    "name": "golduck",
+    "display_name": "Golduck",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 80,
+      "attack": 82,
+      "defense": 78,
+      "sp_attack": 95,
+      "sp_defense": 80,
+      "speed": 85
+    },
+    "abilities": [
+      {
+        "name": "damp",
+        "hidden": false
+      },
+      {
+        "name": "cloud-nine",
+        "hidden": false
+      },
+      {
+        "name": "swift-swim",
+        "hidden": true
+      }
+    ],
+    "height_dm": 17,
+    "weight_hg": 766,
+    "capture_rate": 75,
+    "base_experience": 175,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "psyduck",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 56,
+    "name": "mankey",
+    "display_name": "Mankey",
+    "types": [
+      "fighting"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 80,
+      "defense": 35,
+      "sp_attack": 35,
+      "sp_defense": 45,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "vital-spirit",
+        "hidden": false
+      },
+      {
+        "name": "anger-point",
+        "hidden": false
+      },
+      {
+        "name": "defiant",
+        "hidden": true
+      }
+    ],
+    "height_dm": 5,
+    "weight_hg": 280,
+    "capture_rate": 190,
+    "base_experience": 61,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "primeape",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 28
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 57,
+    "name": "primeape",
+    "display_name": "Primeape",
+    "types": [
+      "fighting"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 105,
+      "defense": 60,
+      "sp_attack": 60,
+      "sp_defense": 70,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "name": "vital-spirit",
+        "hidden": false
+      },
+      {
+        "name": "anger-point",
+        "hidden": false
+      },
+      {
+        "name": "defiant",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 320,
+    "capture_rate": 75,
+    "base_experience": 159,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "mankey",
+    "evolves_to": [
+      {
+        "species": "annihilape",
+        "details": [
+          {
+            "trigger": "use-move"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 58,
+    "name": "growlithe",
+    "display_name": "Growlithe",
+    "types": [
+      "fire"
+    ],
+    "base_stats": {
+      "hp": 55,
+      "attack": 70,
+      "defense": 45,
+      "sp_attack": 70,
+      "sp_defense": 50,
+      "speed": 60
+    },
+    "abilities": [
+      {
+        "name": "intimidate",
+        "hidden": false
+      },
+      {
+        "name": "flash-fire",
+        "hidden": false
+      },
+      {
+        "name": "justified",
+        "hidden": true
+      }
+    ],
+    "height_dm": 7,
+    "weight_hg": 190,
+    "capture_rate": 190,
+    "base_experience": 70,
+    "growth_rate": "slow",
+    "gender_rate": 2,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "arcanine",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "fire-stone"
+          },
+          {
+            "trigger": "use-item",
+            "item": "fire-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 59,
+    "name": "arcanine",
+    "display_name": "Arcanine",
+    "types": [
+      "fire"
+    ],
+    "base_stats": {
+      "hp": 90,
+      "attack": 110,
+      "defense": 80,
+      "sp_attack": 100,
+      "sp_defense": 80,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "name": "intimidate",
+        "hidden": false
+      },
+      {
+        "name": "flash-fire",
+        "hidden": false
+      },
+      {
+        "name": "justified",
+        "hidden": true
+      }
+    ],
+    "height_dm": 19,
+    "weight_hg": 1550,
+    "capture_rate": 75,
+    "base_experience": 194,
+    "growth_rate": "slow",
+    "gender_rate": 2,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "growlithe",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 60,
+    "name": "poliwag",
+    "display_name": "Poliwag",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 50,
+      "defense": 40,
+      "sp_attack": 40,
+      "sp_defense": 40,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "water-absorb",
+        "hidden": false
+      },
+      {
+        "name": "damp",
+        "hidden": false
+      },
+      {
+        "name": "swift-swim",
+        "hidden": true
+      }
+    ],
+    "height_dm": 6,
+    "weight_hg": 124,
+    "capture_rate": 255,
+    "base_experience": 60,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "poliwhirl",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 25
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 61,
+    "name": "poliwhirl",
+    "display_name": "Poliwhirl",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 65,
+      "defense": 65,
+      "sp_attack": 50,
+      "sp_defense": 50,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "water-absorb",
+        "hidden": false
+      },
+      {
+        "name": "damp",
+        "hidden": false
+      },
+      {
+        "name": "swift-swim",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 200,
+    "capture_rate": 120,
+    "base_experience": 135,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "poliwag",
+    "evolves_to": [
+      {
+        "species": "poliwrath",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "water-stone"
+          }
+        ]
+      },
+      {
+        "species": "politoed",
+        "details": [
+          {
+            "trigger": "trade",
+            "held_item": "kings-rock"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 62,
+    "name": "poliwrath",
+    "display_name": "Poliwrath",
+    "types": [
+      "water",
+      "fighting"
+    ],
+    "base_stats": {
+      "hp": 90,
+      "attack": 95,
+      "defense": 95,
+      "sp_attack": 70,
+      "sp_defense": 90,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "water-absorb",
+        "hidden": false
+      },
+      {
+        "name": "damp",
+        "hidden": false
+      },
+      {
+        "name": "swift-swim",
+        "hidden": true
+      }
+    ],
+    "height_dm": 13,
+    "weight_hg": 540,
+    "capture_rate": 45,
+    "base_experience": 230,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "poliwhirl",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 63,
+    "name": "abra",
+    "display_name": "Abra",
+    "types": [
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 25,
+      "attack": 20,
+      "defense": 15,
+      "sp_attack": 105,
+      "sp_defense": 55,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "synchronize",
+        "hidden": false
+      },
+      {
+        "name": "inner-focus",
+        "hidden": false
+      },
+      {
+        "name": "magic-guard",
+        "hidden": true
+      }
+    ],
+    "height_dm": 9,
+    "weight_hg": 195,
+    "capture_rate": 200,
+    "base_experience": 62,
+    "growth_rate": "medium-slow",
+    "gender_rate": 2,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "kadabra",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 16
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 64,
+    "name": "kadabra",
+    "display_name": "Kadabra",
+    "types": [
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 35,
+      "defense": 30,
+      "sp_attack": 120,
+      "sp_defense": 70,
+      "speed": 105
+    },
+    "abilities": [
+      {
+        "name": "synchronize",
+        "hidden": false
+      },
+      {
+        "name": "inner-focus",
+        "hidden": false
+      },
+      {
+        "name": "magic-guard",
+        "hidden": true
+      }
+    ],
+    "height_dm": 13,
+    "weight_hg": 565,
+    "capture_rate": 100,
+    "base_experience": 140,
+    "growth_rate": "medium-slow",
+    "gender_rate": 2,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "abra",
+    "evolves_to": [
+      {
+        "species": "alakazam",
+        "details": [
+          {
+            "trigger": "trade"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 65,
+    "name": "alakazam",
+    "display_name": "Alakazam",
+    "types": [
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 55,
+      "attack": 50,
+      "defense": 45,
+      "sp_attack": 135,
+      "sp_defense": 95,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "name": "synchronize",
+        "hidden": false
+      },
+      {
+        "name": "inner-focus",
+        "hidden": false
+      },
+      {
+        "name": "magic-guard",
+        "hidden": true
+      }
+    ],
+    "height_dm": 15,
+    "weight_hg": 480,
+    "capture_rate": 50,
+    "base_experience": 225,
+    "growth_rate": "medium-slow",
+    "gender_rate": 2,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "kadabra",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 66,
+    "name": "machop",
+    "display_name": "Machop",
+    "types": [
+      "fighting"
+    ],
+    "base_stats": {
+      "hp": 70,
+      "attack": 80,
+      "defense": 50,
+      "sp_attack": 35,
+      "sp_defense": 35,
+      "speed": 35
+    },
+    "abilities": [
+      {
+        "name": "guts",
+        "hidden": false
+      },
+      {
+        "name": "no-guard",
+        "hidden": false
+      },
+      {
+        "name": "steadfast",
+        "hidden": true
+      }
+    ],
+    "height_dm": 8,
+    "weight_hg": 195,
+    "capture_rate": 180,
+    "base_experience": 61,
+    "growth_rate": "medium-slow",
+    "gender_rate": 2,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "machoke",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 28
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 67,
+    "name": "machoke",
+    "display_name": "Machoke",
+    "types": [
+      "fighting"
+    ],
+    "base_stats": {
+      "hp": 80,
+      "attack": 100,
+      "defense": 70,
+      "sp_attack": 50,
+      "sp_defense": 60,
+      "speed": 45
+    },
+    "abilities": [
+      {
+        "name": "guts",
+        "hidden": false
+      },
+      {
+        "name": "no-guard",
+        "hidden": false
+      },
+      {
+        "name": "steadfast",
+        "hidden": true
+      }
+    ],
+    "height_dm": 15,
+    "weight_hg": 705,
+    "capture_rate": 90,
+    "base_experience": 142,
+    "growth_rate": "medium-slow",
+    "gender_rate": 2,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "machop",
+    "evolves_to": [
+      {
+        "species": "machamp",
+        "details": [
+          {
+            "trigger": "trade"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 68,
+    "name": "machamp",
+    "display_name": "Machamp",
+    "types": [
+      "fighting"
+    ],
+    "base_stats": {
+      "hp": 90,
+      "attack": 130,
+      "defense": 80,
+      "sp_attack": 65,
+      "sp_defense": 85,
+      "speed": 55
+    },
+    "abilities": [
+      {
+        "name": "guts",
+        "hidden": false
+      },
+      {
+        "name": "no-guard",
+        "hidden": false
+      },
+      {
+        "name": "steadfast",
+        "hidden": true
+      }
+    ],
+    "height_dm": 16,
+    "weight_hg": 1300,
+    "capture_rate": 45,
+    "base_experience": 227,
+    "growth_rate": "medium-slow",
+    "gender_rate": 2,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "machoke",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 69,
+    "name": "bellsprout",
+    "display_name": "Bellsprout",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 50,
+      "attack": 75,
+      "defense": 35,
+      "sp_attack": 70,
+      "sp_defense": 30,
+      "speed": 40
+    },
+    "abilities": [
+      {
+        "name": "chlorophyll",
+        "hidden": false
+      },
+      {
+        "name": "gluttony",
+        "hidden": true
+      }
+    ],
+    "height_dm": 7,
+    "weight_hg": 40,
+    "capture_rate": 255,
+    "base_experience": 60,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "weepinbell",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 21
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 70,
+    "name": "weepinbell",
+    "display_name": "Weepinbell",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 90,
+      "defense": 50,
+      "sp_attack": 85,
+      "sp_defense": 45,
+      "speed": 55
+    },
+    "abilities": [
+      {
+        "name": "chlorophyll",
+        "hidden": false
+      },
+      {
+        "name": "gluttony",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 64,
+    "capture_rate": 120,
+    "base_experience": 137,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "bellsprout",
+    "evolves_to": [
+      {
+        "species": "victreebel",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "leaf-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 71,
+    "name": "victreebel",
+    "display_name": "Victreebel",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 80,
+      "attack": 105,
+      "defense": 65,
+      "sp_attack": 100,
+      "sp_defense": 70,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "chlorophyll",
+        "hidden": false
+      },
+      {
+        "name": "gluttony",
+        "hidden": true
+      }
+    ],
+    "height_dm": 17,
+    "weight_hg": 155,
+    "capture_rate": 45,
+    "base_experience": 221,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "weepinbell",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 72,
+    "name": "tentacool",
+    "display_name": "Tentacool",
+    "types": [
+      "water",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 40,
+      "defense": 35,
+      "sp_attack": 50,
+      "sp_defense": 100,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "clear-body",
+        "hidden": false
+      },
+      {
+        "name": "liquid-ooze",
+        "hidden": false
+      },
+      {
+        "name": "rain-dish",
+        "hidden": true
+      }
+    ],
+    "height_dm": 9,
+    "weight_hg": 455,
+    "capture_rate": 190,
+    "base_experience": 67,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "tentacruel",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 30
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 73,
+    "name": "tentacruel",
+    "display_name": "Tentacruel",
+    "types": [
+      "water",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 80,
+      "attack": 70,
+      "defense": 65,
+      "sp_attack": 80,
+      "sp_defense": 120,
+      "speed": 100
+    },
+    "abilities": [
+      {
+        "name": "clear-body",
+        "hidden": false
+      },
+      {
+        "name": "liquid-ooze",
+        "hidden": false
+      },
+      {
+        "name": "rain-dish",
+        "hidden": true
+      }
+    ],
+    "height_dm": 16,
+    "weight_hg": 550,
+    "capture_rate": 60,
+    "base_experience": 180,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "tentacool",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 74,
+    "name": "geodude",
+    "display_name": "Geodude",
+    "types": [
+      "rock",
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 80,
+      "defense": 100,
+      "sp_attack": 30,
+      "sp_defense": 30,
+      "speed": 20
+    },
+    "abilities": [
+      {
+        "name": "rock-head",
+        "hidden": false
+      },
+      {
+        "name": "sturdy",
+        "hidden": false
+      },
+      {
+        "name": "sand-veil",
+        "hidden": true
+      }
+    ],
+    "height_dm": 4,
+    "weight_hg": 200,
+    "capture_rate": 255,
+    "base_experience": 60,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "mineral"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "graveler",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 25
+          },
+          {
+            "trigger": "level-up",
+            "min_level": 25
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 75,
+    "name": "graveler",
+    "display_name": "Graveler",
+    "types": [
+      "rock",
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 55,
+      "attack": 95,
+      "defense": 115,
+      "sp_attack": 45,
+      "sp_defense": 45,
+      "speed": 35
+    },
+    "abilities": [
+      {
+        "name": "rock-head",
+        "hidden": false
+      },
+      {
+        "name": "sturdy",
+        "hidden": false
+      },
+      {
+        "name": "sand-veil",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 1050,
+    "capture_rate": 120,
+    "base_experience": 137,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "mineral"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "geodude",
+    "evolves_to": [
+      {
+        "species": "golem",
+        "details": [
+          {
+            "trigger": "trade"
+          },
+          {
+            "trigger": "trade"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 76,
+    "name": "golem",
+    "display_name": "Golem",
+    "types": [
+      "rock",
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 80,
+      "attack": 120,
+      "defense": 130,
+      "sp_attack": 55,
+      "sp_defense": 65,
+      "speed": 45
+    },
+    "abilities": [
+      {
+        "name": "rock-head",
+        "hidden": false
+      },
+      {
+        "name": "sturdy",
+        "hidden": false
+      },
+      {
+        "name": "sand-veil",
+        "hidden": true
+      }
+    ],
+    "height_dm": 14,
+    "weight_hg": 3000,
+    "capture_rate": 45,
+    "base_experience": 223,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "mineral"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "graveler",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 77,
+    "name": "ponyta",
+    "display_name": "Ponyta",
+    "types": [
+      "fire"
+    ],
+    "base_stats": {
+      "hp": 50,
+      "attack": 85,
+      "defense": 55,
+      "sp_attack": 65,
+      "sp_defense": 65,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "run-away",
+        "hidden": false
+      },
+      {
+        "name": "flash-fire",
+        "hidden": false
+      },
+      {
+        "name": "flame-body",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 300,
+    "capture_rate": 190,
+    "base_experience": 82,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "rapidash",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 40
+          },
+          {
+            "trigger": "level-up",
+            "min_level": 40
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 78,
+    "name": "rapidash",
+    "display_name": "Rapidash",
+    "types": [
+      "fire"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 100,
+      "defense": 70,
+      "sp_attack": 80,
+      "sp_defense": 80,
+      "speed": 105
+    },
+    "abilities": [
+      {
+        "name": "run-away",
+        "hidden": false
+      },
+      {
+        "name": "flash-fire",
+        "hidden": false
+      },
+      {
+        "name": "flame-body",
+        "hidden": true
+      }
+    ],
+    "height_dm": 17,
+    "weight_hg": 950,
+    "capture_rate": 60,
+    "base_experience": 175,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "ponyta",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 79,
+    "name": "slowpoke",
+    "display_name": "Slowpoke",
+    "types": [
+      "water",
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 90,
+      "attack": 65,
+      "defense": 65,
+      "sp_attack": 40,
+      "sp_defense": 40,
+      "speed": 15
+    },
+    "abilities": [
+      {
+        "name": "oblivious",
+        "hidden": false
+      },
+      {
+        "name": "own-tempo",
+        "hidden": false
+      },
+      {
+        "name": "regenerator",
+        "hidden": true
+      }
+    ],
+    "height_dm": 12,
+    "weight_hg": 360,
+    "capture_rate": 190,
+    "base_experience": 63,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "water1"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "slowbro",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 37
+          },
+          {
+            "trigger": "use-item",
+            "item": "galarica-cuff"
+          }
+        ]
+      },
+      {
+        "species": "slowking",
+        "details": [
+          {
+            "trigger": "trade",
+            "held_item": "kings-rock"
+          },
+          {
+            "trigger": "use-item",
+            "item": "galarica-wreath"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 80,
+    "name": "slowbro",
+    "display_name": "Slowbro",
+    "types": [
+      "water",
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 95,
+      "attack": 75,
+      "defense": 110,
+      "sp_attack": 100,
+      "sp_defense": 80,
+      "speed": 30
+    },
+    "abilities": [
+      {
+        "name": "oblivious",
+        "hidden": false
+      },
+      {
+        "name": "own-tempo",
+        "hidden": false
+      },
+      {
+        "name": "regenerator",
+        "hidden": true
+      }
+    ],
+    "height_dm": 16,
+    "weight_hg": 785,
+    "capture_rate": 75,
+    "base_experience": 172,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "water1"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "slowpoke",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 81,
+    "name": "magnemite",
+    "display_name": "Magnemite",
+    "types": [
+      "electric",
+      "steel"
+    ],
+    "base_stats": {
+      "hp": 25,
+      "attack": 35,
+      "defense": 70,
+      "sp_attack": 95,
+      "sp_defense": 55,
+      "speed": 45
+    },
+    "abilities": [
+      {
+        "name": "magnet-pull",
+        "hidden": false
+      },
+      {
+        "name": "sturdy",
+        "hidden": false
+      },
+      {
+        "name": "analytic",
+        "hidden": true
+      }
+    ],
+    "height_dm": 3,
+    "weight_hg": 60,
+    "capture_rate": 190,
+    "base_experience": 65,
+    "growth_rate": "medium",
+    "gender_rate": -1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "mineral"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "magneton",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 30
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 82,
+    "name": "magneton",
+    "display_name": "Magneton",
+    "types": [
+      "electric",
+      "steel"
+    ],
+    "base_stats": {
+      "hp": 50,
+      "attack": 60,
+      "defense": 95,
+      "sp_attack": 120,
+      "sp_defense": 70,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "magnet-pull",
+        "hidden": false
+      },
+      {
+        "name": "sturdy",
+        "hidden": false
+      },
+      {
+        "name": "analytic",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 600,
+    "capture_rate": 60,
+    "base_experience": 163,
+    "growth_rate": "medium",
+    "gender_rate": -1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "mineral"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "magnemite",
+    "evolves_to": [
+      {
+        "species": "magnezone",
+        "details": [
+          {
+            "trigger": "level-up",
+            "location": "mt-coronet"
+          },
+          {
+            "trigger": "level-up",
+            "location": "chargestone-cave"
+          },
+          {
+            "trigger": "level-up",
+            "location": "kalos-route-13"
+          },
+          {
+            "trigger": "level-up",
+            "location": "blush-mountain"
+          },
+          {
+            "trigger": "level-up",
+            "location": "vast-poni-canyon"
+          },
+          {
+            "trigger": "use-item",
+            "item": "thunder-stone"
+          },
+          {
+            "trigger": "level-up",
+            "location": "new-mauville"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 83,
+    "name": "farfetchd",
+    "display_name": "Farfetch’d",
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 52,
+      "attack": 90,
+      "defense": 55,
+      "sp_attack": 58,
+      "sp_defense": 62,
+      "speed": 60
+    },
+    "abilities": [
+      {
+        "name": "keen-eye",
+        "hidden": false
+      },
+      {
+        "name": "inner-focus",
+        "hidden": false
+      },
+      {
+        "name": "defiant",
+        "hidden": true
+      }
+    ],
+    "height_dm": 8,
+    "weight_hg": 150,
+    "capture_rate": 45,
+    "base_experience": 132,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "sirfetchd",
+        "details": [
+          {
+            "trigger": "three-critical-hits"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 84,
+    "name": "doduo",
+    "display_name": "Doduo",
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 35,
+      "attack": 85,
+      "defense": 45,
+      "sp_attack": 35,
+      "sp_defense": 35,
+      "speed": 75
+    },
+    "abilities": [
+      {
+        "name": "run-away",
+        "hidden": false
+      },
+      {
+        "name": "early-bird",
+        "hidden": false
+      },
+      {
+        "name": "tangled-feet",
+        "hidden": true
+      }
+    ],
+    "height_dm": 14,
+    "weight_hg": 392,
+    "capture_rate": 190,
+    "base_experience": 62,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "dodrio",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 31
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 85,
+    "name": "dodrio",
+    "display_name": "Dodrio",
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 110,
+      "defense": 70,
+      "sp_attack": 60,
+      "sp_defense": 60,
+      "speed": 110
+    },
+    "abilities": [
+      {
+        "name": "run-away",
+        "hidden": false
+      },
+      {
+        "name": "early-bird",
+        "hidden": false
+      },
+      {
+        "name": "tangled-feet",
+        "hidden": true
+      }
+    ],
+    "height_dm": 18,
+    "weight_hg": 852,
+    "capture_rate": 45,
+    "base_experience": 165,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "doduo",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 86,
+    "name": "seel",
+    "display_name": "Seel",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 45,
+      "defense": 55,
+      "sp_attack": 45,
+      "sp_defense": 70,
+      "speed": 45
+    },
+    "abilities": [
+      {
+        "name": "thick-fat",
+        "hidden": false
+      },
+      {
+        "name": "hydration",
+        "hidden": false
+      },
+      {
+        "name": "ice-body",
+        "hidden": true
+      }
+    ],
+    "height_dm": 11,
+    "weight_hg": 900,
+    "capture_rate": 190,
+    "base_experience": 65,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "dewgong",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 34
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 87,
+    "name": "dewgong",
+    "display_name": "Dewgong",
+    "types": [
+      "water",
+      "ice"
+    ],
+    "base_stats": {
+      "hp": 90,
+      "attack": 70,
+      "defense": 80,
+      "sp_attack": 70,
+      "sp_defense": 95,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "thick-fat",
+        "hidden": false
+      },
+      {
+        "name": "hydration",
+        "hidden": false
+      },
+      {
+        "name": "ice-body",
+        "hidden": true
+      }
+    ],
+    "height_dm": 17,
+    "weight_hg": 1200,
+    "capture_rate": 75,
+    "base_experience": 166,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "seel",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 88,
+    "name": "grimer",
+    "display_name": "Grimer",
+    "types": [
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 80,
+      "attack": 80,
+      "defense": 50,
+      "sp_attack": 40,
+      "sp_defense": 50,
+      "speed": 25
+    },
+    "abilities": [
+      {
+        "name": "stench",
+        "hidden": false
+      },
+      {
+        "name": "sticky-hold",
+        "hidden": false
+      },
+      {
+        "name": "poison-touch",
+        "hidden": true
+      }
+    ],
+    "height_dm": 9,
+    "weight_hg": 300,
+    "capture_rate": 190,
+    "base_experience": 65,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "indeterminate"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "muk",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 38
+          },
+          {
+            "trigger": "level-up",
+            "min_level": 38
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 89,
+    "name": "muk",
+    "display_name": "Muk",
+    "types": [
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 105,
+      "attack": 105,
+      "defense": 75,
+      "sp_attack": 65,
+      "sp_defense": 100,
+      "speed": 50
+    },
+    "abilities": [
+      {
+        "name": "stench",
+        "hidden": false
+      },
+      {
+        "name": "sticky-hold",
+        "hidden": false
+      },
+      {
+        "name": "poison-touch",
+        "hidden": true
+      }
+    ],
+    "height_dm": 12,
+    "weight_hg": 300,
+    "capture_rate": 75,
+    "base_experience": 175,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "indeterminate"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "grimer",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 90,
+    "name": "shellder",
+    "display_name": "Shellder",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 30,
+      "attack": 65,
+      "defense": 100,
+      "sp_attack": 45,
+      "sp_defense": 25,
+      "speed": 40
+    },
+    "abilities": [
+      {
+        "name": "shell-armor",
+        "hidden": false
+      },
+      {
+        "name": "skill-link",
+        "hidden": false
+      },
+      {
+        "name": "overcoat",
+        "hidden": true
+      }
+    ],
+    "height_dm": 3,
+    "weight_hg": 40,
+    "capture_rate": 190,
+    "base_experience": 61,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "cloyster",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "water-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 91,
+    "name": "cloyster",
+    "display_name": "Cloyster",
+    "types": [
+      "water",
+      "ice"
+    ],
+    "base_stats": {
+      "hp": 50,
+      "attack": 95,
+      "defense": 180,
+      "sp_attack": 85,
+      "sp_defense": 45,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "shell-armor",
+        "hidden": false
+      },
+      {
+        "name": "skill-link",
+        "hidden": false
+      },
+      {
+        "name": "overcoat",
+        "hidden": true
+      }
+    ],
+    "height_dm": 15,
+    "weight_hg": 1325,
+    "capture_rate": 60,
+    "base_experience": 184,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "shellder",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 92,
+    "name": "gastly",
+    "display_name": "Gastly",
+    "types": [
+      "ghost",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 30,
+      "attack": 35,
+      "defense": 30,
+      "sp_attack": 100,
+      "sp_defense": 35,
+      "speed": 80
+    },
+    "abilities": [
+      {
+        "name": "levitate",
+        "hidden": false
+      }
+    ],
+    "height_dm": 13,
+    "weight_hg": 1,
+    "capture_rate": 190,
+    "base_experience": 62,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "indeterminate"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "haunter",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 25
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 93,
+    "name": "haunter",
+    "display_name": "Haunter",
+    "types": [
+      "ghost",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 45,
+      "attack": 50,
+      "defense": 45,
+      "sp_attack": 115,
+      "sp_defense": 55,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "name": "levitate",
+        "hidden": false
+      }
+    ],
+    "height_dm": 16,
+    "weight_hg": 1,
+    "capture_rate": 90,
+    "base_experience": 142,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "indeterminate"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "gastly",
+    "evolves_to": [
+      {
+        "species": "gengar",
+        "details": [
+          {
+            "trigger": "trade"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 94,
+    "name": "gengar",
+    "display_name": "Gengar",
+    "types": [
+      "ghost",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 65,
+      "defense": 60,
+      "sp_attack": 130,
+      "sp_defense": 75,
+      "speed": 110
+    },
+    "abilities": [
+      {
+        "name": "cursed-body",
+        "hidden": false
+      }
+    ],
+    "height_dm": 15,
+    "weight_hg": 405,
+    "capture_rate": 45,
+    "base_experience": 225,
+    "growth_rate": "medium-slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "indeterminate"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "haunter",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 95,
+    "name": "onix",
+    "display_name": "Onix",
+    "types": [
+      "rock",
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 35,
+      "attack": 45,
+      "defense": 160,
+      "sp_attack": 30,
+      "sp_defense": 45,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "rock-head",
+        "hidden": false
+      },
+      {
+        "name": "sturdy",
+        "hidden": false
+      },
+      {
+        "name": "weak-armor",
+        "hidden": true
+      }
+    ],
+    "height_dm": 88,
+    "weight_hg": 2100,
+    "capture_rate": 45,
+    "base_experience": 77,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "mineral"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "steelix",
+        "details": [
+          {
+            "trigger": "trade",
+            "held_item": "metal-coat"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 96,
+    "name": "drowzee",
+    "display_name": "Drowzee",
+    "types": [
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 48,
+      "defense": 45,
+      "sp_attack": 43,
+      "sp_defense": 90,
+      "speed": 42
+    },
+    "abilities": [
+      {
+        "name": "insomnia",
+        "hidden": false
+      },
+      {
+        "name": "forewarn",
+        "hidden": false
+      },
+      {
+        "name": "inner-focus",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 324,
+    "capture_rate": 190,
+    "base_experience": 66,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "hypno",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 26
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 97,
+    "name": "hypno",
+    "display_name": "Hypno",
+    "types": [
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 85,
+      "attack": 73,
+      "defense": 70,
+      "sp_attack": 73,
+      "sp_defense": 115,
+      "speed": 67
+    },
+    "abilities": [
+      {
+        "name": "insomnia",
+        "hidden": false
+      },
+      {
+        "name": "forewarn",
+        "hidden": false
+      },
+      {
+        "name": "inner-focus",
+        "hidden": true
+      }
+    ],
+    "height_dm": 16,
+    "weight_hg": 756,
+    "capture_rate": 75,
+    "base_experience": 169,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "drowzee",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 98,
+    "name": "krabby",
+    "display_name": "Krabby",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 30,
+      "attack": 105,
+      "defense": 90,
+      "sp_attack": 25,
+      "sp_defense": 25,
+      "speed": 50
+    },
+    "abilities": [
+      {
+        "name": "hyper-cutter",
+        "hidden": false
+      },
+      {
+        "name": "shell-armor",
+        "hidden": false
+      },
+      {
+        "name": "sheer-force",
+        "hidden": true
+      }
+    ],
+    "height_dm": 4,
+    "weight_hg": 65,
+    "capture_rate": 225,
+    "base_experience": 65,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "kingler",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 28
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 99,
+    "name": "kingler",
+    "display_name": "Kingler",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 55,
+      "attack": 130,
+      "defense": 115,
+      "sp_attack": 50,
+      "sp_defense": 50,
+      "speed": 75
+    },
+    "abilities": [
+      {
+        "name": "hyper-cutter",
+        "hidden": false
+      },
+      {
+        "name": "shell-armor",
+        "hidden": false
+      },
+      {
+        "name": "sheer-force",
+        "hidden": true
+      }
+    ],
+    "height_dm": 13,
+    "weight_hg": 600,
+    "capture_rate": 60,
+    "base_experience": 166,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "krabby",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 100,
+    "name": "voltorb",
+    "display_name": "Voltorb",
+    "types": [
+      "electric"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 30,
+      "defense": 50,
+      "sp_attack": 55,
+      "sp_defense": 55,
+      "speed": 100
+    },
+    "abilities": [
+      {
+        "name": "soundproof",
+        "hidden": false
+      },
+      {
+        "name": "static",
+        "hidden": false
+      },
+      {
+        "name": "aftermath",
+        "hidden": true
+      }
+    ],
+    "height_dm": 5,
+    "weight_hg": 104,
+    "capture_rate": 190,
+    "base_experience": 66,
+    "growth_rate": "medium",
+    "gender_rate": -1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "mineral"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "electrode",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 30
+          },
+          {
+            "trigger": "use-item",
+            "item": "leaf-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 101,
+    "name": "electrode",
+    "display_name": "Electrode",
+    "types": [
+      "electric"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 50,
+      "defense": 70,
+      "sp_attack": 80,
+      "sp_defense": 80,
+      "speed": 150
+    },
+    "abilities": [
+      {
+        "name": "soundproof",
+        "hidden": false
+      },
+      {
+        "name": "static",
+        "hidden": false
+      },
+      {
+        "name": "aftermath",
+        "hidden": true
+      }
+    ],
+    "height_dm": 12,
+    "weight_hg": 666,
+    "capture_rate": 60,
+    "base_experience": 172,
+    "growth_rate": "medium",
+    "gender_rate": -1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "mineral"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "voltorb",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 102,
+    "name": "exeggcute",
+    "display_name": "Exeggcute",
+    "types": [
+      "grass",
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 40,
+      "defense": 80,
+      "sp_attack": 60,
+      "sp_defense": 45,
+      "speed": 40
+    },
+    "abilities": [
+      {
+        "name": "chlorophyll",
+        "hidden": false
+      },
+      {
+        "name": "harvest",
+        "hidden": true
+      }
+    ],
+    "height_dm": 4,
+    "weight_hg": 25,
+    "capture_rate": 90,
+    "base_experience": 65,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "exeggutor",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "leaf-stone"
+          },
+          {
+            "trigger": "use-item",
+            "item": "leaf-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 103,
+    "name": "exeggutor",
+    "display_name": "Exeggutor",
+    "types": [
+      "grass",
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 95,
+      "attack": 95,
+      "defense": 85,
+      "sp_attack": 125,
+      "sp_defense": 75,
+      "speed": 55
+    },
+    "abilities": [
+      {
+        "name": "chlorophyll",
+        "hidden": false
+      },
+      {
+        "name": "harvest",
+        "hidden": true
+      }
+    ],
+    "height_dm": 20,
+    "weight_hg": 1200,
+    "capture_rate": 45,
+    "base_experience": 186,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "exeggcute",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 104,
+    "name": "cubone",
+    "display_name": "Cubone",
+    "types": [
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 50,
+      "attack": 50,
+      "defense": 95,
+      "sp_attack": 40,
+      "sp_defense": 50,
+      "speed": 35
+    },
+    "abilities": [
+      {
+        "name": "rock-head",
+        "hidden": false
+      },
+      {
+        "name": "lightning-rod",
+        "hidden": false
+      },
+      {
+        "name": "battle-armor",
+        "hidden": true
+      }
+    ],
+    "height_dm": 4,
+    "weight_hg": 65,
+    "capture_rate": 190,
+    "base_experience": 64,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "marowak",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 28
+          },
+          {
+            "trigger": "level-up",
+            "min_level": 28,
+            "time_of_day": "night"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 105,
+    "name": "marowak",
+    "display_name": "Marowak",
+    "types": [
+      "ground"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 80,
+      "defense": 110,
+      "sp_attack": 50,
+      "sp_defense": 80,
+      "speed": 45
+    },
+    "abilities": [
+      {
+        "name": "rock-head",
+        "hidden": false
+      },
+      {
+        "name": "lightning-rod",
+        "hidden": false
+      },
+      {
+        "name": "battle-armor",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 450,
+    "capture_rate": 75,
+    "base_experience": 149,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "cubone",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 106,
+    "name": "hitmonlee",
+    "display_name": "Hitmonlee",
+    "types": [
+      "fighting"
+    ],
+    "base_stats": {
+      "hp": 50,
+      "attack": 120,
+      "defense": 53,
+      "sp_attack": 35,
+      "sp_defense": 110,
+      "speed": 87
+    },
+    "abilities": [
+      {
+        "name": "limber",
+        "hidden": false
+      },
+      {
+        "name": "reckless",
+        "hidden": false
+      },
+      {
+        "name": "unburden",
+        "hidden": true
+      }
+    ],
+    "height_dm": 15,
+    "weight_hg": 498,
+    "capture_rate": 45,
+    "base_experience": 159,
+    "growth_rate": "medium",
+    "gender_rate": 0,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "tyrogue",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 107,
+    "name": "hitmonchan",
+    "display_name": "Hitmonchan",
+    "types": [
+      "fighting"
+    ],
+    "base_stats": {
+      "hp": 50,
+      "attack": 105,
+      "defense": 79,
+      "sp_attack": 35,
+      "sp_defense": 110,
+      "speed": 76
+    },
+    "abilities": [
+      {
+        "name": "keen-eye",
+        "hidden": false
+      },
+      {
+        "name": "iron-fist",
+        "hidden": false
+      },
+      {
+        "name": "inner-focus",
+        "hidden": true
+      }
+    ],
+    "height_dm": 14,
+    "weight_hg": 502,
+    "capture_rate": 45,
+    "base_experience": 159,
+    "growth_rate": "medium",
+    "gender_rate": 0,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "tyrogue",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 108,
+    "name": "lickitung",
+    "display_name": "Lickitung",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 90,
+      "attack": 55,
+      "defense": 75,
+      "sp_attack": 60,
+      "sp_defense": 75,
+      "speed": 30
+    },
+    "abilities": [
+      {
+        "name": "own-tempo",
+        "hidden": false
+      },
+      {
+        "name": "oblivious",
+        "hidden": false
+      },
+      {
+        "name": "cloud-nine",
+        "hidden": true
+      }
+    ],
+    "height_dm": 12,
+    "weight_hg": 655,
+    "capture_rate": 45,
+    "base_experience": 77,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "lickilicky",
+        "details": [
+          {
+            "trigger": "level-up",
+            "known_move": "rollout"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 109,
+    "name": "koffing",
+    "display_name": "Koffing",
+    "types": [
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 65,
+      "defense": 95,
+      "sp_attack": 60,
+      "sp_defense": 45,
+      "speed": 35
+    },
+    "abilities": [
+      {
+        "name": "levitate",
+        "hidden": false
+      },
+      {
+        "name": "neutralizing-gas",
+        "hidden": false
+      },
+      {
+        "name": "stench",
+        "hidden": true
+      }
+    ],
+    "height_dm": 6,
+    "weight_hg": 10,
+    "capture_rate": 190,
+    "base_experience": 68,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "indeterminate"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "weezing",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 35
+          },
+          {
+            "trigger": "level-up",
+            "min_level": 35
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 110,
+    "name": "weezing",
+    "display_name": "Weezing",
+    "types": [
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 90,
+      "defense": 120,
+      "sp_attack": 85,
+      "sp_defense": 70,
+      "speed": 60
+    },
+    "abilities": [
+      {
+        "name": "levitate",
+        "hidden": false
+      },
+      {
+        "name": "neutralizing-gas",
+        "hidden": false
+      },
+      {
+        "name": "stench",
+        "hidden": true
+      }
+    ],
+    "height_dm": 12,
+    "weight_hg": 95,
+    "capture_rate": 60,
+    "base_experience": 172,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "indeterminate"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "koffing",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 111,
+    "name": "rhyhorn",
+    "display_name": "Rhyhorn",
+    "types": [
+      "ground",
+      "rock"
+    ],
+    "base_stats": {
+      "hp": 80,
+      "attack": 85,
+      "defense": 95,
+      "sp_attack": 30,
+      "sp_defense": 30,
+      "speed": 25
+    },
+    "abilities": [
+      {
+        "name": "lightning-rod",
+        "hidden": false
+      },
+      {
+        "name": "rock-head",
+        "hidden": false
+      },
+      {
+        "name": "reckless",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 1150,
+    "capture_rate": 120,
+    "base_experience": 69,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "rhydon",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 42
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 112,
+    "name": "rhydon",
+    "display_name": "Rhydon",
+    "types": [
+      "ground",
+      "rock"
+    ],
+    "base_stats": {
+      "hp": 105,
+      "attack": 130,
+      "defense": 120,
+      "sp_attack": 45,
+      "sp_defense": 45,
+      "speed": 40
+    },
+    "abilities": [
+      {
+        "name": "lightning-rod",
+        "hidden": false
+      },
+      {
+        "name": "rock-head",
+        "hidden": false
+      },
+      {
+        "name": "reckless",
+        "hidden": true
+      }
+    ],
+    "height_dm": 19,
+    "weight_hg": 1200,
+    "capture_rate": 60,
+    "base_experience": 170,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "rhyhorn",
+    "evolves_to": [
+      {
+        "species": "rhyperior",
+        "details": [
+          {
+            "trigger": "trade",
+            "held_item": "protector"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 113,
+    "name": "chansey",
+    "display_name": "Chansey",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 250,
+      "attack": 5,
+      "defense": 5,
+      "sp_attack": 35,
+      "sp_defense": 105,
+      "speed": 50
+    },
+    "abilities": [
+      {
+        "name": "natural-cure",
+        "hidden": false
+      },
+      {
+        "name": "serene-grace",
+        "hidden": false
+      },
+      {
+        "name": "healer",
+        "hidden": true
+      }
+    ],
+    "height_dm": 11,
+    "weight_hg": 346,
+    "capture_rate": 30,
+    "base_experience": 395,
+    "growth_rate": "fast",
+    "gender_rate": 8,
+    "base_happiness": 140,
+    "egg_groups": [
+      "fairy"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "happiny",
+    "evolves_to": [
+      {
+        "species": "blissey",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_happiness": 160
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 114,
+    "name": "tangela",
+    "display_name": "Tangela",
+    "types": [
+      "grass"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 55,
+      "defense": 115,
+      "sp_attack": 100,
+      "sp_defense": 40,
+      "speed": 60
+    },
+    "abilities": [
+      {
+        "name": "chlorophyll",
+        "hidden": false
+      },
+      {
+        "name": "leaf-guard",
+        "hidden": false
+      },
+      {
+        "name": "regenerator",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 350,
+    "capture_rate": 45,
+    "base_experience": 87,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "tangrowth",
+        "details": [
+          {
+            "trigger": "level-up",
+            "known_move": "ancient-power"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 115,
+    "name": "kangaskhan",
+    "display_name": "Kangaskhan",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 105,
+      "attack": 95,
+      "defense": 80,
+      "sp_attack": 40,
+      "sp_defense": 80,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "early-bird",
+        "hidden": false
+      },
+      {
+        "name": "scrappy",
+        "hidden": false
+      },
+      {
+        "name": "inner-focus",
+        "hidden": true
+      }
+    ],
+    "height_dm": 22,
+    "weight_hg": 800,
+    "capture_rate": 45,
+    "base_experience": 172,
+    "growth_rate": "medium",
+    "gender_rate": 8,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 116,
+    "name": "horsea",
+    "display_name": "Horsea",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 30,
+      "attack": 40,
+      "defense": 70,
+      "sp_attack": 70,
+      "sp_defense": 25,
+      "speed": 60
+    },
+    "abilities": [
+      {
+        "name": "swift-swim",
+        "hidden": false
+      },
+      {
+        "name": "sniper",
+        "hidden": false
+      },
+      {
+        "name": "damp",
+        "hidden": true
+      }
+    ],
+    "height_dm": 4,
+    "weight_hg": 80,
+    "capture_rate": 225,
+    "base_experience": 59,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "seadra",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 32
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 117,
+    "name": "seadra",
+    "display_name": "Seadra",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 55,
+      "attack": 65,
+      "defense": 95,
+      "sp_attack": 95,
+      "sp_defense": 45,
+      "speed": 85
+    },
+    "abilities": [
+      {
+        "name": "poison-point",
+        "hidden": false
+      },
+      {
+        "name": "sniper",
+        "hidden": false
+      },
+      {
+        "name": "damp",
+        "hidden": true
+      }
+    ],
+    "height_dm": 12,
+    "weight_hg": 250,
+    "capture_rate": 75,
+    "base_experience": 154,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "horsea",
+    "evolves_to": [
+      {
+        "species": "kingdra",
+        "details": [
+          {
+            "trigger": "trade",
+            "held_item": "dragon-scale"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 118,
+    "name": "goldeen",
+    "display_name": "Goldeen",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 45,
+      "attack": 67,
+      "defense": 60,
+      "sp_attack": 35,
+      "sp_defense": 50,
+      "speed": 63
+    },
+    "abilities": [
+      {
+        "name": "swift-swim",
+        "hidden": false
+      },
+      {
+        "name": "water-veil",
+        "hidden": false
+      },
+      {
+        "name": "lightning-rod",
+        "hidden": true
+      }
+    ],
+    "height_dm": 6,
+    "weight_hg": 150,
+    "capture_rate": 225,
+    "base_experience": 64,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water2"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "seaking",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 33
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 119,
+    "name": "seaking",
+    "display_name": "Seaking",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 80,
+      "attack": 92,
+      "defense": 65,
+      "sp_attack": 65,
+      "sp_defense": 80,
+      "speed": 68
+    },
+    "abilities": [
+      {
+        "name": "swift-swim",
+        "hidden": false
+      },
+      {
+        "name": "water-veil",
+        "hidden": false
+      },
+      {
+        "name": "lightning-rod",
+        "hidden": true
+      }
+    ],
+    "height_dm": 13,
+    "weight_hg": 390,
+    "capture_rate": 60,
+    "base_experience": 158,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water2"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "goldeen",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 120,
+    "name": "staryu",
+    "display_name": "Staryu",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 30,
+      "attack": 45,
+      "defense": 55,
+      "sp_attack": 70,
+      "sp_defense": 55,
+      "speed": 85
+    },
+    "abilities": [
+      {
+        "name": "illuminate",
+        "hidden": false
+      },
+      {
+        "name": "natural-cure",
+        "hidden": false
+      },
+      {
+        "name": "analytic",
+        "hidden": true
+      }
+    ],
+    "height_dm": 8,
+    "weight_hg": 345,
+    "capture_rate": 225,
+    "base_experience": 68,
+    "growth_rate": "slow",
+    "gender_rate": -1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "starmie",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "water-stone"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 121,
+    "name": "starmie",
+    "display_name": "Starmie",
+    "types": [
+      "water",
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 75,
+      "defense": 85,
+      "sp_attack": 100,
+      "sp_defense": 85,
+      "speed": 115
+    },
+    "abilities": [
+      {
+        "name": "illuminate",
+        "hidden": false
+      },
+      {
+        "name": "natural-cure",
+        "hidden": false
+      },
+      {
+        "name": "analytic",
+        "hidden": true
+      }
+    ],
+    "height_dm": 11,
+    "weight_hg": 800,
+    "capture_rate": 60,
+    "base_experience": 182,
+    "growth_rate": "slow",
+    "gender_rate": -1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "staryu",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 122,
+    "name": "mr-mime",
+    "display_name": "Mr. Mime",
+    "types": [
+      "psychic",
+      "fairy"
+    ],
+    "base_stats": {
+      "hp": 40,
+      "attack": 45,
+      "defense": 65,
+      "sp_attack": 100,
+      "sp_defense": 120,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "soundproof",
+        "hidden": false
+      },
+      {
+        "name": "filter",
+        "hidden": false
+      },
+      {
+        "name": "technician",
+        "hidden": true
+      }
+    ],
+    "height_dm": 13,
+    "weight_hg": 545,
+    "capture_rate": 45,
+    "base_experience": 161,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "mime-jr",
+    "evolves_to": [
+      {
+        "species": "mr-rime",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 42
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 123,
+    "name": "scyther",
+    "display_name": "Scyther",
+    "types": [
+      "bug",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 70,
+      "attack": 110,
+      "defense": 80,
+      "sp_attack": 55,
+      "sp_defense": 80,
+      "speed": 105
+    },
+    "abilities": [
+      {
+        "name": "swarm",
+        "hidden": false
+      },
+      {
+        "name": "technician",
+        "hidden": false
+      },
+      {
+        "name": "steadfast",
+        "hidden": true
+      }
+    ],
+    "height_dm": 15,
+    "weight_hg": 560,
+    "capture_rate": 45,
+    "base_experience": 100,
+    "growth_rate": "medium",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "scizor",
+        "details": [
+          {
+            "trigger": "trade",
+            "held_item": "metal-coat"
+          }
+        ]
+      },
+      {
+        "species": "kleavor",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "black-augurite"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 124,
+    "name": "jynx",
+    "display_name": "Jynx",
+    "types": [
+      "ice",
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 50,
+      "defense": 35,
+      "sp_attack": 115,
+      "sp_defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "name": "oblivious",
+        "hidden": false
+      },
+      {
+        "name": "forewarn",
+        "hidden": false
+      },
+      {
+        "name": "dry-skin",
+        "hidden": true
+      }
+    ],
+    "height_dm": 14,
+    "weight_hg": 406,
+    "capture_rate": 45,
+    "base_experience": 159,
+    "growth_rate": "medium",
+    "gender_rate": 8,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "smoochum",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 125,
+    "name": "electabuzz",
+    "display_name": "Electabuzz",
+    "types": [
+      "electric"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 83,
+      "defense": 57,
+      "sp_attack": 95,
+      "sp_defense": 85,
+      "speed": 105
+    },
+    "abilities": [
+      {
+        "name": "static",
+        "hidden": false
+      },
+      {
+        "name": "vital-spirit",
+        "hidden": true
+      }
+    ],
+    "height_dm": 11,
+    "weight_hg": 300,
+    "capture_rate": 45,
+    "base_experience": 172,
+    "growth_rate": "medium",
+    "gender_rate": 2,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "elekid",
+    "evolves_to": [
+      {
+        "species": "electivire",
+        "details": [
+          {
+            "trigger": "trade",
+            "held_item": "electirizer"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 126,
+    "name": "magmar",
+    "display_name": "Magmar",
+    "types": [
+      "fire"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 95,
+      "defense": 57,
+      "sp_attack": 100,
+      "sp_defense": 85,
+      "speed": 93
+    },
+    "abilities": [
+      {
+        "name": "flame-body",
+        "hidden": false
+      },
+      {
+        "name": "vital-spirit",
+        "hidden": true
+      }
+    ],
+    "height_dm": 13,
+    "weight_hg": 445,
+    "capture_rate": 45,
+    "base_experience": 173,
+    "growth_rate": "medium",
+    "gender_rate": 2,
+    "base_happiness": 70,
+    "egg_groups": [
+      "humanshape"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "magby",
+    "evolves_to": [
+      {
+        "species": "magmortar",
+        "details": [
+          {
+            "trigger": "trade",
+            "held_item": "magmarizer"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 127,
+    "name": "pinsir",
+    "display_name": "Pinsir",
+    "types": [
+      "bug"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 125,
+      "defense": 100,
+      "sp_attack": 55,
+      "sp_defense": 70,
+      "speed": 85
+    },
+    "abilities": [
+      {
+        "name": "hyper-cutter",
+        "hidden": false
+      },
+      {
+        "name": "mold-breaker",
+        "hidden": false
+      },
+      {
+        "name": "moxie",
+        "hidden": true
+      }
+    ],
+    "height_dm": 15,
+    "weight_hg": 550,
+    "capture_rate": 45,
+    "base_experience": 175,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "bug"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 128,
+    "name": "tauros",
+    "display_name": "Tauros",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 75,
+      "attack": 100,
+      "defense": 95,
+      "sp_attack": 40,
+      "sp_defense": 70,
+      "speed": 110
+    },
+    "abilities": [
+      {
+        "name": "intimidate",
+        "hidden": false
+      },
+      {
+        "name": "anger-point",
+        "hidden": false
+      },
+      {
+        "name": "sheer-force",
+        "hidden": true
+      }
+    ],
+    "height_dm": 14,
+    "weight_hg": 884,
+    "capture_rate": 45,
+    "base_experience": 172,
+    "growth_rate": "slow",
+    "gender_rate": 0,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 129,
+    "name": "magikarp",
+    "display_name": "Magikarp",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 20,
+      "attack": 10,
+      "defense": 55,
+      "sp_attack": 15,
+      "sp_defense": 20,
+      "speed": 80
+    },
+    "abilities": [
+      {
+        "name": "swift-swim",
+        "hidden": false
+      },
+      {
+        "name": "rattled",
+        "hidden": true
+      }
+    ],
+    "height_dm": 9,
+    "weight_hg": 100,
+    "capture_rate": 255,
+    "base_experience": 40,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water2",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "gyarados",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 20
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 130,
+    "name": "gyarados",
+    "display_name": "Gyarados",
+    "types": [
+      "water",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 95,
+      "attack": 125,
+      "defense": 79,
+      "sp_attack": 60,
+      "sp_defense": 100,
+      "speed": 81
+    },
+    "abilities": [
+      {
+        "name": "intimidate",
+        "hidden": false
+      },
+      {
+        "name": "moxie",
+        "hidden": true
+      }
+    ],
+    "height_dm": 65,
+    "weight_hg": 2350,
+    "capture_rate": 45,
+    "base_experience": 189,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water2",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "magikarp",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 131,
+    "name": "lapras",
+    "display_name": "Lapras",
+    "types": [
+      "water",
+      "ice"
+    ],
+    "base_stats": {
+      "hp": 130,
+      "attack": 85,
+      "defense": 80,
+      "sp_attack": 85,
+      "sp_defense": 95,
+      "speed": 60
+    },
+    "abilities": [
+      {
+        "name": "water-absorb",
+        "hidden": false
+      },
+      {
+        "name": "shell-armor",
+        "hidden": false
+      },
+      {
+        "name": "hydration",
+        "hidden": true
+      }
+    ],
+    "height_dm": 25,
+    "weight_hg": 2200,
+    "capture_rate": 45,
+    "base_experience": 187,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "water1"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 132,
+    "name": "ditto",
+    "display_name": "Ditto",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 48,
+      "attack": 48,
+      "defense": 48,
+      "sp_attack": 48,
+      "sp_defense": 48,
+      "speed": 48
+    },
+    "abilities": [
+      {
+        "name": "limber",
+        "hidden": false
+      },
+      {
+        "name": "imposter",
+        "hidden": true
+      }
+    ],
+    "height_dm": 3,
+    "weight_hg": 40,
+    "capture_rate": 35,
+    "base_experience": 101,
+    "growth_rate": "medium",
+    "gender_rate": -1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ditto"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 133,
+    "name": "eevee",
+    "display_name": "Eevee",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 55,
+      "attack": 55,
+      "defense": 50,
+      "sp_attack": 45,
+      "sp_defense": 65,
+      "speed": 55
+    },
+    "abilities": [
+      {
+        "name": "run-away",
+        "hidden": false
+      },
+      {
+        "name": "adaptability",
+        "hidden": false
+      },
+      {
+        "name": "anticipation",
+        "hidden": true
+      }
+    ],
+    "height_dm": 3,
+    "weight_hg": 65,
+    "capture_rate": 45,
+    "base_experience": 65,
+    "growth_rate": "medium",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "vaporeon",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "water-stone"
+          }
+        ]
+      },
+      {
+        "species": "jolteon",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "thunder-stone"
+          }
+        ]
+      },
+      {
+        "species": "flareon",
+        "details": [
+          {
+            "trigger": "use-item",
+            "item": "fire-stone"
+          }
+        ]
+      },
+      {
+        "species": "espeon",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_happiness": 160,
+            "time_of_day": "day"
+          }
+        ]
+      },
+      {
+        "species": "umbreon",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_happiness": 160,
+            "time_of_day": "night"
+          }
+        ]
+      },
+      {
+        "species": "leafeon",
+        "details": [
+          {
+            "trigger": "level-up",
+            "location": "eterna-forest"
+          },
+          {
+            "trigger": "level-up",
+            "location": "pinwheel-forest"
+          },
+          {
+            "trigger": "level-up",
+            "location": "kalos-route-20"
+          },
+          {
+            "trigger": "use-item",
+            "item": "leaf-stone"
+          },
+          {
+            "trigger": "level-up",
+            "location": "petalburg-woods"
+          },
+          {
+            "trigger": "level-up",
+            "location": "lush-jungle"
+          }
+        ]
+      },
+      {
+        "species": "glaceon",
+        "details": [
+          {
+            "trigger": "level-up",
+            "location": "sinnoh-route-217"
+          },
+          {
+            "trigger": "level-up",
+            "location": "twist-mountain"
+          },
+          {
+            "trigger": "level-up",
+            "location": "frost-cavern"
+          },
+          {
+            "trigger": "use-item",
+            "item": "ice-stone"
+          },
+          {
+            "trigger": "level-up",
+            "location": "shoal-cave"
+          },
+          {
+            "trigger": "level-up",
+            "location": "mount-lanakila"
+          }
+        ]
+      },
+      {
+        "species": "sylveon",
+        "details": [
+          {
+            "trigger": "level-up"
+          },
+          {
+            "trigger": "level-up",
+            "min_happiness": 160
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 134,
+    "name": "vaporeon",
+    "display_name": "Vaporeon",
+    "types": [
+      "water"
+    ],
+    "base_stats": {
+      "hp": 130,
+      "attack": 65,
+      "defense": 60,
+      "sp_attack": 110,
+      "sp_defense": 95,
+      "speed": 65
+    },
+    "abilities": [
+      {
+        "name": "water-absorb",
+        "hidden": false
+      },
+      {
+        "name": "hydration",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 290,
+    "capture_rate": 45,
+    "base_experience": 184,
+    "growth_rate": "medium",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "eevee",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 135,
+    "name": "jolteon",
+    "display_name": "Jolteon",
+    "types": [
+      "electric"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 65,
+      "defense": 60,
+      "sp_attack": 110,
+      "sp_defense": 95,
+      "speed": 130
+    },
+    "abilities": [
+      {
+        "name": "volt-absorb",
+        "hidden": false
+      },
+      {
+        "name": "quick-feet",
+        "hidden": true
+      }
+    ],
+    "height_dm": 8,
+    "weight_hg": 245,
+    "capture_rate": 45,
+    "base_experience": 184,
+    "growth_rate": "medium",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "eevee",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 136,
+    "name": "flareon",
+    "display_name": "Flareon",
+    "types": [
+      "fire"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 130,
+      "defense": 60,
+      "sp_attack": 95,
+      "sp_defense": 110,
+      "speed": 65
+    },
+    "abilities": [
+      {
+        "name": "flash-fire",
+        "hidden": false
+      },
+      {
+        "name": "guts",
+        "hidden": true
+      }
+    ],
+    "height_dm": 9,
+    "weight_hg": 250,
+    "capture_rate": 45,
+    "base_experience": 184,
+    "growth_rate": "medium",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "ground"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "eevee",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 137,
+    "name": "porygon",
+    "display_name": "Porygon",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 65,
+      "attack": 60,
+      "defense": 70,
+      "sp_attack": 85,
+      "sp_defense": 75,
+      "speed": 40
+    },
+    "abilities": [
+      {
+        "name": "trace",
+        "hidden": false
+      },
+      {
+        "name": "download",
+        "hidden": false
+      },
+      {
+        "name": "analytic",
+        "hidden": true
+      }
+    ],
+    "height_dm": 8,
+    "weight_hg": 365,
+    "capture_rate": 45,
+    "base_experience": 79,
+    "growth_rate": "medium",
+    "gender_rate": -1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "mineral"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "porygon2",
+        "details": [
+          {
+            "trigger": "trade",
+            "held_item": "up-grade"
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 138,
+    "name": "omanyte",
+    "display_name": "Omanyte",
+    "types": [
+      "rock",
+      "water"
+    ],
+    "base_stats": {
+      "hp": 35,
+      "attack": 40,
+      "defense": 100,
+      "sp_attack": 90,
+      "sp_defense": 55,
+      "speed": 35
+    },
+    "abilities": [
+      {
+        "name": "swift-swim",
+        "hidden": false
+      },
+      {
+        "name": "shell-armor",
+        "hidden": false
+      },
+      {
+        "name": "weak-armor",
+        "hidden": true
+      }
+    ],
+    "height_dm": 4,
+    "weight_hg": 75,
+    "capture_rate": 45,
+    "base_experience": 71,
+    "growth_rate": "medium",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1",
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "omastar",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 40
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 139,
+    "name": "omastar",
+    "display_name": "Omastar",
+    "types": [
+      "rock",
+      "water"
+    ],
+    "base_stats": {
+      "hp": 70,
+      "attack": 60,
+      "defense": 125,
+      "sp_attack": 115,
+      "sp_defense": 70,
+      "speed": 55
+    },
+    "abilities": [
+      {
+        "name": "swift-swim",
+        "hidden": false
+      },
+      {
+        "name": "shell-armor",
+        "hidden": false
+      },
+      {
+        "name": "weak-armor",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 350,
+    "capture_rate": 45,
+    "base_experience": 173,
+    "growth_rate": "medium",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1",
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "omanyte",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 140,
+    "name": "kabuto",
+    "display_name": "Kabuto",
+    "types": [
+      "rock",
+      "water"
+    ],
+    "base_stats": {
+      "hp": 30,
+      "attack": 80,
+      "defense": 90,
+      "sp_attack": 55,
+      "sp_defense": 45,
+      "speed": 55
+    },
+    "abilities": [
+      {
+        "name": "swift-swim",
+        "hidden": false
+      },
+      {
+        "name": "battle-armor",
+        "hidden": false
+      },
+      {
+        "name": "weak-armor",
+        "hidden": true
+      }
+    ],
+    "height_dm": 5,
+    "weight_hg": 115,
+    "capture_rate": 45,
+    "base_experience": 71,
+    "growth_rate": "medium",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1",
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "kabutops",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 40
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 141,
+    "name": "kabutops",
+    "display_name": "Kabutops",
+    "types": [
+      "rock",
+      "water"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 115,
+      "defense": 105,
+      "sp_attack": 65,
+      "sp_defense": 70,
+      "speed": 80
+    },
+    "abilities": [
+      {
+        "name": "swift-swim",
+        "hidden": false
+      },
+      {
+        "name": "battle-armor",
+        "hidden": false
+      },
+      {
+        "name": "weak-armor",
+        "hidden": true
+      }
+    ],
+    "height_dm": 13,
+    "weight_hg": 405,
+    "capture_rate": 45,
+    "base_experience": 173,
+    "growth_rate": "medium",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "water1",
+      "water3"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "kabuto",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 142,
+    "name": "aerodactyl",
+    "display_name": "Aerodactyl",
+    "types": [
+      "rock",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 80,
+      "attack": 105,
+      "defense": 65,
+      "sp_attack": 60,
+      "sp_defense": 75,
+      "speed": 130
+    },
+    "abilities": [
+      {
+        "name": "rock-head",
+        "hidden": false
+      },
+      {
+        "name": "pressure",
+        "hidden": false
+      },
+      {
+        "name": "unnerve",
+        "hidden": true
+      }
+    ],
+    "height_dm": 18,
+    "weight_hg": 590,
+    "capture_rate": 45,
+    "base_experience": 180,
+    "growth_rate": "slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "flying"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 143,
+    "name": "snorlax",
+    "display_name": "Snorlax",
+    "types": [
+      "normal"
+    ],
+    "base_stats": {
+      "hp": 160,
+      "attack": 110,
+      "defense": 65,
+      "sp_attack": 65,
+      "sp_defense": 110,
+      "speed": 30
+    },
+    "abilities": [
+      {
+        "name": "immunity",
+        "hidden": false
+      },
+      {
+        "name": "thick-fat",
+        "hidden": false
+      },
+      {
+        "name": "gluttony",
+        "hidden": true
+      }
+    ],
+    "height_dm": 21,
+    "weight_hg": 4600,
+    "capture_rate": 25,
+    "base_experience": 189,
+    "growth_rate": "slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "munchlax",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 144,
+    "name": "articuno",
+    "display_name": "Articuno",
+    "types": [
+      "ice",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 90,
+      "attack": 85,
+      "defense": 100,
+      "sp_attack": 95,
+      "sp_defense": 125,
+      "speed": 85
+    },
+    "abilities": [
+      {
+        "name": "pressure",
+        "hidden": false
+      },
+      {
+        "name": "snow-cloak",
+        "hidden": true
+      }
+    ],
+    "height_dm": 17,
+    "weight_hg": 554,
+    "capture_rate": 3,
+    "base_experience": 261,
+    "growth_rate": "slow",
+    "gender_rate": -1,
+    "base_happiness": 35,
+    "egg_groups": [
+      "no-eggs"
+    ],
+    "is_legendary": true,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 145,
+    "name": "zapdos",
+    "display_name": "Zapdos",
+    "types": [
+      "electric",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 90,
+      "attack": 90,
+      "defense": 85,
+      "sp_attack": 125,
+      "sp_defense": 90,
+      "speed": 100
+    },
+    "abilities": [
+      {
+        "name": "pressure",
+        "hidden": false
+      },
+      {
+        "name": "static",
+        "hidden": true
+      }
+    ],
+    "height_dm": 16,
+    "weight_hg": 526,
+    "capture_rate": 3,
+    "base_experience": 261,
+    "growth_rate": "slow",
+    "gender_rate": -1,
+    "base_happiness": 35,
+    "egg_groups": [
+      "no-eggs"
+    ],
+    "is_legendary": true,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 146,
+    "name": "moltres",
+    "display_name": "Moltres",
+    "types": [
+      "fire",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 90,
+      "attack": 100,
+      "defense": 90,
+      "sp_attack": 125,
+      "sp_defense": 85,
+      "speed": 90
+    },
+    "abilities": [
+      {
+        "name": "pressure",
+        "hidden": false
+      },
+      {
+        "name": "flame-body",
+        "hidden": true
+      }
+    ],
+    "height_dm": 20,
+    "weight_hg": 600,
+    "capture_rate": 3,
+    "base_experience": 261,
+    "growth_rate": "slow",
+    "gender_rate": -1,
+    "base_happiness": 35,
+    "egg_groups": [
+      "no-eggs"
+    ],
+    "is_legendary": true,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 147,
+    "name": "dratini",
+    "display_name": "Dratini",
+    "types": [
+      "dragon"
+    ],
+    "base_stats": {
+      "hp": 41,
+      "attack": 64,
+      "defense": 45,
+      "sp_attack": 50,
+      "sp_defense": 50,
+      "speed": 50
+    },
+    "abilities": [
+      {
+        "name": "shed-skin",
+        "hidden": false
+      },
+      {
+        "name": "marvel-scale",
+        "hidden": true
+      }
+    ],
+    "height_dm": 18,
+    "weight_hg": 33,
+    "capture_rate": 45,
+    "base_experience": 60,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 35,
+    "egg_groups": [
+      "water1",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "dragonair",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 30
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 148,
+    "name": "dragonair",
+    "display_name": "Dragonair",
+    "types": [
+      "dragon"
+    ],
+    "base_stats": {
+      "hp": 61,
+      "attack": 84,
+      "defense": 65,
+      "sp_attack": 70,
+      "sp_defense": 70,
+      "speed": 70
+    },
+    "abilities": [
+      {
+        "name": "shed-skin",
+        "hidden": false
+      },
+      {
+        "name": "marvel-scale",
+        "hidden": true
+      }
+    ],
+    "height_dm": 40,
+    "weight_hg": 165,
+    "capture_rate": 45,
+    "base_experience": 147,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 35,
+    "egg_groups": [
+      "water1",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "dratini",
+    "evolves_to": [
+      {
+        "species": "dragonite",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 55
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 149,
+    "name": "dragonite",
+    "display_name": "Dragonite",
+    "types": [
+      "dragon",
+      "flying"
+    ],
+    "base_stats": {
+      "hp": 91,
+      "attack": 134,
+      "defense": 95,
+      "sp_attack": 100,
+      "sp_defense": 100,
+      "speed": 80
+    },
+    "abilities": [
+      {
+        "name": "inner-focus",
+        "hidden": false
+      },
+      {
+        "name": "multiscale",
+        "hidden": true
+      }
+    ],
+    "height_dm": 22,
+    "weight_hg": 2100,
+    "capture_rate": 45,
+    "base_experience": 270,
+    "growth_rate": "slow",
+    "gender_rate": 4,
+    "base_happiness": 35,
+    "egg_groups": [
+      "water1",
+      "dragon"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "dragonair",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 150,
+    "name": "mewtwo",
+    "display_name": "Mewtwo",
+    "types": [
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 106,
+      "attack": 110,
+      "defense": 90,
+      "sp_attack": 154,
+      "sp_defense": 90,
+      "speed": 130
+    },
+    "abilities": [
+      {
+        "name": "pressure",
+        "hidden": false
+      },
+      {
+        "name": "unnerve",
+        "hidden": true
+      }
+    ],
+    "height_dm": 20,
+    "weight_hg": 1220,
+    "capture_rate": 3,
+    "base_experience": 306,
+    "growth_rate": "slow",
+    "gender_rate": -1,
+    "base_happiness": 0,
+    "egg_groups": [
+      "no-eggs"
+    ],
+    "is_legendary": true,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 151,
+    "name": "mew",
+    "display_name": "Mew",
+    "types": [
+      "psychic"
+    ],
+    "base_stats": {
+      "hp": 100,
+      "attack": 100,
+      "defense": 100,
+      "sp_attack": 100,
+      "sp_defense": 100,
+      "speed": 100
+    },
+    "abilities": [
+      {
+        "name": "synchronize",
+        "hidden": false
+      }
+    ],
+    "height_dm": 4,
+    "weight_hg": 40,
+    "capture_rate": 45,
+    "base_experience": 270,
+    "growth_rate": "medium-slow",
+    "gender_rate": -1,
+    "base_happiness": 100,
+    "egg_groups": [
+      "no-eggs"
+    ],
+    "is_legendary": false,
+    "is_mythical": true,
+    "evolves_from": null,
+    "evolves_to": [],
+    "arco_liberacao": 1
   }
 ]

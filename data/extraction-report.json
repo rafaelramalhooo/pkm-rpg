@@ -1,38 +1,21 @@
 {
   "range": [
     1,
-    3
+    151
   ],
-  "pokemon": 3,
-  "moves": 60,
+  "pokemon": 151,
+  "moves": 492,
   "divergences": [],
-  "failures": [
-    {
-      "id": 1,
-      "name": "bulbasaur",
-      "source": "pokemondb",
-      "error": "HTTP 403 em https://pokemondb.net/pokedex/bulbasaur"
-    },
-    {
-      "id": 2,
-      "name": "ivysaur",
-      "source": "pokemondb",
-      "error": "HTTP 403 em https://pokemondb.net/pokedex/ivysaur"
-    },
-    {
-      "id": 3,
-      "name": "venusaur",
-      "source": "pokemondb",
-      "error": "HTTP 403 em https://pokemondb.net/pokedex/venusaur"
-    }
-  ],
+  "failures": [],
   "version_groups": {
-    "scarlet-violet": 3
+    "scarlet-violet": 99,
+    "sword-shield": 26,
+    "lets-go-pikachu-lets-go-eevee": 10,
+    "legends-arceus": 16
   },
-  "duration_min": 0.85,
-  "generated_at": "2026-11-03T18:56:08.910Z",
+  "duration_min": 4.03,
+  "generated_at": "2026-11-03T19:01:29.076Z",
   "sources": [
-    "pokeapi.co",
-    "pokemondb.net (conferência)"
+    "pokeapi.co"
   ]
 }
