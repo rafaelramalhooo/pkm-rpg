@@ -1,0 +1,61 @@
+name: Publicar site
+
+# Produção na raiz (ramo main) e teste em /teste/ (ramo teste, se existir).
+on:
+  push:
+    branches: [main, teste]
+    paths:
+      - "public/**"
+      - "src/**"
+      - "data/*.json"
+      - ".github/workflows/publicar-site.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: prod
+
+      - uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: teste
+          path: teste
+
+      - name: Montar o site
+        run: |
+          mkdir -p _site/data
+          cp -r prod/public/. _site/
+          cp prod/data/*.json _site/data/ 2>/dev/null || true
+          if [ -d teste/public ]; then
+            mkdir -p _site/teste/data
+            cp -r teste/public/. _site/teste/
+            cp teste/data/*.json _site/teste/data/ 2>/dev/null || true
+          fi
+          # Nunca publicar o cache bruto nem o relatório de extração
+          rm -f _site/data/extraction-report.json
+          rm -f _site/teste/data/extraction-report.json
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

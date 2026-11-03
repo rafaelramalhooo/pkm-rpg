@@ -1,0 +1,27 @@
+name: Manter ativo
+
+# Faz uma chamada leve ao projeto de produção a cada 3 dias, para o Supabase não pausá-lo.
+# Precisa de dois secrets do repositório: SUPABASE_PROD_URL e SUPABASE_PROD_ANON_KEY.
+on:
+  schedule:
+    - cron: "17 12 */3 * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar a API de produção
+        env:
+          URL: ${{ secrets.SUPABASE_PROD_URL }}
+          KEY: ${{ secrets.SUPABASE_PROD_ANON_KEY }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "Secrets não configurados; nada a fazer."
+            exit 0
+          fi
+          code=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $KEY" "$URL/auth/v1/health")
+          echo "Resposta: $code"
+          test "$code" = "200"
