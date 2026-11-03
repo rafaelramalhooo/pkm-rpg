@@ -1,0 +1,10 @@
+{
+  "name": "pkm-rpg",
+  "version": "0.0.1",
+  "private": true,
+  "description": "RPG de Pokémon em navegador para jogar com amigos (uso privado, sem fins comerciais)",
+  "type": "module",
+  "scripts": {
+    "extract": "node scripts/extract.js"
+  }
+}

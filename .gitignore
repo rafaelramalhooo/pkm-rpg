@@ -1,0 +1,28 @@
+# Dependências e build
+node_modules/
+dist/
+.vite/
+
+# Segredos: NUNCA versionar
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Arte protegida (sprites ficam no Supabase Storage privado)
+assets/sprites/
+public/sprites/
+sprites/
+
+# Cache bruto da extração de dados
+data/raw/*
+!data/raw/.gitkeep
+
+# Backups de banco
+*.dump
+*.sql.gz
+backups/
+
+# Sistema
+.DS_Store
