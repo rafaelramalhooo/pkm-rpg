@@ -33,7 +33,7 @@ export function telaLogin(): void {
     // Em caso de sucesso, o roteador em main.ts troca a tela.
   });
 
-  montar(
+  montar([
     el(
       "div",
       { class: "painel" },
@@ -41,5 +41,5 @@ export function telaLogin(): void {
       el("p", { class: "sub" }, "Acesso só por convite do Mestre."),
       form,
     ),
-  );
+  ]);
 }

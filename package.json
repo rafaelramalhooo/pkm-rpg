@@ -8,10 +8,12 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "extract": "node scripts/extract.js"
+    "extract": "node scripts/extract.js",
+    "arte": "node scripts/gerar-arte-provisoria.mjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.0"
+    "@supabase/supabase-js": "^2.45.0",
+    "phaser": "3.90.0"
   },
   "devDependencies": {
     "typescript": "^5.5.0",

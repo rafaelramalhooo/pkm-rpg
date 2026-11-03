@@ -51,7 +51,7 @@ export function telaPersonagem(aoCriar: (j: Jogador) => void): void {
     aoCriar(data as Jogador);
   });
 
-  montar(
+  montar([
     el(
       "div",
       { class: "painel" },
@@ -59,5 +59,5 @@ export function telaPersonagem(aoCriar: (j: Jogador) => void): void {
       el("p", { class: "sub" }, "Você começa em Pallet Town."),
       form,
     ),
-  );
+  ]);
 }

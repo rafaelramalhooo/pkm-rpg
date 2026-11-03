@@ -12,9 +12,10 @@ if (AMBIENTE !== "producao") {
   document.body.append(tag);
 }
 
-let usuarioAtual: string | null = null;
+let usuarioAtual: string | null | undefined; // undefined = ainda não roteado
 
 async function rotear(userId: string | null): Promise<void> {
+  if (userId === usuarioAtual) return; // o Supabase avisa a mesma sessão mais de uma vez
   usuarioAtual = userId;
   if (!userId) {
     telaLogin();
@@ -30,14 +31,14 @@ async function rotear(userId: string | null): Promise<void> {
     telaLogin();
     return;
   }
-  if (!data) telaPersonagem((j: Jogador) => telaJogo(j));
-  else telaJogo(data as Jogador);
+  if (!data) telaPersonagem((j: Jogador) => void telaJogo(j));
+  else void telaJogo(data as Jogador);
 }
 
 supabase.auth.onAuthStateChange((evento, sessao) => {
   const id = sessao?.user.id ?? null;
   // Ignora renovações de token do mesmo usuário.
-  if (evento === "TOKEN_REFRESHED" || (evento === "SIGNED_IN" && id === usuarioAtual)) return;
+  if (evento === "TOKEN_REFRESHED") return;
   void rotear(id);
 });
 
