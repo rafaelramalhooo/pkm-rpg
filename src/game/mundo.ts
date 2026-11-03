@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { supabase, type Direcao, type Jogador } from "../supabase";
 
 const T = 16;
@@ -27,6 +28,22 @@ interface Saida {
   mensagem: string;
 }
 
+/** O que cada jogador anuncia na presença do mapa (nome e aparência vêm do banco, não daqui). */
+interface Posicao {
+  x: number;
+  y: number;
+  dir: Direcao;
+}
+
+interface Outro {
+  sprite: Phaser.GameObjects.Sprite;
+  rotulo: Phaser.GameObjects.Text;
+  aparencia: number;
+  x: number;
+  y: number;
+  passo: number;
+}
+
 class CenaMundo extends Phaser.Scene {
   private tx: number;
   private ty: number;
@@ -45,6 +62,11 @@ class CenaMundo extends Phaser.Scene {
   private salvarEm = 0;
   private ultimoSalvo: string;
   private salvando = false;
+  private canal?: RealtimeChannel;
+  private presentes: Record<string, Posicao> = {};
+  private outros = new Map<string, Outro>();
+  private carregando = new Set<string>();
+  private encerrada = false;
 
   constructor(
     private readonly jogador: Jogador,
@@ -98,6 +120,8 @@ class CenaMundo extends Phaser.Scene {
 
     // Teclado sem "capturar" as teclas (para não atrapalhar a digitação nos formulários).
     this.teclas = this.input.keyboard!.addKeys("UP,DOWN,LEFT,RIGHT,W,A,S,D", false) as Record<string, Phaser.Input.Keyboard.Key>;
+
+    this.conectar();
   }
 
   update(tempo: number): void {
@@ -142,6 +166,7 @@ class CenaMundo extends Phaser.Scene {
       this.olhando = d;
       this.sprite.setFrame(this.quadro(0));
       this.liberaGiro = tempo + 110;
+      this.anunciar(this.tx, this.ty);
       return;
     }
     const { dx, dy } = DIRS[d];
@@ -156,6 +181,7 @@ class CenaMundo extends Phaser.Scene {
       return;
     }
     this.andando = true;
+    this.anunciar(nx, ny); // os outros já começam a caminhar até o tile de destino
     this.passo++;
     this.sprite.setFrame(this.quadro(this.passo % 2 === 1 ? 1 : 2));
     this.tweens.add({
@@ -176,6 +202,96 @@ class CenaMundo extends Phaser.Scene {
     this.aviso.setText(texto).setVisible(true);
     this.temporizadorAviso?.remove(false);
     this.temporizadorAviso = this.time.delayedCall(2200, () => this.aviso.setVisible(false));
+  }
+
+  // ---------- Multijogador (presença no canal privado do mapa) ----------
+
+  private conectar(): void {
+    const canal = supabase.channel(`mapa:${this.jogador.mapa_id}`, {
+      config: { private: true, presence: { key: this.jogador.id } },
+    });
+    canal.on("presence", { event: "sync" }, () => this.sincronizar(canal.presenceState<Posicao>()));
+    canal.subscribe((status) => {
+      if (status === "SUBSCRIBED") this.anunciar(this.tx, this.ty);
+    });
+    this.canal = canal;
+  }
+
+  private anunciar(x: number, y: number): void {
+    if (!this.canal || this.encerrada) return;
+    const posicao: Posicao = { x, y, dir: this.olhando };
+    void this.canal.track(posicao);
+  }
+
+  private sincronizar(estado: Record<string, Posicao[]>): void {
+    if (this.encerrada) return;
+    this.presentes = {};
+    for (const [chave, metas] of Object.entries(estado)) {
+      if (chave === this.jogador.id || metas.length === 0) continue;
+      this.presentes[chave] = metas[metas.length - 1];
+    }
+    for (const [chave, pos] of Object.entries(this.presentes)) {
+      if (this.outros.has(chave)) this.moverOutro(chave, pos);
+      else void this.criarOutro(chave);
+    }
+    for (const chave of [...this.outros.keys()]) if (!this.presentes[chave]) this.removerOutro(chave);
+  }
+
+  private async criarOutro(chave: string): Promise<void> {
+    if (this.carregando.has(chave) || this.outros.has(chave)) return;
+    this.carregando.add(chave);
+    const { data } = await supabase.from("jogadores").select("nome, aparencia").eq("id", chave).maybeSingle();
+    this.carregando.delete(chave);
+    const pos = this.presentes[chave];
+    if (this.encerrada || !data || !pos || this.outros.has(chave)) return; // saiu enquanto carregava
+    const aparencia = Number(data.aparencia);
+    const sprite = this.add.sprite(pos.x * T, pos.y * T, "treinadores", aparencia * 12 + DIRS[pos.dir].idx * 3).setOrigin(0, 0).setDepth(9);
+    const rotulo = this.add
+      .text(pos.x * T + T / 2, pos.y * T, String(data.nome), {
+        fontFamily: "monospace",
+        fontSize: "8px",
+        color: "#e8f4c8",
+        stroke: "#0f380f",
+        strokeThickness: 3,
+      })
+      .setOrigin(0.5, 1)
+      .setDepth(12);
+    this.outros.set(chave, { sprite, rotulo, aparencia, x: pos.x, y: pos.y, passo: 0 });
+  }
+
+  private moverOutro(chave: string, pos: Posicao): void {
+    const o = this.outros.get(chave);
+    if (!o) return;
+    const base = o.aparencia * 12 + DIRS[pos.dir].idx * 3;
+    if (pos.x === o.x && pos.y === o.y) {
+      o.sprite.setFrame(base); // só virou
+      return;
+    }
+    const longe = Math.abs(pos.x - o.x) + Math.abs(pos.y - o.y) > 2;
+    o.x = pos.x;
+    o.y = pos.y;
+    o.passo++;
+    const duracao = longe ? 0 : MS_POR_PASSO;
+    this.tweens.killTweensOf([o.sprite, o.rotulo]);
+    o.sprite.setFrame(base + (o.passo % 2 === 1 ? 1 : 2));
+    this.tweens.add({ targets: o.sprite, x: pos.x * T, y: pos.y * T, duration: duracao, onComplete: () => o.sprite.setFrame(base) });
+    this.tweens.add({ targets: o.rotulo, x: pos.x * T + T / 2, y: pos.y * T, duration: duracao });
+  }
+
+  private removerOutro(chave: string): void {
+    const o = this.outros.get(chave);
+    if (!o) return;
+    this.tweens.killTweensOf([o.sprite, o.rotulo]);
+    o.sprite.destroy();
+    o.rotulo.destroy();
+    this.outros.delete(chave);
+  }
+
+  /** Sai do canal (ao trocar de tela, sair do jogo ou fechar). */
+  desconectar(): void {
+    this.encerrada = true;
+    if (this.canal) void supabase.removeChannel(this.canal);
+    this.canal = undefined;
   }
 
   /** Guarda a posição no servidor (que valida distância e velocidade). */
@@ -221,6 +337,7 @@ export function iniciarMundo(pai: HTMLElement, jogador: Jogador, entrada: Entrad
 
   return () => {
     void cena.salvar();
+    cena.desconectar();
     window.removeEventListener("resize", aoRedimensionar);
     document.removeEventListener("visibilitychange", aoEsconder);
     jogo.destroy(true);

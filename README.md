@@ -1,10 +1,10 @@
 # pkm-rpg
 
-RPG de Pokémon em navegador (PWA), estilo Game Boy, para jogar com amigos.
+RPG de Pokémon que roda direto no navegador (computador e celular, sem instalar nada), estilo Game Boy, para jogar com amigos.
 **Uso privado e sem fins comerciais.**
 
 ## Stack
-- Front-end estático (GitHub Pages) + PWA
+- Front-end estático (GitHub Pages), direto no navegador (sem PWA)
 - Supabase (Auth, Postgres, Realtime, Storage, Edge Functions)
 - Vite + TypeScript; Phaser 3 + mapas do Tiled (a partir do M1b)
 - Motor de batalha: simulador do Pokémon Showdown (`@pkmn/sim`), no servidor
