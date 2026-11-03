@@ -1,10 +1,19 @@
 name: Publicar site
 
-# Produção na raiz (ramo main) e teste em /teste/ (ramo teste, se existir).
+# Compila o site duas vezes a partir do mesmo código:
+#  - produção na raiz (aponta para o Supabase de produção);
+#  - teste em /teste/ (aponta para o Supabase de teste).
+# URL do projeto e chave publishable são PÚBLICAS por desenho (a segurança vem do RLS).
+# Nunca coloque aqui a chave secreta (service_role).
 on:
   push:
-    branches: [main, teste]
+    branches: [main]
     paths:
+      - "index.html"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "tsconfig.json"
       - "public/**"
       - "src/**"
       - "data/*.json"
@@ -28,29 +37,39 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
-          path: prod
 
-      - uses: actions/checkout@v4
-        continue-on-error: true
+      - uses: actions/setup-node@v4
         with:
-          ref: teste
-          path: teste
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Compilar produção
+        env:
+          VITE_BASE: /pkm-rpg/
+          VITE_AMBIENTE: producao
+          VITE_SUPABASE_URL: https://dnhrtfcutluqsforwhsp.supabase.co
+          VITE_SUPABASE_ANON_KEY: sb_publishable_t4Pm9QpVA_6a1ORBnNtrmg_p8ryApce
+        run: npm run build
+
+      - name: Compilar teste
+        env:
+          VITE_BASE: /pkm-rpg/teste/
+          VITE_AMBIENTE: teste
+          VITE_SUPABASE_URL: https://uaqccpmxmxxjiypqvgtn.supabase.co
+          VITE_SUPABASE_ANON_KEY: sb_publishable_tdotJ3L8J2UY1VlhoPwFZw_hgTSf5O0
+        run: npx vite build --outDir dist-teste
 
       - name: Montar o site
         run: |
-          mkdir -p _site/data
-          cp -r prod/public/. _site/
-          cp prod/data/*.json _site/data/ 2>/dev/null || true
-          if [ -d teste/public ]; then
-            mkdir -p _site/teste/data
-            cp -r teste/public/. _site/teste/
-            cp teste/data/*.json _site/teste/data/ 2>/dev/null || true
-          fi
-          # Nunca publicar o cache bruto nem o relatório de extração
-          rm -f _site/data/extraction-report.json
-          rm -f _site/teste/data/extraction-report.json
+          mkdir -p _site/data _site/teste/data
+          cp -r dist/. _site/
+          cp -r dist-teste/. _site/teste/
+          cp data/*.json _site/data/ 2>/dev/null || true
+          cp data/*.json _site/teste/data/ 2>/dev/null || true
+          # Nunca publicar o relatório de extração
+          rm -f _site/data/extraction-report.json _site/teste/data/extraction-report.json
           touch _site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3

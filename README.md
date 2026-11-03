@@ -6,7 +6,7 @@ RPG de Pokémon em navegador (PWA), estilo Game Boy, para jogar com amigos.
 ## Stack
 - Front-end estático (GitHub Pages) + PWA
 - Supabase (Auth, Postgres, Realtime, Storage, Edge Functions)
-- Phaser 3 + mapas do Tiled
+- Vite + TypeScript; Phaser 3 + mapas do Tiled (a partir do M1b)
 - Motor de batalha: simulador do Pokémon Showdown (`@pkmn/sim`), no servidor
 
 ## Estrutura
@@ -20,6 +20,13 @@ RPG de Pokémon em navegador (PWA), estilo Game Boy, para jogar com amigos.
 | `supabase/migrations/` | Migrações do banco |
 | `supabase/functions/` | Edge Functions (regras do jogo) |
 | `docs/` | Documentação |
+
+## Desenvolvimento local
+1. `npm install`
+2. Copie `.env.example` para `.env.local` e preencha com a URL e a chave **publishable** do projeto de **teste** (nunca a chave secreta).
+3. `npm run dev`
+
+A publicação é automática (GitHub Actions): produção na raiz do site e teste em `/teste/`.
 
 ## Regras do repositório
 - Nunca versionar chaves, senhas ou arquivos `.env`.
