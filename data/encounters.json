@@ -1,0 +1,30 @@
+{
+  "bulbasaur": [
+    {
+      "area": "cerulean-city-area",
+      "version": "yellow",
+      "method": "gift",
+      "min_level": 10,
+      "max_level": 10,
+      "chance": 100
+    },
+    {
+      "area": "pallet-town-area",
+      "version": "red",
+      "method": "gift",
+      "min_level": 5,
+      "max_level": 5,
+      "chance": 100
+    },
+    {
+      "area": "pallet-town-area",
+      "version": "blue",
+      "method": "gift",
+      "min_level": 5,
+      "max_level": 5,
+      "chance": 100
+    }
+  ],
+  "ivysaur": [],
+  "venusaur": []
+}

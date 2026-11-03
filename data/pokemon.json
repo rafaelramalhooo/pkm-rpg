@@ -1,0 +1,151 @@
+[
+  {
+    "id": 1,
+    "name": "bulbasaur",
+    "display_name": "Bulbasaur",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 45,
+      "attack": 49,
+      "defense": 49,
+      "sp_attack": 65,
+      "sp_defense": 65,
+      "speed": 45
+    },
+    "abilities": [
+      {
+        "name": "overgrow",
+        "hidden": false
+      },
+      {
+        "name": "chlorophyll",
+        "hidden": true
+      }
+    ],
+    "height_dm": 7,
+    "weight_hg": 69,
+    "capture_rate": 45,
+    "base_experience": 64,
+    "growth_rate": "medium-slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": null,
+    "evolves_to": [
+      {
+        "species": "ivysaur",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 16
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 2,
+    "name": "ivysaur",
+    "display_name": "Ivysaur",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 60,
+      "attack": 62,
+      "defense": 63,
+      "sp_attack": 80,
+      "sp_defense": 80,
+      "speed": 60
+    },
+    "abilities": [
+      {
+        "name": "overgrow",
+        "hidden": false
+      },
+      {
+        "name": "chlorophyll",
+        "hidden": true
+      }
+    ],
+    "height_dm": 10,
+    "weight_hg": 130,
+    "capture_rate": 45,
+    "base_experience": 142,
+    "growth_rate": "medium-slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "bulbasaur",
+    "evolves_to": [
+      {
+        "species": "venusaur",
+        "details": [
+          {
+            "trigger": "level-up",
+            "min_level": 32
+          }
+        ]
+      }
+    ],
+    "arco_liberacao": 1
+  },
+  {
+    "id": 3,
+    "name": "venusaur",
+    "display_name": "Venusaur",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "base_stats": {
+      "hp": 80,
+      "attack": 82,
+      "defense": 83,
+      "sp_attack": 100,
+      "sp_defense": 100,
+      "speed": 80
+    },
+    "abilities": [
+      {
+        "name": "overgrow",
+        "hidden": false
+      },
+      {
+        "name": "chlorophyll",
+        "hidden": true
+      }
+    ],
+    "height_dm": 20,
+    "weight_hg": 1000,
+    "capture_rate": 45,
+    "base_experience": 236,
+    "growth_rate": "medium-slow",
+    "gender_rate": 1,
+    "base_happiness": 70,
+    "egg_groups": [
+      "monster",
+      "plant"
+    ],
+    "is_legendary": false,
+    "is_mythical": false,
+    "evolves_from": "ivysaur",
+    "evolves_to": [],
+    "arco_liberacao": 1
+  }
+]

@@ -1,0 +1,380 @@
+{
+  "bulbasaur": {
+    "version_group": "scarlet-violet",
+    "level_up": [
+      {
+        "move": "growl",
+        "level": 1
+      },
+      {
+        "move": "tackle",
+        "level": 1
+      },
+      {
+        "move": "vine-whip",
+        "level": 3
+      },
+      {
+        "move": "growth",
+        "level": 6
+      },
+      {
+        "move": "leech-seed",
+        "level": 9
+      },
+      {
+        "move": "razor-leaf",
+        "level": 12
+      },
+      {
+        "move": "poison-powder",
+        "level": 15
+      },
+      {
+        "move": "sleep-powder",
+        "level": 15
+      },
+      {
+        "move": "seed-bomb",
+        "level": 18
+      },
+      {
+        "move": "take-down",
+        "level": 21
+      },
+      {
+        "move": "sweet-scent",
+        "level": 24
+      },
+      {
+        "move": "synthesis",
+        "level": 27
+      },
+      {
+        "move": "worry-seed",
+        "level": 30
+      },
+      {
+        "move": "power-whip",
+        "level": 33
+      },
+      {
+        "move": "solar-beam",
+        "level": 36
+      }
+    ],
+    "machine": [
+      "acid-spray",
+      "body-slam",
+      "bullet-seed",
+      "charm",
+      "curse",
+      "double-edge",
+      "endure",
+      "energy-ball",
+      "facade",
+      "false-swipe",
+      "giga-drain",
+      "grass-knot",
+      "grass-pledge",
+      "grassy-glide",
+      "grassy-terrain",
+      "helping-hand",
+      "knock-off",
+      "leaf-storm",
+      "magical-leaf",
+      "protect",
+      "rest",
+      "seed-bomb",
+      "sleep-talk",
+      "sludge-bomb",
+      "solar-beam",
+      "substitute",
+      "sunny-day",
+      "swords-dance",
+      "take-down",
+      "tera-blast",
+      "toxic",
+      "trailblaze",
+      "venoshock",
+      "weather-ball"
+    ],
+    "other": [
+      {
+        "move": "petal-dance",
+        "method": "egg"
+      },
+      {
+        "move": "toxic",
+        "method": "egg"
+      },
+      {
+        "move": "curse",
+        "method": "egg"
+      },
+      {
+        "move": "ingrain",
+        "method": "egg"
+      }
+    ]
+  },
+  "ivysaur": {
+    "version_group": "scarlet-violet",
+    "level_up": [
+      {
+        "move": "growl",
+        "level": 1
+      },
+      {
+        "move": "growth",
+        "level": 1
+      },
+      {
+        "move": "tackle",
+        "level": 1
+      },
+      {
+        "move": "vine-whip",
+        "level": 1
+      },
+      {
+        "move": "leech-seed",
+        "level": 9
+      },
+      {
+        "move": "razor-leaf",
+        "level": 12
+      },
+      {
+        "move": "poison-powder",
+        "level": 15
+      },
+      {
+        "move": "sleep-powder",
+        "level": 15
+      },
+      {
+        "move": "seed-bomb",
+        "level": 20
+      },
+      {
+        "move": "take-down",
+        "level": 25
+      },
+      {
+        "move": "sweet-scent",
+        "level": 30
+      },
+      {
+        "move": "synthesis",
+        "level": 35
+      },
+      {
+        "move": "worry-seed",
+        "level": 40
+      },
+      {
+        "move": "power-whip",
+        "level": 45
+      },
+      {
+        "move": "solar-beam",
+        "level": 50
+      }
+    ],
+    "machine": [
+      "acid-spray",
+      "body-slam",
+      "bullet-seed",
+      "charm",
+      "curse",
+      "double-edge",
+      "endure",
+      "energy-ball",
+      "facade",
+      "false-swipe",
+      "giga-drain",
+      "grass-knot",
+      "grass-pledge",
+      "grassy-glide",
+      "grassy-terrain",
+      "helping-hand",
+      "knock-off",
+      "leaf-storm",
+      "magical-leaf",
+      "protect",
+      "rest",
+      "roar",
+      "seed-bomb",
+      "sleep-talk",
+      "sludge-bomb",
+      "solar-beam",
+      "substitute",
+      "sunny-day",
+      "swords-dance",
+      "take-down",
+      "tera-blast",
+      "toxic",
+      "trailblaze",
+      "venoshock",
+      "weather-ball"
+    ],
+    "other": [
+      {
+        "move": "petal-dance",
+        "method": "egg"
+      },
+      {
+        "move": "toxic",
+        "method": "egg"
+      },
+      {
+        "move": "curse",
+        "method": "egg"
+      },
+      {
+        "move": "ingrain",
+        "method": "egg"
+      }
+    ]
+  },
+  "venusaur": {
+    "version_group": "scarlet-violet",
+    "level_up": [
+      {
+        "move": "petal-blizzard",
+        "level": 0
+      },
+      {
+        "move": "growl",
+        "level": 1
+      },
+      {
+        "move": "growth",
+        "level": 1
+      },
+      {
+        "move": "petal-dance",
+        "level": 1
+      },
+      {
+        "move": "tackle",
+        "level": 1
+      },
+      {
+        "move": "vine-whip",
+        "level": 1
+      },
+      {
+        "move": "leech-seed",
+        "level": 9
+      },
+      {
+        "move": "razor-leaf",
+        "level": 12
+      },
+      {
+        "move": "poison-powder",
+        "level": 15
+      },
+      {
+        "move": "sleep-powder",
+        "level": 15
+      },
+      {
+        "move": "seed-bomb",
+        "level": 20
+      },
+      {
+        "move": "take-down",
+        "level": 25
+      },
+      {
+        "move": "sweet-scent",
+        "level": 30
+      },
+      {
+        "move": "synthesis",
+        "level": 37
+      },
+      {
+        "move": "worry-seed",
+        "level": 44
+      },
+      {
+        "move": "power-whip",
+        "level": 51
+      },
+      {
+        "move": "solar-beam",
+        "level": 58
+      }
+    ],
+    "machine": [
+      "acid-spray",
+      "amnesia",
+      "body-slam",
+      "bulldoze",
+      "bullet-seed",
+      "charm",
+      "curse",
+      "double-edge",
+      "earth-power",
+      "earthquake",
+      "endure",
+      "energy-ball",
+      "facade",
+      "false-swipe",
+      "frenzy-plant",
+      "giga-drain",
+      "giga-impact",
+      "grass-knot",
+      "grass-pledge",
+      "grassy-glide",
+      "grassy-terrain",
+      "helping-hand",
+      "hyper-beam",
+      "knock-off",
+      "leaf-storm",
+      "magical-leaf",
+      "petal-blizzard",
+      "poison-jab",
+      "protect",
+      "rest",
+      "roar",
+      "scary-face",
+      "seed-bomb",
+      "sleep-talk",
+      "sludge-bomb",
+      "solar-beam",
+      "stomping-tantrum",
+      "substitute",
+      "sunny-day",
+      "swords-dance",
+      "take-down",
+      "tera-blast",
+      "toxic",
+      "trailblaze",
+      "venoshock",
+      "weather-ball"
+    ],
+    "other": [
+      {
+        "move": "petal-dance",
+        "method": "egg"
+      },
+      {
+        "move": "toxic",
+        "method": "egg"
+      },
+      {
+        "move": "curse",
+        "method": "egg"
+      },
+      {
+        "move": "ingrain",
+        "method": "egg"
+      }
+    ]
+  }
+}

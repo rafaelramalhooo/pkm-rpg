@@ -1,0 +1,177 @@
+[
+  {
+    "id": 4,
+    "name": "poke-ball",
+    "category": "standard-balls",
+    "short_effect": "Tries to catch a wild Pokémon.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 3,
+    "name": "great-ball",
+    "category": "standard-balls",
+    "short_effect": "Tries to catch a wild Pokémon.  Success rate is 1.5×.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 2,
+    "name": "ultra-ball",
+    "category": "standard-balls",
+    "short_effect": "Tries to catch a wild Pokémon.  Success rate is 2×.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 17,
+    "name": "potion",
+    "category": "healing",
+    "short_effect": "Restores 20 HP.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 26,
+    "name": "super-potion",
+    "category": "healing",
+    "short_effect": "Restores 50 HP.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 25,
+    "name": "hyper-potion",
+    "category": "healing",
+    "short_effect": "Restores 200 HP.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 24,
+    "name": "max-potion",
+    "category": "healing",
+    "short_effect": "Restores HP to full.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 23,
+    "name": "full-restore",
+    "category": "healing",
+    "short_effect": "Restores HP to full and cures any status ailment and confusion.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 28,
+    "name": "revive",
+    "category": "revival",
+    "short_effect": "Revives with half HP.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 29,
+    "name": "max-revive",
+    "category": "revival",
+    "short_effect": "Revives with full HP.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 18,
+    "name": "antidote",
+    "category": "status-cures",
+    "short_effect": "Cures poison.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 19,
+    "name": "burn-heal",
+    "category": "status-cures",
+    "short_effect": "Cures a burn.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 20,
+    "name": "ice-heal",
+    "category": "status-cures",
+    "short_effect": "Cures freezing.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 21,
+    "name": "awakening",
+    "category": "status-cures",
+    "short_effect": "Cures sleep.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 22,
+    "name": "paralyze-heal",
+    "category": "status-cures",
+    "short_effect": "Cures paralysis.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 27,
+    "name": "full-heal",
+    "category": "status-cures",
+    "short_effect": "Cures any status ailment and confusion.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 79,
+    "name": "repel",
+    "category": "spelunking",
+    "short_effect": "For 100 steps, prevents wild encounters of level lower than your party’s lead Pokémon.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 76,
+    "name": "super-repel",
+    "category": "spelunking",
+    "short_effect": "For 200 steps, prevents wild encounters of level lower than your party’s lead Pokémon.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 77,
+    "name": "max-repel",
+    "category": "spelunking",
+    "short_effect": "For 250 steps, prevents wild encounters of level lower than your party’s lead Pokémon.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 78,
+    "name": "escape-rope",
+    "category": "spelunking",
+    "short_effect": "Transports user to the outside entrance of a cave.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 82,
+    "name": "fire-stone",
+    "category": "evolution",
+    "short_effect": "Evolves an Eevee into Flareon, a Growlithe into Arcanine, a Pansear into Simisear, or a Vulpix into Ninetales.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 84,
+    "name": "water-stone",
+    "category": "evolution",
+    "short_effect": "Evolves an Eevee into Vaporeon, a Lombre into Ludicolo, a Panpour into Simipour, a Poliwhirl into Poliwrath, a Shellder into Cloyster, or a Staryu into Starmie.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 83,
+    "name": "thunder-stone",
+    "category": "evolution",
+    "short_effect": "Evolves an Eelektrik into Eelektross, an Eevee into Jolteon, or a Pikachu into Raichu.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 85,
+    "name": "leaf-stone",
+    "category": "evolution",
+    "short_effect": "Evolves an Exeggcute into Exeggutor, a Gloom into Vileplume, a Nuzleaf into Shiftry, a Pansage into Simisage, or a Weepinbell into Victreebel.",
+    "arco_liberacao": 1
+  },
+  {
+    "id": 81,
+    "name": "moon-stone",
+    "category": "evolution",
+    "short_effect": "Evolves a Clefairy into Clefable, a Jigglypuff into Wigglytuff, a Munna into Musharna, a Nidorina into Nidoqueen, a Nidorino into Nidoking, or a Skitty into Delcatty.",
+    "arco_liberacao": 1
+  }
+]
