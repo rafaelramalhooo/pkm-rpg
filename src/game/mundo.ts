@@ -40,6 +40,8 @@ export interface Controle {
   bloquear(sim: boolean): void;
   dizer(texto: string): void;
   recarregarJogador(): Promise<Jogador | null>;
+  /** +1 aproxima, -1 afasta, 0 volta ao automático. */
+  zoom(passo: -1 | 0 | 1): void;
 }
 
 const T = 16;
@@ -162,7 +164,6 @@ class CenaMundo extends Phaser.Scene {
       this.eu.sprite.setFrame(QUADROS[this.eu.dir] + 1);
     }
     const c = this.cameras.main;
-    c.setBounds(0, 0, dados.w * T, dados.h * T);
     c.startFollow(this.eu.sprite, true, 1, 1);
     c.roundPixels = true;
     this.ajustarZoom();
@@ -171,9 +172,44 @@ class CenaMundo extends Phaser.Scene {
     this.avisarLugar();
   }
 
+  private nivelZoom: number | null = (() => {
+    try {
+      const v = Number(localStorage.getItem("pkm-zoom"));
+      return v >= 1 && v <= 6 ? v : null;
+    } catch {
+      return null;
+    }
+  })();
+
   private ajustarZoom(): void {
-    const z = Math.max(2, Math.min(5, Math.round(Math.min(this.scale.width / 240, this.scale.height / 170))));
-    this.cameras.main.setZoom(z);
+    const auto = Math.max(1.5, Math.min(4, Math.round(Math.min(this.scale.width / 420, this.scale.height / 280) * 2) / 2));
+    const c = this.cameras.main;
+    c.setZoom(this.nivelZoom ?? auto);
+    if (this.mapa) {
+      // com o mapa menor que a tela (zoom afastado), centraliza em vez de encostar no canto
+      const mw = this.mapa.w * T;
+      const mh = this.mapa.h * T;
+      const vw = this.scale.width / c.zoom;
+      const vh = this.scale.height / c.zoom;
+      c.setBounds(-Math.max(0, vw - mw) / 2, -Math.max(0, vh - mh) / 2, Math.max(mw, vw), Math.max(mh, vh));
+    }
+  }
+
+  zoom(passo: -1 | 0 | 1): void {
+    const NIVEIS = [1, 1.5, 2, 3, 4, 5, 6];
+    if (passo === 0) this.nivelZoom = null;
+    else {
+      const atual = this.cameras.main.zoom;
+      let i = NIVEIS.findIndex((n) => n >= atual - 0.01);
+      if (i < 0) i = NIVEIS.length - 1;
+      i = Math.max(0, Math.min(NIVEIS.length - 1, i + passo));
+      this.nivelZoom = NIVEIS[i];
+    }
+    try {
+      if (this.nivelZoom === null) localStorage.removeItem("pkm-zoom");
+      else localStorage.setItem("pkm-zoom", String(this.nivelZoom));
+    } catch { /* sem armazenamento: vale só nesta sessão */ }
+    this.ajustarZoom();
   }
 
   private naGrama(x: number, y: number): boolean {
@@ -201,7 +237,7 @@ class CenaMundo extends Phaser.Scene {
   private criarFicha(nome: string, aparencia: number, x: number, y: number, dir: Direcao, dono = false): Ficha {
     const sprite = this.add.sprite(px(x), py(y), `p${aparencia}`, QUADROS[dir] + 1).setOrigin(0.5, 0.875);
     const texto = this.add
-      .text(0, 0, nome, { fontFamily: "monospace", fontSize: "6px", color: dono ? "#ffffff" : "#e8f0a0", stroke: "#0f380f", strokeThickness: 2 })
+      .text(0, 0, nome, { fontFamily: "monospace", fontSize: "6px", color: dono ? "#ffffff" : "#e8f0a0", stroke: "#0b1020", strokeThickness: 2 })
       .setOrigin(0.5, 1)
       .setResolution(4);
     texto.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
@@ -478,7 +514,7 @@ export async function iniciarMundo(pai: HTMLElement, jogador: Jogador, ganchos: 
   const jogo = new Phaser.Game({
     type: Phaser.AUTO,
     parent: pai,
-    backgroundColor: "#0f380f",
+    backgroundColor: "#0b1020",
     pixelArt: true,
     roundPixels: true,
     scale: { mode: Phaser.Scale.RESIZE, width: "100%", height: "100%" },
@@ -493,5 +529,6 @@ export async function iniciarMundo(pai: HTMLElement, jogador: Jogador, ganchos: 
     bloquear: (s) => cena.bloquear(s),
     dizer: (t) => cena.dizer(t),
     recarregarJogador: () => cena.recarregar(),
+    zoom: (p) => cena.zoom(p),
   };
 }

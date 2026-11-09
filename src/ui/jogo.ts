@@ -185,6 +185,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           if (error) throw new Error(error.message);
           pr(`PA repostos (${String(data)} jogadores).`);
         })()),
+        botao("Resetar jogador...", () => void abrirReset(), ""),
         botao("+10 Poké Bolas para mim", () => void rodar(async () => {
           const { error } = await supabase.rpc("dar_item", { p_jogador: j.id, p_item: "poke-ball", p_qtd: 10 });
           if (error) throw new Error(error.message);
@@ -207,6 +208,34 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     });
     nos.push(form, botao("Sair", () => void supabase.auth.signOut(), ""));
     modal.abrir(j.nome, ...nos);
+  }
+
+  async function abrirReset(): Promise<void> {
+    const { data } = await supabase.from("jogadores").select("id, nome, papel").order("nome");
+    const msg = msgPainel();
+    const linhas = ((data ?? []) as { id: string; nome: string; papel: string }[]).map((p) => {
+      const b = el("button", { type: "button", class: "sec" }, `${p.nome}${p.papel === "mestre" ? " (Mestre)" : ""}`);
+      let armado = false;
+      b.addEventListener("click", async () => {
+        if (!armado) {
+          armado = true;
+          b.textContent = `Confirmar: apagar tudo de ${p.nome}?`;
+          b.classList.add("perigo");
+          window.setTimeout(() => {
+            armado = false;
+            b.classList.remove("perigo");
+            b.textContent = `${p.nome}${p.papel === "mestre" ? " (Mestre)" : ""}`;
+          }, 5000);
+          return;
+        }
+        const { error } = await supabase.rpc("resetar_jogador", { p_jogador: p.id });
+        if (error) return void mensagem(msg, error.message);
+        mensagem(msg, `${p.nome} voltou ao começo.`, "ok");
+        if (p.id === j.id) window.setTimeout(() => location.reload(), 900);
+      });
+      return b;
+    });
+    modal.abrir("Resetar jogador", el("p", { class: "sub" }, "Volta para Pallet Town, apaga time, mochila, Pokédex e batalha; devolve PA e dinheiro. O login e o personagem ficam."), ...linhas, msg);
   }
 
   // ---------- ações do jogo ----------
@@ -281,6 +310,11 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   });
 
   const aoTecla = (e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && ["+", "=", "-", "_", "0"].includes(e.key)) {
+      e.preventDefault();
+      controle?.zoom(e.key === "0" ? 0 : e.key === "-" || e.key === "_" ? -1 : 1);
+      return;
+    }
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     if (emBatalha || modal.aberto()) return;
     if (e.key === "e" || e.key === "E" || e.key === " " || e.key === "Enter") {
@@ -303,6 +337,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   const botoes = el(
     "div",
     { class: "grupo" },
+    botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"),
+    botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"),
     botao("Time", () => void abrirTime(), "sec botao-menu"),
     botao("Mochila", () => void abrirMochila(), "sec botao-menu"),
     botao("Pokédex", () => void abrirPokedex(), "sec botao-menu"),
@@ -310,7 +346,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   );
   const topo = el("div", { class: "barra" }, el("div", { class: "grupo" }, el("span", { class: "nome-jogador" }, j.nome), onde), el("div", { class: "grupo" }, dinheiro, pa));
   const rodape = el("div", { class: "barra rodape" }, formChat, botoes);
-  const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage · entre na grama alta e procure Pokémon");
+  const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage · Ctrl + / Ctrl − ajustam o zoom · entre na grama alta e procure Pokémon");
 
   const minha = montar([el("div", { class: "jogo" }, el("div", { class: "cartucho" }, topo, tela, rodape), dica, modal.raiz)], true);
 
