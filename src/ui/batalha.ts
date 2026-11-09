@@ -108,6 +108,81 @@ export function abrirBatalha(inicial: ResultadoBatalha, meuId: string): Promise<
       alvo.classList.add(classe);
     };
 
+    // ---------- animação de captura ----------
+    let bola: HTMLElement | null = null;
+    const centro = (n: Element) => {
+      const r = n.getBoundingClientRect();
+      const c = cena.getBoundingClientRect();
+      return { x: r.left - c.left + r.width / 2, y: r.top - c.top + r.height / 2 };
+    };
+    async function lancarBola(): Promise<void> {
+      bola?.remove();
+      const b = el("div", { class: "pokebola" }, el("i", {}));
+      cena.append(b);
+      bola = b;
+      const de = centro(campoMeu);
+      const para = centro(campoInimigo);
+      const solo = { x: para.x, y: para.y + cena.clientHeight * 0.12 };
+      b.style.left = `${de.x}px`;
+      b.style.top = `${de.y}px`;
+      const voo = b.animate(
+        [
+          { transform: "translate(-50%,-50%) rotate(0deg)", left: `${de.x}px`, top: `${de.y}px` },
+          { transform: "translate(-50%,-50%) rotate(540deg)", left: `${(de.x + para.x) / 2}px`, top: `${Math.min(de.y, para.y) - 60}px`, offset: 0.5 },
+          { transform: "translate(-50%,-50%) rotate(1080deg)", left: `${para.x}px`, top: `${para.y}px` },
+        ],
+        { duration: 650, easing: "ease-in", fill: "forwards" },
+      );
+      await voo.finished;
+      // o Pokémon vira luz e entra na bola
+      imgI?.animate([{ filter: "brightness(1)", transform: "scale(1)", opacity: 1 }, { filter: "brightness(6)", transform: "scale(.2)", opacity: 0 }], { duration: 450, fill: "forwards" });
+      b.classList.add("aberta");
+      await esperar(450);
+      b.classList.remove("aberta");
+      const cai = b.animate(
+        [{ left: `${para.x}px`, top: `${para.y}px` }, { left: `${solo.x}px`, top: `${solo.y}px`, offset: 0.7 }, { left: `${solo.x}px`, top: `${solo.y - 14}px`, offset: 0.85 }, { left: `${solo.x}px`, top: `${solo.y}px` }],
+        { duration: 600, fill: "forwards" },
+      );
+      await cai.finished;
+      b.style.left = `${solo.x}px`;
+      b.style.top = `${solo.y}px`;
+      await esperar(250);
+    }
+    async function balancar(): Promise<void> {
+      if (!bola) return;
+      await bola.animate(
+        [{ transform: "translate(-50%,-50%) rotate(0deg)" }, { transform: "translate(-50%,-50%) rotate(-28deg)" }, { transform: "translate(-50%,-50%) rotate(26deg)" }, { transform: "translate(-50%,-50%) rotate(0deg)" }],
+        { duration: 700, easing: "ease-in-out" },
+      ).finished;
+      await esperar(300);
+    }
+    async function brilharBola(): Promise<void> {
+      if (!bola) return;
+      bola.classList.add("capturada");
+      for (let i = 0; i < 8; i++) {
+        const e = el("span", { class: "estrela" }, "✦");
+        const a = (i / 8) * Math.PI * 2;
+        e.style.left = bola.style.left;
+        e.style.top = bola.style.top;
+        cena.append(e);
+        e.animate(
+          [{ transform: "translate(-50%,-50%) scale(.4)", opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * 46}px), calc(-50% + ${Math.sin(a) * 46}px)) scale(1.2)`, opacity: 0 }],
+          { duration: 900, easing: "ease-out", fill: "forwards" },
+        ).finished.then(() => e.remove(), () => e.remove());
+      }
+      await esperar(700);
+    }
+    async function abrirBola(): Promise<void> {
+      if (bola) {
+        bola.classList.add("aberta");
+        await esperar(250);
+        bola.remove();
+        bola = null;
+      }
+      imgI?.animate([{ filter: "brightness(6)", transform: "scale(.2)", opacity: 0 }, { filter: "brightness(1)", transform: "scale(1)", opacity: 1 }], { duration: 500, fill: "forwards" });
+      await esperar(500);
+    }
+
     async function tocar(eventos: Evento[], novoAtivo: PokemonRow | null = null): Promise<void> {
       for (const e of eventos) {
         switch (e.t) {
@@ -145,16 +220,28 @@ export function abrirBatalha(inicial: ResultadoBatalha, meuId: string): Promise<
             imgM?.remove(); imgM = null; idMeu = -1;
             if (novoAtivo) { ativo = novoAtivo; hpM = novoAtivo.hp_atual; desenhar(); }
             await dizer(`Vai, ${str(e.nome)}!`, 800); break;
-          case "bola": await dizer(`Você lançou a ${nomeItem(str(e.bola))}! (chance de ${str(e.chance)}%)`, 900); imgI?.classList.add("na-bola"); break;
+          case "bola": {
+            await dizer(`Você lançou a ${nomeItem(str(e.bola))}! (chance de ${str(e.chance)}%)`, 500);
+            await lancarBola();
+            break;
+          }
           case "balanco": {
             const n = Number(e.n);
-            for (let i = 0; i < n; i++) await dizer("..." .repeat(i + 1), 600);
+            for (let i = 0; i < n; i++) {
+              await balancar();
+              msg.textContent = ".".repeat(i + 1) + "  ";
+            }
+            await esperar(350);
             break;
           }
           case "capturado":
+            await brilharBola();
             await dizer(`Capturou ${str(e.nome)}! ${e.time ? "Ele entrou no seu time." : "Foi enviado para o box."}`, 1500);
             break;
-          case "escapou": imgI?.classList.remove("na-bola"); await dizer(`${str(e.nome)} escapou da bola!`, 900); break;
+          case "escapou":
+            await abrirBola();
+            await dizer(`${str(e.nome)} escapou da bola!`, 900);
+            break;
           case "fuga": await dizer("Você fugiu em segurança!", 900); break;
           default: break;
         }

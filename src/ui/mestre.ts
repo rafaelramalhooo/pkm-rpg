@@ -10,7 +10,7 @@ interface MapaJson {
 }
 
 async function json<T>(caminho: string): Promise<T> {
-  const r = await fetch(`${BASE}${caminho}`);
+  const r = await fetch(`${BASE}${caminho}?t=${Date.now()}`);
   if (!r.ok) throw new Error(`Não achei ${caminho}`);
   return (await r.json()) as T;
 }
@@ -35,6 +35,8 @@ export async function importarDados(p: Progresso): Promise<void> {
     });
   }
   await enviar("mapas", mapas, p);
+  const { error: ec } = await supabase.rpc("corrigir_posicoes");
+  if (ec) throw new Error(`corrigir_posicoes: ${ec.message}`);
   for (const t of ["especies", "golpes", "aprende", "eficacia", "naturezas", "itens", "encontros"]) {
     await enviar(t, await json<unknown[]>(`data/${t}.json`), p);
   }

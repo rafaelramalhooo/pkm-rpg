@@ -48,7 +48,9 @@ const T = 16;
 const PASSO_MS = 150;
 const QUADROS: Record<Direcao, number> = { baixo: 0, esquerda: 3, direita: 6, cima: 9 };
 const DELTA: Record<Direcao, [number, number]> = { cima: [0, -1], baixo: [0, 1], esquerda: [-1, 0], direita: [1, 0] };
+declare const __BUILD__: string;
 const BASE = import.meta.env.BASE_URL as string;
+const V = `?v=${__BUILD__}`;
 const px = (x: number) => x * T + 8;
 const py = (y: number) => y * T + 15; // pés do personagem perto da base do tile
 
@@ -123,12 +125,12 @@ class CenaMundo extends Phaser.Scene {
   private async carregarMapa(id: string): Promise<MapaDados> {
     const guardado = this.cacheMapas.get(id);
     if (guardado) return guardado;
-    const r = await fetch(`${BASE}assets/mapas/${id}.json`);
+    const r = await fetch(`${BASE}assets/mapas/${id}.json${V}`);
     if (!r.ok) throw new Error("Mapa não encontrado.");
     const dados = (await r.json()) as MapaDados;
     await new Promise<void>((ok, erro) => {
-      this.load.image(`${id}-baixo`, `${BASE}assets/mapas/${id}.png`);
-      this.load.image(`${id}-cima`, `${BASE}assets/mapas/${id}-cima.png`);
+      this.load.image(`${id}-baixo`, `${BASE}assets/mapas/${id}.png${V}`);
+      this.load.image(`${id}-cima`, `${BASE}assets/mapas/${id}-cima.png${V}`);
       this.load.once("complete", () => ok());
       this.load.once("loaderror", () => erro(new Error("Falha ao carregar a arte do mapa.")));
       this.load.start();
