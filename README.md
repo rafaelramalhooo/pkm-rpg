@@ -6,8 +6,8 @@ RPG de Pokémon que roda direto no navegador (computador e celular, sem instalar
 ## Stack
 - Front-end estático (GitHub Pages), direto no navegador (sem PWA)
 - Supabase (Auth, Postgres, Realtime, Storage, Edge Functions)
-- Vite + TypeScript; Phaser 3 desenhando um mapa hexagonal (hexcrawl) lido do banco; andar custa PA
-- Motor de batalha: simulador do Pokémon Showdown (`@pkmn/sim`), no servidor
+- Vite + TypeScript; Phaser 3 desenhando mapas de tiles andáveis (estilo Game Boy); passos são grátis e PA é gasto em ações (procurar Pokémon etc.)
+- Regras (andar, encontros, batalha, captura) em funções PL/pgSQL no Supabase; o cliente só mostra o resultado
 
 ## Estrutura
 | Pasta | Conteúdo |
@@ -34,8 +34,9 @@ A publicação é automática (GitHub Actions): produção na raiz do site e tes
 - Dados dos Pokémon são extraídos uma vez (pokemondb.net e PokéAPI) e guardados como JSON; o jogo nunca consulta essas fontes em tempo real.
 
 ## Créditos de arte
-- Tiles do mapa hexagonal: [Hexagon Pack](https://www.kenney.nl/assets/hexagon-pack), de Kenney (CC0, domínio público). Só os tiles usados ficam em `public/assets/hex/`, com a licença original; a água foi gerada a partir de um tile do pacote.
-- Sprites dos treinadores (`public/assets/personagens.png`): arte original gerada por script (`npm run arte`).
+- Mapas e sprites de treinadores: projeto [Tuxemon](https://github.com/Tuxemon/Tuxemon) (arte e mapas sob CC-BY-SA 4.0, CC-BY e domínio público, conforme o autor de cada arquivo; lista completa em `docs/CREDITOS-TUXEMON.md`). Os mapas `public/assets/mapas/*.png` são recomposições feitas por script a partir dessa arte e, por isso, **continuam sob CC-BY-SA 4.0** (compartilhar igual, com crédito).
+- Tiles do mapa hexagonal antigo (ideia guardada para o mapa-múndi): [Hexagon Pack](https://www.kenney.nl/assets/hexagon-pack), de Kenney (CC0), em `public/assets/hex/`.
+- Sprites dos Pokémon: não ficam no repositório (bucket privado do Supabase, enviados pelo Mestre).
 
 ## Aviso
 Pokémon e seus nomes são marcas da Nintendo, Game Freak e Creatures Inc. Este é um projeto de fãs, privado, sem afiliação nem fins lucrativos.

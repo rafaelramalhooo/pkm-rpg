@@ -32,5 +32,8 @@ dist-teste/
 # Pacotes de arte baixados (só os tiles usados entram em public/assets/hex)
 *.zip
 
-# Temporários do Vite
+# Temporários
+.quadros-tmp/
+.previa-hex/
 vite.config.ts.timestamp-*
+.pkm-*.tgz

@@ -1,451 +1,497 @@
+// Mundo andável: mapa de tiles (16 px) pré-renderizado, personagem animado, multijogador por canal de mapa.
+// O servidor decide tudo (andar, portais); o cliente só antecipa o passo para parecer instantâneo.
 import Phaser from "phaser";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { supabase, type Jogador } from "../supabase";
-
-const BASE = import.meta.env.BASE_URL;
-
-// Geometria dos hexágonos (tiles do Kenney, "pointy-top", 120x140 px; linhas ímpares deslocadas à direita).
-const LW = 120;
-const LH = 140;
-const DX = 120;
-const DY = 105;
-const RAIO = 69;
-const MARGEM = 10;
-const ZOOM_MAX = 1.3;
-
-export interface Hex {
-  q: number;
-  r: number;
-  bioma: string;
-  tile: string;
-  custo: number;
-  bloqueado: boolean;
-  poi_id: string | null;
-  poi_nome: string | null;
-  poi_descricao: string | null;
-  rotulo: string | null;
-  arco_liberado: number;
-}
+import { supabase, type Direcao, type Jogador } from "../supabase";
 
 export interface Poi {
   id: string;
+  tipo: string;
   nome: string;
+  x: number;
+  y: number;
   descricao: string;
 }
+interface Portal { x: number; y: number; w?: number; h?: number }
+interface MapaDados {
+  id: string;
+  nome: string;
+  w: number;
+  h: number;
+  solido: string;
+  grama: string;
+  portais: Portal[];
+  pois: Poi[];
+}
 
-/** Como o jogo avisa a interface (DOM) sobre o que acontece. */
+export interface Lugar { mapa_id: string; nome_mapa: string; x: number; y: number; naGrama: boolean; poi: Poi | null }
+
 export interface Ganchos {
-  aoPA(pa: number, max: number): void;
-  aoPoi(poi: Poi): void;
+  /** O jogador mudou de lugar (ou de mapa). */
+  aoLugar(l: Lugar): void;
+  /** O servidor devolveu o estado do jogador (posição validada). */
+  aoJogador(j: Jogador): void;
   aviso(texto: string): void;
 }
 
 export interface Controle {
   encerrar(): void;
-  zoom(fator: number): void;
-  centralizar(): void;
-  atualizarPA(): Promise<void>;
+  segurar(dir: Direcao | null): void;
+  bloquear(sim: boolean): void;
+  dizer(texto: string): void;
+  recarregarJogador(): Promise<Jogador | null>;
 }
 
-/** O que cada jogador anuncia na presença do mapa (nome e aparência vêm do banco, não daqui). */
-interface Posicao {
-  q: number;
-  r: number;
-}
+const T = 16;
+const PASSO_MS = 150;
+const QUADROS: Record<Direcao, number> = { baixo: 0, esquerda: 3, direita: 6, cima: 9 };
+const DELTA: Record<Direcao, [number, number]> = { cima: [0, -1], baixo: [0, 1], esquerda: [-1, 0], direita: [1, 0] };
+const BASE = import.meta.env.BASE_URL as string;
+const px = (x: number) => x * T + 8;
+const py = (y: number) => y * T + 15; // pés do personagem perto da base do tile
 
 interface Ficha {
-  caixa: Phaser.GameObjects.Container;
-  q: number;
-  r: number;
+  sprite: Phaser.GameObjects.Sprite;
+  nome: Phaser.GameObjects.Text;
+  balao?: Phaser.GameObjects.Text;
+  balaoTimer?: Phaser.Time.TimerEvent;
+  x: number;
+  y: number;
+  aparencia: number;
+  dir: Direcao;
 }
+interface Presenca { nome: string; aparencia: number; x: number; y: number; dir: Direcao }
 
-const chaveHex = (q: number, r: number) => `${q},${r}`;
-
-function centro(q: number, r: number): { x: number; y: number } {
-  return { x: MARGEM + LW / 2 + q * DX + (r % 2 ? DX / 2 : 0), y: MARGEM + LH / 2 + r * DY };
-}
-
-/** Vizinhos na grade "odd-r" (igual à função mover do servidor). */
-function vizinhos(q: number, r: number): [number, number][] {
-  const d = r % 2 === 0 ? [[-1, 0], [1, 0], [-1, -1], [0, -1], [-1, 1], [0, 1]] : [[-1, 0], [1, 0], [0, -1], [1, -1], [0, 1], [1, 1]];
-  return d.map(([dq, dr]) => [q + dq, r + dr]);
+function criarAnimacoes(cena: Phaser.Scene, i: number): void {
+  const k = `p${i}`;
+  (Object.keys(QUADROS) as Direcao[]).forEach((d) => {
+    const b = QUADROS[d];
+    if (!cena.anims.exists(`${k}-${d}`)) {
+      cena.anims.create({
+        key: `${k}-${d}`,
+        frames: [b, b + 1, b + 2, b + 1].map((frame) => ({ key: k, frame })),
+        frameRate: 8,
+        repeat: -1,
+      });
+    }
+  });
 }
 
 class CenaMundo extends Phaser.Scene {
-  private q: number;
-  private r: number;
-  private pa: number;
-  private movendo = false;
-  private encerrada = false;
-  private hexes = new Map<string, Hex>();
-  private minha!: Ficha;
+  private jogador: Jogador;
+  private ganchos: Ganchos;
+  private mapa!: MapaDados;
+  private cacheMapas = new Map<string, MapaDados>();
+  private camadas: Phaser.GameObjects.Image[] = [];
+  private eu!: Ficha;
   private outros = new Map<string, Ficha>();
-  private carregando = new Set<string>();
-  private presentes: Record<string, Posicao> = {};
   private canal?: RealtimeChannel;
-  private destaque!: Phaser.GameObjects.Graphics;
-  private chips: Phaser.GameObjects.GameObject[] = [];
-  private inicio?: { x: number; y: number; sx: number; sy: number; arrastou: boolean };
-  private pinca?: { d0: number; z0: number };
-  private ignorarToque = false;
-  private largura = 0;
-  private altura = 0;
+  private teclas!: Record<string, Phaser.Input.Keyboard.Key>;
+  private segurando: Direcao | null = null;
+  private andando = false;
+  private bloqueado = false;
+  private mudandoMapa = false;
+  private fila: Promise<void> = Promise.resolve();
+  private encerrada = false;
+  private timerTrack?: number;
 
-  constructor(
-    private readonly jogador: Jogador,
-    hexes: Hex[],
-    private readonly paMax: number,
-    private readonly ganchos: Ganchos,
-  ) {
+  constructor(jogador: Jogador, ganchos: Ganchos) {
     super("mundo");
-    this.q = jogador.x;
-    this.r = jogador.y;
-    this.pa = jogador.pa;
-    for (const h of hexes) this.hexes.set(chaveHex(h.q, h.r), h);
-    const colunas = Math.max(...hexes.map((h) => h.q)) + 1;
-    const linhas = Math.max(...hexes.map((h) => h.r)) + 1;
-    this.largura = MARGEM * 2 + colunas * DX + DX / 2;
-    this.altura = MARGEM * 2 + (linhas - 1) * DY + LH;
+    this.jogador = { ...jogador };
+    this.ganchos = ganchos;
   }
 
   preload(): void {
-    for (const tile of new Set([...this.hexes.values()].map((h) => h.tile))) this.load.image(tile, `${BASE}assets/hex/${tile}.png`);
-    this.load.spritesheet("treinadores", `${BASE}assets/personagens.png`, { frameWidth: 16, frameHeight: 16 });
+    for (let i = 0; i < 12; i++) {
+      this.load.spritesheet(`p${i}`, `${BASE}assets/personagens/p${i}.png`, { frameWidth: 16, frameHeight: 32 });
+    }
   }
 
   create(): void {
-    this.textures.get("treinadores").setFilter(Phaser.Textures.FilterMode.NEAREST);
+    for (let i = 0; i < 12; i++) criarAnimacoes(this, i);
+    const kb = this.input.keyboard!;
+    kb.disableGlobalCapture();
+    this.teclas = kb.addKeys("UP,DOWN,LEFT,RIGHT,W,A,S,D") as Record<string, Phaser.Input.Keyboard.Key>;
+    this.scale.on("resize", () => this.ajustarZoom());
+    void this.entrarNoMapa(this.jogador.mapa_id, true);
+  }
 
-    for (const h of this.hexes.values()) {
-      const { x, y } = centro(h.q, h.r);
-      this.add.image(x, y, h.tile).setDepth(0);
-      if (h.rotulo) {
-        this.add
-          .text(x, y + (h.poi_id ? 38 : 10), h.rotulo, {
-            fontFamily: "monospace",
-            fontSize: "20px",
-            fontStyle: "bold",
-            color: "#fffbe6",
-            stroke: "#0f380f",
-            strokeThickness: 6,
-          })
-          .setOrigin(0.5, 0)
-          .setDepth(8);
-      }
+  // ---------- mapa ----------
+
+  private async carregarMapa(id: string): Promise<MapaDados> {
+    const guardado = this.cacheMapas.get(id);
+    if (guardado) return guardado;
+    const r = await fetch(`${BASE}assets/mapas/${id}.json`);
+    if (!r.ok) throw new Error("Mapa não encontrado.");
+    const dados = (await r.json()) as MapaDados;
+    await new Promise<void>((ok, erro) => {
+      this.load.image(`${id}-baixo`, `${BASE}assets/mapas/${id}.png`);
+      this.load.image(`${id}-cima`, `${BASE}assets/mapas/${id}-cima.png`);
+      this.load.once("complete", () => ok());
+      this.load.once("loaderror", () => erro(new Error("Falha ao carregar a arte do mapa.")));
+      this.load.start();
+    });
+    this.cacheMapas.set(id, dados);
+    return dados;
+  }
+
+  private async entrarNoMapa(id: string, primeira = false): Promise<void> {
+    this.mudandoMapa = true;
+    let dados: MapaDados;
+    try {
+      dados = await this.carregarMapa(id);
+    } catch (e) {
+      this.ganchos.aviso(e instanceof Error ? e.message : "Erro ao abrir o mapa.");
+      this.mudandoMapa = false;
+      return;
     }
-    this.destaque = this.add.graphics().setDepth(6);
+    if (this.encerrada) return;
+    this.mapa = dados;
+    for (const c of this.camadas) c.destroy();
+    const baixo = this.add.image(0, 0, `${id}-baixo`).setOrigin(0, 0).setDepth(0);
+    const cima = this.add.image(0, 0, `${id}-cima`).setOrigin(0, 0).setDepth(1000);
+    this.camadas = [baixo, cima];
+    this.limparOutros();
 
-    this.minha = this.criarFicha(this.jogador.nome, this.jogador.aparencia, this.q, this.r, 11);
+    if (primeira) {
+      this.eu = this.criarFicha(this.jogador.nome, this.jogador.aparencia, this.jogador.x, this.jogador.y, this.jogador.direcao, true);
+    } else {
+      this.colocar(this.eu, this.jogador.x, this.jogador.y);
+      this.eu.dir = this.jogador.direcao;
+      this.eu.sprite.anims.stop();
+      this.eu.sprite.setFrame(QUADROS[this.eu.dir] + 1);
+    }
+    const c = this.cameras.main;
+    c.setBounds(0, 0, dados.w * T, dados.h * T);
+    c.startFollow(this.eu.sprite, true, 1, 1);
+    c.roundPixels = true;
+    this.ajustarZoom();
+    this.conectar();
+    this.mudandoMapa = false;
+    this.avisarLugar();
+  }
 
-    const cam = this.cameras.main;
-    cam.setBounds(0, 0, this.largura, this.altura);
-    this.ajustarZoom(true);
-    this.centralizar();
+  private ajustarZoom(): void {
+    const z = Math.max(2, Math.min(5, Math.round(Math.min(this.scale.width / 240, this.scale.height / 170))));
+    this.cameras.main.setZoom(z);
+  }
 
-    this.input.addPointer(1);
-    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
-      if (this.pinca) return;
-      this.inicio = { x: p.x, y: p.y, sx: cam.scrollX, sy: cam.scrollY, arrastou: false };
+  private naGrama(x: number, y: number): boolean {
+    return this.mapa.grama.charAt(y * this.mapa.w + x) === "1";
+  }
+  private solido(x: number, y: number): boolean {
+    if (x < 0 || y < 0 || x >= this.mapa.w || y >= this.mapa.h) return true;
+    return this.mapa.solido.charAt(y * this.mapa.w + x) === "1";
+  }
+  private poiEm(x: number, y: number): Poi | null {
+    return this.mapa.pois.find((p) => p.x === x && p.y === y) ?? null;
+  }
+  private portalEm(x: number, y: number): boolean {
+    return this.mapa.portais.some((p) => x >= p.x && x < p.x + (p.w ?? 1) && y >= p.y && y < p.y + (p.h ?? 1));
+  }
+
+  private avisarLugar(): void {
+    const x = this.jogador.x;
+    const y = this.jogador.y;
+    this.ganchos.aoLugar({ mapa_id: this.mapa.id, nome_mapa: this.mapa.nome, x, y, naGrama: this.naGrama(x, y), poi: this.poiEm(x, y) });
+  }
+
+  // ---------- fichas (personagens) ----------
+
+  private criarFicha(nome: string, aparencia: number, x: number, y: number, dir: Direcao, dono = false): Ficha {
+    const sprite = this.add.sprite(px(x), py(y), `p${aparencia}`, QUADROS[dir] + 1).setOrigin(0.5, 0.875);
+    const texto = this.add
+      .text(0, 0, nome, { fontFamily: "monospace", fontSize: "6px", color: dono ? "#ffffff" : "#e8f0a0", stroke: "#0f380f", strokeThickness: 2 })
+      .setOrigin(0.5, 1)
+      .setResolution(4);
+    texto.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+    const f: Ficha = { sprite, nome: texto, x, y, aparencia, dir };
+    this.posicionarAcessorios(f);
+    return f;
+  }
+
+  private posicionarAcessorios(f: Ficha): void {
+    f.sprite.setDepth(10 + f.sprite.y);
+    f.nome.setPosition(f.sprite.x, f.sprite.y - 17).setDepth(2000);
+    f.balao?.setPosition(f.sprite.x, f.sprite.y - 24).setDepth(2001);
+  }
+
+  private colocar(f: Ficha, x: number, y: number): void {
+    this.tweens.killTweensOf(f.sprite);
+    f.x = x;
+    f.y = y;
+    f.sprite.setPosition(px(x), py(y));
+    this.posicionarAcessorios(f);
+  }
+
+  private moverFicha(f: Ficha, x: number, y: number, dir: Direcao, ms: number): void {
+    this.tweens.killTweensOf(f.sprite);
+    f.x = x;
+    f.y = y;
+    f.dir = dir;
+    f.sprite.anims.play(`p${f.aparencia}-${dir}`, true);
+    this.tweens.add({
+      targets: f.sprite,
+      x: px(x),
+      y: py(y),
+      duration: ms,
+      ease: "Linear",
+      onUpdate: () => this.posicionarAcessorios(f),
+      onComplete: () => {
+        f.sprite.anims.stop();
+        f.sprite.setFrame(QUADROS[dir] + 1);
+        this.posicionarAcessorios(f);
+      },
     });
-    this.input.on("pointermove", (p: Phaser.Input.Pointer) => {
-      const i = this.inicio;
-      if (!i || !p.isDown || this.pinca) return;
-      if (!i.arrastou && Math.hypot(p.x - i.x, p.y - i.y) > 8) i.arrastou = true;
-      if (i.arrastou) {
-        cam.scrollX = i.sx - (p.x - i.x) / cam.zoom;
-        cam.scrollY = i.sy - (p.y - i.y) / cam.zoom;
-      }
+  }
+
+  private limparOutros(): void {
+    for (const f of this.outros.values()) this.destruirFicha(f);
+    this.outros.clear();
+  }
+  private destruirFicha(f: Ficha): void {
+    this.tweens.killTweensOf(f.sprite);
+    f.balaoTimer?.remove();
+    f.sprite.destroy();
+    f.nome.destroy();
+    f.balao?.destroy();
+  }
+
+  private mostrarBalao(f: Ficha, texto: string): void {
+    f.balao?.destroy();
+    f.balaoTimer?.remove();
+    const b = this.add
+      .text(0, 0, texto.slice(0, 60), {
+        fontFamily: "monospace", fontSize: "6px", color: "#0f380f", backgroundColor: "#f0f8c0",
+        padding: { x: 3, y: 2 }, wordWrap: { width: 90 }, align: "center",
+      })
+      .setOrigin(0.5, 1)
+      .setResolution(4);
+    b.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+    f.balao = b;
+    this.posicionarAcessorios(f);
+    f.balaoTimer = this.time.delayedCall(5000, () => {
+      b.destroy();
+      if (f.balao === b) f.balao = undefined;
     });
-    this.input.on("pointerup", (p: Phaser.Input.Pointer) => {
-      const i = this.inicio;
-      this.inicio = undefined;
-      if (this.ignorarToque) {
-        if (!this.input.pointer1.isDown && !this.input.pointer2.isDown) this.ignorarToque = false;
+  }
+
+  // ---------- entrada e movimento ----------
+
+  segurar(d: Direcao | null): void {
+    this.segurando = d;
+  }
+  bloquear(sim: boolean): void {
+    this.bloqueado = sim;
+    if (sim) this.segurando = null;
+  }
+
+  private direcaoDoTeclado(): Direcao | null {
+    const t = this.teclas;
+    if (t.UP.isDown || t.W.isDown) return "cima";
+    if (t.DOWN.isDown || t.S.isDown) return "baixo";
+    if (t.LEFT.isDown || t.A.isDown) return "esquerda";
+    if (t.RIGHT.isDown || t.D.isDown) return "direita";
+    return null;
+  }
+
+  override update(): void {
+    if (!this.mapa || this.encerrada) return;
+    const digitando = document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement;
+    if (this.andando || this.mudandoMapa || this.bloqueado) return;
+    const d = this.segurando ?? (digitando ? null : this.direcaoDoTeclado());
+    if (d) this.passo(d);
+  }
+
+  private passo(d: Direcao): void {
+    const [dx, dy] = DELTA[d];
+    const nx = this.jogador.x + dx;
+    const ny = this.jogador.y + dy;
+    this.eu.dir = d;
+    if (this.solido(nx, ny)) {
+      this.eu.sprite.anims.stop();
+      this.eu.sprite.setFrame(QUADROS[d] + 1);
+      return;
+    }
+    if (this.portalEm(nx, ny)) {
+      void this.atravessarPortal(d);
+      return;
+    }
+    this.andando = true;
+    this.jogador.x = nx;
+    this.jogador.y = ny;
+    this.jogador.direcao = d;
+    this.moverFicha(this.eu, nx, ny, d, PASSO_MS);
+    void this.canal?.send({ type: "broadcast", event: "mov", payload: { id: this.jogador.id, x: nx, y: ny, dir: d } });
+    this.time.delayedCall(PASSO_MS, () => {
+      this.andando = false;
+      this.avisarLugar();
+      this.rastrear();
+    });
+    this.enviarPasso(d);
+  }
+
+  private enviarPasso(d: Direcao): void {
+    this.fila = this.fila.then(async () => {
+      if (this.encerrada) return;
+      const { data, error } = await supabase.rpc("andar", { p_dir: d });
+      if (this.encerrada) return;
+      if (error || !data) {
+        if (error && !/devagar/i.test(error.message)) this.ganchos.aviso(error.message);
+        await this.ressincronizar();
         return;
       }
-      if (!i || i.arrastou) return;
-      const w = cam.getWorldPoint(p.x, p.y);
-      void this.tocar(w.x, w.y);
+      const s = data as Jogador;
+      if (s.mapa_id !== this.mapa.id) return;
+      this.ganchos.aoJogador(s);
+      if (!this.andando && (s.x !== this.jogador.x || s.y !== this.jogador.y)) {
+        this.jogador = { ...this.jogador, ...s };
+        this.colocar(this.eu, s.x, s.y);
+        this.avisarLugar();
+      }
     });
-    this.input.on("wheel", (_p: unknown, _o: unknown, _dx: number, dy: number) => this.zoom(dy > 0 ? 0.9 : 1.1));
-    this.scale.on("resize", () => this.ajustarZoom(false));
-
-    this.time.addEvent({ delay: 20000, loop: true, callback: () => void this.atualizarPA() });
-    this.atualizarDestaque();
-    this.conectar();
   }
 
-  update(): void {
-    const p1 = this.input.pointer1;
-    const p2 = this.input.pointer2;
-    if (p1.isDown && p2.isDown) {
-      const d = Phaser.Math.Distance.Between(p1.x, p1.y, p2.x, p2.y);
-      if (!this.pinca) {
-        this.pinca = { d0: Math.max(d, 1), z0: this.cameras.main.zoom };
-        this.inicio = undefined;
-        this.ignorarToque = true;
-      } else {
-        this.definirZoom((this.pinca.z0 * d) / this.pinca.d0);
-      }
-    } else if (this.pinca && !p1.isDown && !p2.isDown) {
-      this.pinca = undefined;
-    }
-  }
-
-  // ---------- Câmera ----------
-
-  private zoomMin(): number {
-    return Math.min(this.scale.width / this.largura, this.scale.height / this.altura);
-  }
-
-  private definirZoom(z: number): void {
-    this.cameras.main.setZoom(Phaser.Math.Clamp(z, this.zoomMin(), ZOOM_MAX));
-  }
-
-  private ajustarZoom(inicial: boolean): void {
-    const cam = this.cameras.main;
-    if (inicial) this.definirZoom(this.scale.width / (6 * DX));
-    else this.definirZoom(cam.zoom);
-  }
-
-  zoom(fator: number): void {
-    this.definirZoom(this.cameras.main.zoom * fator);
-  }
-
-  centralizar(): void {
-    const { x, y } = centro(this.q, this.r);
-    this.cameras.main.centerOn(x, y);
-  }
-
-  // ---------- Fichas ----------
-
-  private criarFicha(nome: string, aparencia: number, q: number, r: number, profundidade: number): Ficha {
-    const { x, y } = centro(q, r);
-    const sprite = this.add.sprite(0, 26, "treinadores", aparencia * 12).setOrigin(0.5, 1).setScale(4);
-    const rotulo = this.add
-      .text(0, -42, nome, { fontFamily: "monospace", fontSize: "18px", fontStyle: "bold", color: "#e8f4c8", stroke: "#0f380f", strokeThickness: 5 })
-      .setOrigin(0.5, 1);
-    const caixa = this.add.container(x, y, [sprite, rotulo]).setDepth(profundidade);
-    return { caixa, q, r };
-  }
-
-  /** Posição final de cada ficha; quem divide o mesmo hexágono fica lado a lado. */
-  private reposicionar(rapido = false): void {
-    const grupos = new Map<string, string[]>();
-    const todas: [string, Ficha][] = [["__eu__", this.minha], ...this.outros.entries()];
-    for (const [id, f] of todas) {
-      const k = chaveHex(f.q, f.r);
-      grupos.set(k, [...(grupos.get(k) ?? []), id]);
-    }
-    for (const [id, f] of todas) {
-      const ocupantes = (grupos.get(chaveHex(f.q, f.r)) ?? []).sort();
-      const { x, y } = centro(f.q, f.r);
-      const alvoX = x + (ocupantes.indexOf(id) - (ocupantes.length - 1) / 2) * 34;
-      this.tweens.killTweensOf(f.caixa);
-      if (rapido) f.caixa.setPosition(alvoX, y);
-      else this.tweens.add({ targets: f.caixa, x: alvoX, y, duration: 260, ease: "Sine.easeInOut" });
-    }
-  }
-
-  // ---------- Toque e movimento ----------
-
-  private hexEm(x: number, y: number): Hex | undefined {
-    let melhor: Hex | undefined;
-    let dist = RAIO - 3;
-    for (const h of this.hexes.values()) {
-      const c = centro(h.q, h.r);
-      const d = Math.hypot(c.x - x, c.y - y);
-      if (d < dist) {
-        dist = d;
-        melhor = h;
-      }
-    }
-    return melhor;
-  }
-
-  private async tocar(x: number, y: number): Promise<void> {
-    const h = this.hexEm(x, y);
-    if (!h || this.movendo) return;
-    if (h.q === this.q && h.r === this.r) {
-      this.abrirPoi(h);
-      return;
-    }
-    if (!vizinhos(this.q, this.r).some(([q, r]) => q === h.q && r === h.r)) {
-      this.ganchos.aviso("Ande um hexágono por vez: toque num vizinho do seu.");
-      return;
-    }
-    if (h.bloqueado) {
-      this.ganchos.aviso("O caminho está bloqueado.");
-      return;
-    }
-    if (this.pa < h.custo) {
-      this.ganchos.aviso(`PA insuficiente: este terreno custa ${h.custo} e você tem ${this.pa}.`);
-      return;
-    }
-    this.movendo = true;
-    this.atualizarDestaque();
-    const { data, error } = await supabase.rpc("mover", { p_q: h.q, p_r: h.r });
-    this.movendo = false;
+  private async atravessarPortal(d: Direcao): Promise<void> {
+    this.mudandoMapa = true;
+    await this.fila;
+    const { data, error } = await supabase.rpc("andar", { p_dir: d });
     if (this.encerrada) return;
     if (error || !data) {
-      this.ganchos.aviso(error?.message ?? "Não foi possível andar.");
-      void this.atualizarPA();
-      this.atualizarDestaque();
+      this.ganchos.aviso(error?.message ?? "Não foi possível passar.");
+      this.mudandoMapa = false;
+      await this.ressincronizar();
       return;
     }
-    const j = data as Jogador;
-    this.q = j.x;
-    this.r = j.y;
-    this.pa = Number(j.pa);
-    this.minha.q = this.q;
-    this.minha.r = this.r;
-    this.ganchos.aoPA(this.pa, this.paMax);
-    this.anunciar();
-    this.reposicionar();
-    this.atualizarDestaque();
-    const c = centro(this.q, this.r);
-    this.cameras.main.pan(c.x, c.y, 260, "Sine.easeInOut");
-    if (h.poi_id) this.time.delayedCall(300, () => this.abrirPoi(h));
-  }
-
-  private abrirPoi(h: Hex): void {
-    if (h.poi_id && h.poi_nome) this.ganchos.aoPoi({ id: h.poi_id, nome: h.poi_nome, descricao: h.poi_descricao ?? "" });
-  }
-
-  private atualizarDestaque(): void {
-    this.destaque.clear();
-    for (const o of this.chips) o.destroy();
-    this.chips = [];
-    const cor = (q: number, r: number, alfaLinha: number, alfaFundo: number, cor: number) => {
-      const { x, y } = centro(q, r);
-      const pts = Array.from({ length: 6 }, (_, k) => {
-        const a = ((30 + 60 * k) * Math.PI) / 180;
-        return new Phaser.Geom.Point(x + (RAIO - 2) * Math.cos(a), y + (RAIO - 2) * Math.sin(a));
-      });
-      this.destaque.fillStyle(cor, alfaFundo).fillPoints(pts, true);
-      this.destaque.lineStyle(4, cor, alfaLinha).strokePoints(pts, true);
-    };
-    cor(this.q, this.r, 0.9, 0, 0xffffff);
-    if (this.movendo) return;
-    for (const [q, r] of vizinhos(this.q, this.r)) {
-      const h = this.hexes.get(chaveHex(q, r));
-      if (!h || h.bloqueado) continue;
-      const pode = this.pa >= h.custo;
-      cor(q, r, 0.9, 0.14, pode ? 0xffe14a : 0xb0b0b0);
-      const { x, y } = centro(q, r);
-      const disco = this.add.circle(x, y - 6, 21, pode ? 0xffe14a : 0x9a9a9a).setStrokeStyle(3, 0x2a1f00).setDepth(7);
-      const num = this.add
-        .text(x, y - 6, String(h.custo), { fontFamily: "monospace", fontSize: "26px", fontStyle: "bold", color: pode ? "#2a1f00" : "#5a2a2a" })
-        .setOrigin(0.5)
-        .setDepth(7.5);
-      this.chips.push(disco, num);
+    const s = data as Jogador;
+    this.jogador = { ...this.jogador, ...s };
+    this.ganchos.aoJogador(this.jogador);
+    if (s.mapa_id !== this.mapa.id) await this.entrarNoMapa(s.mapa_id);
+    else {
+      this.colocar(this.eu, s.x, s.y);
+      this.mudandoMapa = false;
+      this.avisarLugar();
     }
   }
 
-  async atualizarPA(): Promise<void> {
-    const { data } = await supabase.from("jogadores").select("pa").eq("id", this.jogador.id).maybeSingle();
-    if (this.encerrada || !data) return;
-    this.pa = Number(data.pa);
-    this.ganchos.aoPA(this.pa, this.paMax);
-    this.atualizarDestaque();
+  /** Volta ao estado que o servidor conhece (após erro ou recusa). */
+  private async ressincronizar(): Promise<void> {
+    const j = await this.recarregar();
+    if (!j || this.encerrada) return;
+    if (j.mapa_id !== this.mapa.id) {
+      await this.entrarNoMapa(j.mapa_id);
+      return;
+    }
+    this.andando = false;
+    this.colocar(this.eu, j.x, j.y);
+    this.avisarLugar();
   }
 
-  // ---------- Multijogador (presença no canal privado do mapa) ----------
+  async recarregar(): Promise<Jogador | null> {
+    const { data } = await supabase
+      .from("jogadores")
+      .select("id, nome, papel, aparencia, mapa_id, x, y, direcao, pa, dinheiro")
+      .eq("id", this.jogador.id)
+      .maybeSingle();
+    if (!data) return null;
+    this.jogador = { ...this.jogador, ...(data as Jogador) };
+    this.ganchos.aoJogador(this.jogador);
+    return this.jogador;
+  }
+
+  // ---------- multijogador ----------
 
   private conectar(): void {
-    const canal = supabase.channel(`mapa:${this.jogador.mapa_id}`, {
-      config: { private: true, presence: { key: this.jogador.id } },
+    if (this.canal) void supabase.removeChannel(this.canal);
+    const canal = supabase.channel(`mapa:${this.mapa.id}`, {
+      config: { private: true, presence: { key: this.jogador.id }, broadcast: { self: false } },
     });
-    canal.on("presence", { event: "sync" }, () => this.sincronizar(canal.presenceState<Posicao>()));
+    canal.on("presence", { event: "sync" }, () => this.sincronizar(canal.presenceState<Presenca>()));
+    canal.on("broadcast", { event: "mov" }, ({ payload }) => this.aoMover(payload as { id: string; x: number; y: number; dir: Direcao }));
+    canal.on("broadcast", { event: "chat" }, ({ payload }) => this.aoChat(payload as { id: string; texto: string }));
     canal.subscribe((status) => {
-      if (status === "SUBSCRIBED") this.anunciar();
+      if (status === "SUBSCRIBED") this.rastrear(true);
     });
     this.canal = canal;
   }
 
-  private anunciar(): void {
+  private rastrear(agora = false): void {
     if (!this.canal || this.encerrada) return;
-    const posicao: Posicao = { q: this.q, r: this.r };
-    void this.canal.track(posicao);
+    window.clearTimeout(this.timerTrack);
+    const enviar = () => {
+      const p: Presenca = { nome: this.jogador.nome, aparencia: this.jogador.aparencia, x: this.jogador.x, y: this.jogador.y, dir: this.jogador.direcao };
+      void this.canal?.track(p);
+    };
+    if (agora) enviar();
+    else this.timerTrack = window.setTimeout(enviar, 500);
   }
 
-  private sincronizar(estado: Record<string, Posicao[]>): void {
+  private sincronizar(estado: Record<string, Presenca[]>): void {
     if (this.encerrada) return;
-    this.presentes = {};
+    const presentes: Record<string, Presenca> = {};
     for (const [chave, metas] of Object.entries(estado)) {
       if (chave === this.jogador.id || metas.length === 0) continue;
-      this.presentes[chave] = metas[metas.length - 1];
+      presentes[chave] = metas[metas.length - 1];
     }
-    for (const [chave, pos] of Object.entries(this.presentes)) {
+    for (const [chave, p] of Object.entries(presentes)) {
       const f = this.outros.get(chave);
-      if (f) {
-        f.q = pos.q;
-        f.r = pos.r;
-      } else void this.criarOutro(chave);
+      if (!f) this.outros.set(chave, this.criarFicha(p.nome, p.aparencia, p.x, p.y, p.dir));
+      else if (!f.sprite.anims.isPlaying) this.colocar(f, p.x, p.y);
     }
     for (const chave of [...this.outros.keys()]) {
-      if (!this.presentes[chave]) {
-        this.outros.get(chave)?.caixa.destroy();
+      if (!presentes[chave]) {
+        this.destruirFicha(this.outros.get(chave)!);
         this.outros.delete(chave);
       }
     }
-    this.reposicionar();
   }
 
-  private async criarOutro(chave: string): Promise<void> {
-    if (this.carregando.has(chave) || this.outros.has(chave)) return;
-    this.carregando.add(chave);
-    const { data } = await supabase.from("jogadores").select("nome, aparencia").eq("id", chave).maybeSingle();
-    this.carregando.delete(chave);
-    const pos = this.presentes[chave];
-    if (this.encerrada || !data || !pos || this.outros.has(chave)) return; // saiu enquanto carregava
-    this.outros.set(chave, this.criarFicha(String(data.nome), Number(data.aparencia), pos.q, pos.r, 10));
-    this.reposicionar(true);
+  private aoMover(p: { id: string; x: number; y: number; dir: Direcao }): void {
+    const f = this.outros.get(p.id);
+    if (!f || typeof p.x !== "number" || typeof p.y !== "number") return;
+    if (Math.abs(f.x - p.x) + Math.abs(f.y - p.y) > 2) this.colocar(f, p.x, p.y);
+    this.moverFicha(f, p.x, p.y, p.dir, PASSO_MS);
   }
 
-  /** Sai do canal (ao trocar de tela, sair do jogo ou fechar). */
+  private aoChat(p: { id: string; texto: string }): void {
+    const f = this.outros.get(p.id);
+    if (f && typeof p.texto === "string") this.mostrarBalao(f, p.texto);
+  }
+
+  dizer(texto: string): void {
+    const t = texto.trim().slice(0, 60);
+    if (!t || !this.eu) return;
+    this.mostrarBalao(this.eu, t);
+    void this.canal?.send({ type: "broadcast", event: "chat", payload: { id: this.jogador.id, texto: t } });
+  }
+
   desconectar(): void {
     this.encerrada = true;
+    window.clearTimeout(this.timerTrack);
     if (this.canal) void supabase.removeChannel(this.canal);
     this.canal = undefined;
   }
 }
 
-/** Carrega o mapa do banco e cria o jogo dentro de `pai`. */
 export async function iniciarMundo(pai: HTMLElement, jogador: Jogador, ganchos: Ganchos): Promise<Controle> {
-  const [{ data: hexes, error }, { data: cfg }] = await Promise.all([
-    supabase
-      .from("hexes")
-      .select("q, r, bioma, tile, custo, bloqueado, poi_id, poi_nome, poi_descricao, rotulo, arco_liberado")
-      .eq("mapa_id", jogador.mapa_id),
-    supabase.from("config").select("valor").eq("chave", "pa_por_dia").maybeSingle(),
-  ]);
-  if (error || !hexes || hexes.length === 0) throw new Error("Não foi possível carregar o mapa.");
-  const paMax = Number(cfg?.valor ?? 10) || 10;
-
-  const cena = new CenaMundo(jogador, hexes as Hex[], paMax, ganchos);
+  const cena = new CenaMundo(jogador, ganchos);
   const jogo = new Phaser.Game({
     type: Phaser.AUTO,
     parent: pai,
     backgroundColor: "#0f380f",
+    pixelArt: true,
+    roundPixels: true,
     scale: { mode: Phaser.Scale.RESIZE, width: "100%", height: "100%" },
     scene: cena,
   });
-  ganchos.aoPA(jogador.pa, paMax);
-
-  const aoVoltar = () => {
-    if (!document.hidden) void cena.atualizarPA();
-  };
-  document.addEventListener("visibilitychange", aoVoltar);
-
   return {
     encerrar: () => {
       cena.desconectar();
-      document.removeEventListener("visibilitychange", aoVoltar);
       jogo.destroy(true);
     },
-    zoom: (f) => cena.zoom(f),
-    centralizar: () => cena.centralizar(),
-    atualizarPA: () => cena.atualizarPA(),
+    segurar: (d) => cena.segurar(d),
+    bloquear: (s) => cena.bloquear(s),
+    dizer: (t) => cena.dizer(t),
+    recarregarJogador: () => cena.recarregar(),
   };
 }

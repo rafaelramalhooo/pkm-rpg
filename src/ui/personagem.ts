@@ -1,12 +1,8 @@
 import { supabase, type Jogador } from "../supabase";
 import { el, montar, mensagem } from "./dom";
 
-const APARENCIAS = [
-  { nome: "Camisa vermelha", cor: "#c04040" },
-  { nome: "Camisa azul", cor: "#3f6fd0" },
-  { nome: "Camisa verde", cor: "#3f9a4f" },
-  { nome: "Camisa amarela", cor: "#d8b030" },
-];
+const BASE = import.meta.env.BASE_URL as string;
+const TOTAL_APARENCIAS = 12;
 
 export function telaPersonagem(aoCriar: (j: Jogador) => void): void {
   let escolhida = 0;
@@ -14,9 +10,9 @@ export function telaPersonagem(aoCriar: (j: Jogador) => void): void {
   const msg = el("p", { class: "msg", role: "status" });
   const criar = el("button", { type: "submit" }, "Começar a aventura");
 
-  const botoes = APARENCIAS.map((a, i) => {
-    const b = el("button", { type: "button", "aria-label": a.nome, title: a.nome, "aria-pressed": String(i === 0) });
-    b.style.background = a.cor;
+  const botoes = Array.from({ length: TOTAL_APARENCIAS }, (_, i) => {
+    const b = el("button", { type: "button", class: "aparencia", "aria-label": `Visual ${i + 1}`, title: `Visual ${i + 1}`, "aria-pressed": String(i === 0) });
+    b.style.backgroundImage = `url(${BASE}assets/personagens/p${i}.png)`;
     b.addEventListener("click", () => {
       escolhida = i;
       botoes.forEach((x, j) => x.setAttribute("aria-pressed", String(j === i)));

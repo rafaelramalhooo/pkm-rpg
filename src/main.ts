@@ -23,7 +23,7 @@ async function rotear(userId: string | null): Promise<void> {
   }
   const { data, error } = await supabase
     .from("jogadores")
-    .select("id, nome, papel, aparencia, mapa_id, x, y, direcao, pa")
+    .select("id, nome, papel, aparencia, mapa_id, x, y, direcao, pa, dinheiro")
     .eq("id", userId)
     .maybeSingle();
   if (usuarioAtual !== userId) return; // mudou de usuário enquanto carregava

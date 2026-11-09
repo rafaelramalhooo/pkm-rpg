@@ -17,4 +17,5 @@ export interface Jogador {
   y: number;
   direcao: Direcao;
   pa: number;
+  dinheiro?: number;
 }
