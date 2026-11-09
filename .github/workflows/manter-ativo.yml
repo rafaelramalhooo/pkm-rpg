@@ -1,7 +1,9 @@
 name: Manter ativo
 
-# Faz uma chamada leve ao projeto de produção a cada 3 dias, para o Supabase não pausá-lo.
-# Precisa de dois secrets do repositório: SUPABASE_PROD_URL e SUPABASE_PROD_ANON_KEY.
+# A cada 3 dias chama a função `ping` do banco (uma consulta de verdade) nos dois projetos Supabase,
+# para o plano gratuito não pausá-los por inatividade.
+# Só usa a URL e a chave publishable, públicas por desenho (as mesmas do site). Nunca coloque aqui
+# a chave secreta (service_role).
 on:
   schedule:
     - cron: "17 12 */3 * *"
@@ -12,16 +14,24 @@ permissions: {}
 jobs:
   ping:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - nome: producao
+            url: https://dnhrtfcutluqsforwhsp.supabase.co
+            key: sb_publishable_t4Pm9QpVA_6a1ORBnNtrmg_p8ryApce
+          - nome: teste
+            url: https://uaqccpmxmxxjiypqvgtn.supabase.co
+            key: sb_publishable_tdotJ3L8J2UY1VlhoPwFZw_hgTSf5O0
     steps:
-      - name: Chamar a API de produção
+      - name: Chamar o banco (${{ matrix.nome }})
         env:
-          URL: ${{ secrets.SUPABASE_PROD_URL }}
-          KEY: ${{ secrets.SUPABASE_PROD_ANON_KEY }}
+          URL: ${{ matrix.url }}
+          KEY: ${{ matrix.key }}
         run: |
-          if [ -z "$URL" ] || [ -z "$KEY" ]; then
-            echo "Secrets não configurados; nada a fazer."
-            exit 0
-          fi
-          code=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $KEY" "$URL/auth/v1/health")
+          code=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "apikey: $KEY" -H "Content-Type: application/json" -d '{}' \
+            "$URL/rest/v1/rpc/ping")
           echo "Resposta: $code"
           test "$code" = "200"
