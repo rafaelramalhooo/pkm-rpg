@@ -1,0 +1,1552 @@
+{
+ "mapa": "kanto",
+ "colunas": 11,
+ "linhas": 14,
+ "spawn": {
+  "q": 5,
+  "r": 12
+ },
+ "layout": "odd-r (linhas ímpares deslocadas meio hexágono para a direita)",
+ "hexes": [
+  {
+   "q": 0,
+   "r": 0,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 0,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 0,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 0,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 0,
+   "bioma": "colina",
+   "tile": "grass_15",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 0,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 6,
+   "r": 0,
+   "bioma": "colina",
+   "tile": "grass_15",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 0,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 0,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 0,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 0,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 1,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 1,
+   "bioma": "colina",
+   "tile": "grass_15",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 1,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 1,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 1,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 1,
+   "bioma": "cidade",
+   "tile": "medieval_smallCastle",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": "pewter",
+   "rotulo": "Pewter City"
+  },
+  {
+   "q": 6,
+   "r": 1,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 1,
+   "bioma": "colina",
+   "tile": "grass_15",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 1,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 1,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 1,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 2,
+   "bioma": "colina",
+   "tile": "grass_15",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 2,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 2,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 2,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 2,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 2,
+   "bioma": "estrada",
+   "tile": "dirt_06",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 6,
+   "r": 2,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 2,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 2,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 2,
+   "bioma": "colina",
+   "tile": "grass_15",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 2,
+   "bioma": "montanha",
+   "tile": "grass_14",
+   "custo": 3,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 3,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 3,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 3,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 3,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 3,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 3,
+   "bioma": "floresta_densa",
+   "tile": "grass_13",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 6,
+   "r": 3,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 3,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 3,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 3,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 3,
+   "bioma": "colina",
+   "tile": "grass_15",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 4,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 4,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 4,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 4,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 4,
+   "bioma": "floresta_densa",
+   "tile": "grass_13",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 4,
+   "bioma": "floresta_densa",
+   "tile": "grass_13",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": "Floresta de Viridian"
+  },
+  {
+   "q": 6,
+   "r": 4,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 4,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 4,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 4,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 4,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 5,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 5,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 5,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 5,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 5,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 5,
+   "bioma": "floresta_densa",
+   "tile": "grass_13",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 6,
+   "r": 5,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 5,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 5,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 5,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 5,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 6,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 6,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 6,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 6,
+   "bioma": "colina",
+   "tile": "grass_15",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 6,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 6,
+   "bioma": "estrada",
+   "tile": "dirt_06",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 6,
+   "r": 6,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 6,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 6,
+   "bioma": "colina",
+   "tile": "grass_15",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 6,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 6,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 7,
+   "bioma": "agua",
+   "tile": "agua_2",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 7,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 7,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 7,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 7,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 7,
+   "bioma": "cidade",
+   "tile": "modern_villageLarge",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": "viridian",
+   "rotulo": "Viridian City"
+  },
+  {
+   "q": 6,
+   "r": 7,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 7,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 7,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 7,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 7,
+   "bioma": "agua",
+   "tile": "agua_3",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 8,
+   "bioma": "agua",
+   "tile": "agua_3",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 8,
+   "bioma": "agua",
+   "tile": "agua_1",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 8,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 8,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 8,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 8,
+   "bioma": "estrada",
+   "tile": "dirt_06",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 6,
+   "r": 8,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 8,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 8,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 8,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 8,
+   "bioma": "agua",
+   "tile": "agua_1",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 9,
+   "bioma": "agua",
+   "tile": "agua_1",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 9,
+   "bioma": "agua",
+   "tile": "agua_2",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 9,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 9,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 9,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 9,
+   "bioma": "estrada",
+   "tile": "dirt_06",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": "Rota 1"
+  },
+  {
+   "q": 6,
+   "r": 9,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 9,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 9,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 9,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 9,
+   "bioma": "agua",
+   "tile": "agua_2",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 10,
+   "bioma": "agua",
+   "tile": "agua_2",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 10,
+   "bioma": "agua",
+   "tile": "agua_3",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 10,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 10,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 10,
+   "bioma": "floresta",
+   "tile": "grass_12",
+   "custo": 2,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 10,
+   "bioma": "estrada",
+   "tile": "dirt_06",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 6,
+   "r": 10,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 10,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 10,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 10,
+   "bioma": "areia",
+   "tile": "sand_07",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 10,
+   "bioma": "agua",
+   "tile": "agua_3",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 11,
+   "bioma": "agua",
+   "tile": "agua_3",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 11,
+   "bioma": "agua",
+   "tile": "agua_1",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 11,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 11,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 11,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 11,
+   "bioma": "estrada",
+   "tile": "dirt_06",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 6,
+   "r": 11,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 11,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 11,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 11,
+   "bioma": "areia",
+   "tile": "sand_07",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 11,
+   "bioma": "areia",
+   "tile": "sand_07",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 12,
+   "bioma": "agua",
+   "tile": "agua_1",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 12,
+   "bioma": "agua",
+   "tile": "agua_2",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 12,
+   "bioma": "agua",
+   "tile": "agua_3",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 12,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 12,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 12,
+   "bioma": "cidade",
+   "tile": "modern_houseSmall",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": "pallet",
+   "rotulo": "Pallet Town"
+  },
+  {
+   "q": 6,
+   "r": 12,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 12,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 12,
+   "bioma": "planicie",
+   "tile": "grass_05",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 12,
+   "bioma": "areia",
+   "tile": "sand_07",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 12,
+   "bioma": "areia",
+   "tile": "sand_07",
+   "custo": 1,
+   "bloqueado": false,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 0,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_2",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 1,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_3",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 2,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_1",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 3,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_2",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 4,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_3",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 5,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_1",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 6,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_2",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 7,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_3",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 8,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_1",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 9,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_2",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  },
+  {
+   "q": 10,
+   "r": 13,
+   "bioma": "agua",
+   "tile": "agua_3",
+   "custo": 0,
+   "bloqueado": true,
+   "poi_id": null,
+   "rotulo": null
+  }
+ ]
+}

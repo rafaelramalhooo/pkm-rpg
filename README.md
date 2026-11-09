@@ -6,7 +6,7 @@ RPG de Pokémon que roda direto no navegador (computador e celular, sem instalar
 ## Stack
 - Front-end estático (GitHub Pages), direto no navegador (sem PWA)
 - Supabase (Auth, Postgres, Realtime, Storage, Edge Functions)
-- Vite + TypeScript; Phaser 3 + mapas do Tiled (a partir do M1b)
+- Vite + TypeScript; Phaser 3 desenhando um mapa hexagonal (hexcrawl) lido do banco; andar custa PA
 - Motor de batalha: simulador do Pokémon Showdown (`@pkmn/sim`), no servidor
 
 ## Estrutura
@@ -32,6 +32,10 @@ A publicação é automática (GitHub Actions): produção na raiz do site e tes
 - Nunca versionar chaves, senhas ou arquivos `.env`.
 - Nunca versionar sprites, músicas ou outras artes protegidas (ficam no Supabase Storage privado).
 - Dados dos Pokémon são extraídos uma vez (pokemondb.net e PokéAPI) e guardados como JSON; o jogo nunca consulta essas fontes em tempo real.
+
+## Créditos de arte
+- Tiles do mapa hexagonal: [Hexagon Pack](https://www.kenney.nl/assets/hexagon-pack), de Kenney (CC0, domínio público). Só os tiles usados ficam em `public/assets/hex/`, com a licença original; a água foi gerada a partir de um tile do pacote.
+- Sprites dos treinadores (`public/assets/personagens.png`): arte original gerada por script (`npm run arte`).
 
 ## Aviso
 Pokémon e seus nomes são marcas da Nintendo, Game Freak e Creatures Inc. Este é um projeto de fãs, privado, sem afiliação nem fins lucrativos.

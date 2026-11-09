@@ -28,3 +28,9 @@ backups/
 .DS_Store
 dist-teste/
 .preview/
+
+# Pacotes de arte baixados (só os tiles usados entram em public/assets/hex)
+*.zip
+
+# Temporários do Vite
+vite.config.ts.timestamp-*
