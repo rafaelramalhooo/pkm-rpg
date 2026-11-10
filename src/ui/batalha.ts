@@ -2,7 +2,7 @@
 // que roda o simulador oficial do Showdown). Aqui só enviamos a intenção do jogador e tocamos o que volta.
 import { supabase } from "../supabase";
 import { el } from "./dom";
-import { COR_TIPO, golpePorSlug, imagemPokemon, minhaMochila, NOME_TIPO, nomeItem } from "./dados";
+import { COR_TIPO, golpePorSlug, imagemPokemon, minhaMochila, NOME_TIPO, nomeItem, urlSprite } from "./dados";
 
 interface MembroSim { orig: number; id?: string; hp: number; maxhp: number; status: string | null; nome: string; nivel: number; especie: string; num: number; ativo: boolean; pp: number[] }
 interface PedidoGolpe { n: number; id: string; nome: string; pp: number; maxpp: number; desativado: boolean }
@@ -62,7 +62,7 @@ function caixa(classe: string): Caixa {
 }
 
 /** Abre a batalha. Resolve quando o jogador fecha (com o estado final). */
-export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string): Promise<EstadoFinal> {
+export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, fundoCena = "campo"): Promise<EstadoFinal> {
   return new Promise((resolver) => {
     let ocupado = true;
     let ultima: Resposta | null = null;
@@ -71,6 +71,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string): Promise
     let nomeTreinador = "";
 
     const fundo = el("div", { class: "sd-fundo" });
+    fundo.style.backgroundImage = `url(${import.meta.env.BASE_URL}assets/batalha/${fundoCena}.png)`;
     const campoAdv = el("div", { class: "sd-campo adv" });
     const campoJog = el("div", { class: "sd-campo jog" });
     const cxAdv = caixa("adv");
@@ -81,6 +82,13 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string): Promise
     const log = el("div", { class: "sd-log" }, el("div", { class: "sd-log-tit" }, "Registro da batalha"));
     const raiz = el("div", { class: "batalha sd" }, el("div", { class: "sd-moldura" }, el("div", { class: "sd-esq" }, cena, msg, controles), el("div", { class: "sd-dir" }, log)));
     document.body.append(raiz);
+    // sprites em tamanho natural (como no Showdown), reduzidos só quando o palco encolhe
+    cena.addEventListener("load", (ev) => {
+      const t = ev.target;
+      if (t instanceof HTMLImageElement && t.closest(".sd-campo")) t.style.setProperty("--nw", String(t.naturalWidth));
+    }, true);
+    msg.textContent = "Carregando a batalha...";
+    new ResizeObserver(() => cena.style.setProperty("--k", String(Math.min(1, cena.clientWidth / 640)))).observe(cena);
 
     let imgAdv: HTMLElement | null = null;
     let imgJog: HTMLElement | null = null;
@@ -468,6 +476,11 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string): Promise
       try {
         const r = await chamar({ acao: "estado" });
         tipoBatalha = r.batalha.tipo;
+        // baixa os sprites antes de abrir a cena, para não aparecerem aos pedaços
+        await Promise.race([
+          Promise.all([...r.jogador.filter((x) => x.ativo).map((x) => urlSprite("costas", x.num)), ...r.adversario.filter((x) => x.ativo).map((x) => urlSprite("frente", x.num))]),
+          esperar(2500),
+        ]);
         if (r.treinador) nomeTreinador = r.treinador;
         if (r.linhas.length === 0) {
           // batalha retomada: desenha direto o estado atual

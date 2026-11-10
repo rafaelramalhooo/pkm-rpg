@@ -311,12 +311,20 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     }
   }
 
+  const FUNDOS: Record<string, string> = { pallet: "campo", rota1: "mato", rota2: "mato", viridian: "cidade", floresta: "floresta", pewter: "cidade", ginasio: "ginasio" };
+  const fundoDoMapa = (id: string | null | undefined): string => FUNDOS[id ?? ""] ?? "campo";
+
+  // aquece a função de batalha (o motor é pesado): a 1ª batalha da sessão não precisa esperar o carregamento
+  const aquecer = (): void => { void supabase.functions.invoke("batalha", { body: { acao: "aquecer" } }).catch(() => undefined); };
+  aquecer();
+  window.setInterval(() => { if (!document.hidden) aquecer(); }, 4 * 60 * 1000);
+
   async function lutar(res: ResultadoBatalha): Promise<void> {
     emBatalha = true;
     modal.fechar();
     controle?.bloquear(true);
     await carregarReferencias();
-    const estado = await abrirBatalha(res, j.id);
+    const estado = await abrirBatalha(res, j.id, fundoDoMapa(j.mapa_id));
     emBatalha = false;
     controle?.bloquear(false);
     await recarregarJogador();
