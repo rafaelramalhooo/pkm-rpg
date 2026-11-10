@@ -328,3 +328,28 @@ h1 { color: #fff; }
 .dinheiro { background: #0f1b3f; border: 1px solid #22386f; color: #ffe08a; font-weight: 700; }
 .fala { margin: 4px 0; padding: 12px 14px; border-left: 3px solid var(--brilho); background: #0b1735; border-radius: 0 12px 12px 0; font-style: italic; }
 @media (max-width: 700px) { .dock-rot { display: none; } .botao-menu.dock { padding: 8px 10px; } .cartao-pk { grid-template-columns: 72px 1fr; } .pk-img.grande { width: 72px; height: 72px; } }
+
+/* ===== Showdown: palco compacto de proporção fixa (16:9, no máx. 640px), registro ao lado em telas largas ===== */
+.sd-moldura { width: min(100%, 960px); grid-template-columns: minmax(0, 640px) minmax(220px, 300px); justify-content: center; align-items: start; gap: 10px; }
+.sd-esq { border-radius: 12px; }
+.sd-cena { container-type: inline-size; max-height: none; border-radius: 0; }
+.sd-fundo { background: linear-gradient(#6fb4ea 0%, #cfeaff 44%, transparent 44.2%), linear-gradient(#7fc468 44%, #4f9a4a 100%); }
+.sd-chao.adv { right: 14%; top: 36%; width: 24%; height: 8%; }
+.sd-chao.jog { left: 10%; bottom: 7%; width: 30%; height: 9%; }
+.sd-campo.adv { right: 17%; top: 14%; width: 18cqw; height: 18cqw; }
+.sd-campo.jog { left: 14%; bottom: 10%; width: 25cqw; height: 25cqw; }
+.sd-campo .pk-img { width: 100%; height: 100%; }
+.sd-campo .pk-img img { width: 100%; height: 100%; object-fit: contain; object-position: bottom center; }
+.sd-campo.jog .pk-img img { transform: none; }
+.sd-caixa { width: 34cqw; padding: 4px 8px 6px; font-size: 2.3cqw; border-radius: 6px; background: #f4f8ffe6; }
+.sd-caixa.adv { left: 3%; top: 5%; border-radius: 6px; } .sd-caixa.jog { right: 3%; bottom: 6%; border-radius: 6px; }
+.sd-hp-trilho { height: 7px; }
+.sd-bufs { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; } .sd-bufs:empty { display: none; }
+.sd-buf { font-size: .7em; font-weight: 800; padding: 0 5px; border-radius: 3px; color: #fff; } .sd-buf.up { background: #2f8f4f; } .sd-buf.down { background: #c04040; }
+.sd-msg { min-height: 2.2em; padding: 8px 12px; font-size: .9rem; }
+.sd-controles { padding: 8px; gap: 6px; min-height: 0; }
+.sd-golpe { padding: 7px 10px; } .sd-golpe .g-nome { font-size: .92rem; } .sd-golpe .g-meta { font-size: .62rem; } .sd-golpe .g-pp { font-size: .66rem; margin-top: 0; }
+.sd-time { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; } .sd-membro { padding: 4px 6px; grid-template-columns: 28px 1fr; } .sd-membro .pk-img, .sd-membro .pk-img img { width: 28px; height: 28px; }
+.sd-log { border-radius: 12px; padding: 8px; font-size: .74rem; max-height: min(78vh, 560px); }
+@media (max-width: 960px) { .sd-moldura { grid-template-columns: minmax(0, 640px); } .sd-dir { order: 2; } .sd-log { max-height: 140px; } }
+@media (max-width: 520px) { .sd-golpes { grid-template-columns: 1fr 1fr; } .sd-time { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

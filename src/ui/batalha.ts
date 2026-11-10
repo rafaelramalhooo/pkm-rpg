@@ -26,6 +26,7 @@ const STATUS_TEXTO: Record<string, string> = {
   slp: "caiu no sono!", frz: "foi congelado!",
 };
 const STAT: Record<string, string> = { atk: "Ataque", def: "Defesa", spa: "Ataque Esp.", spd: "Defesa Esp.", spe: "Velocidade", accuracy: "Precisão", evasion: "Evasão" };
+const STAT_CURTO: Record<string, string> = { atk: "Atq", def: "Def", spa: "AtqE", spd: "DefE", spe: "Vel", accuracy: "Prec", evasion: "Eva" };
 const CURAVEIS = ["potion", "super-potion", "hyper-potion", "max-potion", "full-restore", "antidote", "burn-heal", "ice-heal", "awakening", "paralyze-heal", "full-heal"];
 
 async function chamar(corpo: Record<string, unknown>): Promise<Resposta> {
@@ -47,16 +48,17 @@ function pctHp(atual: number, max: number): { pct: number; classe: string } {
   return { pct, classe: pct > 50 ? "ok" : pct > 20 ? "medio" : "baixo" };
 }
 
-interface Caixa { raiz: HTMLElement; nome: HTMLElement; nivel: HTMLElement; fill: HTMLElement; num: HTMLElement; st: HTMLElement }
+interface Caixa { raiz: HTMLElement; nome: HTMLElement; nivel: HTMLElement; fill: HTMLElement; num: HTMLElement; st: HTMLElement; bufs: HTMLElement }
 function caixa(classe: string): Caixa {
   const nome = el("span", { class: "sd-nome" });
   const nivel = el("span", { class: "sd-nivel" });
   const st = el("span", { class: "sd-st" });
   const fill = el("div", { class: "sd-hp-fill ok" });
   const num = el("div", { class: "sd-hp-num" });
-  const raiz = el("div", { class: `sd-caixa ${classe}` }, el("div", { class: "sd-topo" }, nome, nivel, st), el("div", { class: "sd-hp" }, el("div", { class: "sd-hp-trilho" }, fill), num));
+  const bufs = el("div", { class: "sd-bufs" });
+  const raiz = el("div", { class: `sd-caixa ${classe}` }, el("div", { class: "sd-topo" }, nome, nivel, st), el("div", { class: "sd-hp" }, el("div", { class: "sd-hp-trilho" }, fill), num), bufs);
   raiz.style.visibility = "hidden";
-  return { raiz, nome, nivel, fill, num, st };
+  return { raiz, nome, nivel, fill, num, st, bufs };
 }
 
 /** Abre a batalha. Resolve quando o jogador fecha (com o estado final). */
@@ -83,7 +85,8 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string): Promise
     let imgAdv: HTMLElement | null = null;
     let imgJog: HTMLElement | null = null;
     let bola: HTMLElement | null = null;
-    const ativos = { jog: { nome: "", nivel: 0, hp: 0, max: 1, status: null as string | null, num: 0 }, adv: { nome: "", nivel: 0, hp: 0, max: 1, status: null as string | null, num: 0 } };
+    const novoAtivo = () => ({ nome: "", nivel: 0, hp: 0, max: 1, status: null as string | null, num: 0, bufs: {} as Record<string, number> });
+    const ativos = { jog: novoAtivo(), adv: novoAtivo() };
     const lado = (l: string) => (l === "p1" ? "jog" : "adv") as "jog" | "adv";
 
     // ---------- desenho ----------
@@ -99,6 +102,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string): Promise
       c.fill.style.width = `${b.pct}%`;
       c.fill.className = `sd-hp-fill ${b.classe}`;
       c.num.textContent = l === "jog" ? `${a.hp}/${a.max}` : `${Math.round(b.pct)}%`;
+      c.bufs.replaceChildren(...Object.entries(a.bufs).filter(([, v]) => v !== 0).map(([k, v]) => el("span", { class: `sd-buf ${v > 0 ? "up" : "down"}` }, `${STAT_CURTO[k] ?? k} ${v > 0 ? "+" : ""}${v}`)));
     }
     function trocarSprite(l: "jog" | "adv", num: number): void {
       const antigo = l === "jog" ? imgJog : imgAdv;
@@ -246,7 +250,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string): Promise
           const nivel = Number((lv ?? "L1").slice(1));
           const m = achar(r, l, esp, nivel);
           const h = lerHp(p[3]);
-          ativos[l] = { nome, nivel, hp: h.hp, max: h.max ?? m?.maxhp ?? Math.max(1, h.hp), status: h.st, num: m?.num ?? 0 };
+          ativos[l] = { nome, nivel, hp: h.hp, max: h.max ?? m?.maxhp ?? Math.max(1, h.hp), status: h.st, num: m?.num ?? 0, bufs: {} };
           if (l === "adv" && ativos.adv.max > 0 && tipoBatalha === "selvagem") ativos.adv.max = 100, ativos.adv.hp = Math.round((h.hp / (h.max ?? 1)) * 100) || 100;
           trocarSprite(l, ativos[l].num);
           pintar(l);
@@ -311,6 +315,9 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string): Promise
         case "-boost": case "-unboost": {
           const { l, nome } = ident(p[1]);
           const n = Number(p[3]);
+          const a = ativos[l];
+          a.bufs[p[2]] = Math.max(-6, Math.min(6, (a.bufs[p[2]] ?? 0) + (cmd === "-boost" ? n : -n)));
+          pintar(l);
           await dizer(`${STAT[p[2]] ?? p[2]} de ${quem(l, nome)} ${cmd === "-boost" ? (n > 1 ? "aumentou muito" : "aumentou") : n > 1 ? "diminuiu muito" : "diminuiu"}!`, 800);
           break;
         }
@@ -468,7 +475,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string): Promise
             const m = (l === "jog" ? r.jogador : r.adversario).find((x) => x.ativo);
             if (!m) continue;
             const selv = l === "adv" && tipoBatalha === "selvagem";
-            ativos[l] = { nome: m.nome, nivel: m.nivel, hp: selv ? Math.round((m.hp / m.maxhp) * 100) : m.hp, max: selv ? 100 : m.maxhp, status: m.status, num: m.num };
+            ativos[l] = { nome: m.nome, nivel: m.nivel, hp: selv ? Math.round((m.hp / m.maxhp) * 100) : m.hp, max: selv ? 100 : m.maxhp, status: m.status, num: m.num, bufs: {} };
             trocarSprite(l, m.num);
             pintar(l);
           }
