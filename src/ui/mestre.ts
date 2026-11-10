@@ -37,6 +37,9 @@ export async function importarDados(p: Progresso): Promise<void> {
   await enviar("mapas", mapas, p);
   const { error: ec } = await supabase.rpc("corrigir_posicoes");
   if (ec) throw new Error(`corrigir_posicoes: ${ec.message}`);
+  p("treinadores...");
+  const { error: et } = await supabase.rpc("importar_treinadores", { p_linhas: await json<unknown[]>("data/treinadores.json") });
+  if (et) throw new Error(`treinadores: ${et.message}`);
   for (const t of ["especies", "golpes", "aprende", "eficacia", "naturezas", "itens", "encontros"]) {
     await enviar(t, await json<unknown[]>(`data/${t}.json`), p);
   }

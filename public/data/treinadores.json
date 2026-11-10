@@ -1,0 +1,8 @@
+[
+  {"id":"rota1_tiago","mapa_id":"rota1","x":19,"y":36,"direcao":"esquerda","visao":3,"nome":"Tiago","classe":"Garoto","aparencia":8,"recompensa":90,
+   "falas":{"antes":"Ei! Você tem Pokémon, né? Vamos lutar!","derrota":"Perdi... Meu Rattata treinou tanto! Você é forte."},
+   "equipe":[{"especie":19,"nivel":4}],"arco":1},
+  {"id":"rota1_lia","mapa_id":"rota1","x":14,"y":20,"direcao":"direita","visao":3,"nome":"Lia","classe":"Moça","aparencia":9,"recompensa":110,
+   "falas":{"antes":"Nossos olhares se cruzaram! Isso significa batalha!","derrota":"Ai, ai... Meus Pokémon precisam descansar."},
+   "equipe":[{"especie":16,"nivel":3},{"especie":19,"nivel":3}],"arco":1}
+]

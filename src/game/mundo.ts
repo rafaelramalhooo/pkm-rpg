@@ -24,6 +24,11 @@ interface MapaDados {
   pois: Poi[];
 }
 
+export interface TreinadorMapa {
+  id: string; x: number; y: number; direcao: Direcao; visao: number; nome: string; classe: string; aparencia: number;
+  falas: { antes?: string; derrota?: string }; vencido: boolean;
+}
+
 export interface Lugar { mapa_id: string; nome_mapa: string; x: number; y: number; naGrama: boolean; poi: Poi | null }
 
 export interface Ganchos {
@@ -32,6 +37,10 @@ export interface Ganchos {
   /** O servidor devolveu o estado do jogador (posição validada). */
   aoJogador(j: Jogador): void;
   aviso(texto: string): void;
+  /** Treinadores NPC do mapa (com a marca de quais o jogador já venceu). */
+  treinadores?(mapaId: string): Promise<TreinadorMapa[]>;
+  /** Um treinador viu o jogador. Resolve com true se o jogador o venceu. */
+  aoTreinador?(t: TreinadorMapa): Promise<boolean>;
 }
 
 export interface Controle {
@@ -98,6 +107,9 @@ class CenaMundo extends Phaser.Scene {
   private fila: Promise<void> = Promise.resolve();
   private encerrada = false;
   private timerTrack?: number;
+  private npcs = new Map<string, { d: TreinadorMapa; ficha: Ficha }>();
+  private desafiando = false;
+  private ignorar: string | null = null;
 
   constructor(jogador: Jogador, ganchos: Ganchos) {
     super("mundo");
@@ -156,6 +168,8 @@ class CenaMundo extends Phaser.Scene {
     const cima = this.add.image(0, 0, `${id}-cima`).setOrigin(0, 0).setDepth(1000);
     this.camadas = [baixo, cima];
     this.limparOutros();
+    await this.carregarNpcs(id);
+    if (this.encerrada) return;
 
     if (primeira) {
       this.eu = this.criarFicha(this.jogador.nome, this.jogador.aparencia, this.jogador.x, this.jogador.y, this.jogador.direcao, true);
@@ -232,14 +246,97 @@ class CenaMundo extends Phaser.Scene {
     const x = this.jogador.x;
     const y = this.jogador.y;
     this.ganchos.aoLugar({ mapa_id: this.mapa.id, nome_mapa: this.mapa.nome, x, y, naGrama: this.naGrama(x, y), poi: this.poiEm(x, y) });
+    void this.verificarTreinadores();
+  }
+
+  // ---------- treinadores NPC ----------
+
+  private async carregarNpcs(mapaId: string): Promise<void> {
+    for (const n of this.npcs.values()) this.destruirFicha(n.ficha);
+    this.npcs.clear();
+    let lista: TreinadorMapa[] = [];
+    try {
+      lista = (await this.ganchos.treinadores?.(mapaId)) ?? [];
+    } catch { /* sem treinadores: segue o jogo */ }
+    if (this.encerrada || this.mapa?.id !== mapaId) return;
+    for (const d of lista) {
+      const ficha = this.criarFicha(`${d.classe} ${d.nome}`, d.aparencia, d.x, d.y, d.direcao, false, d.vencido ? "#8b97b8" : "#ffd27a");
+      this.npcs.set(d.id, { d, ficha });
+    }
+  }
+
+  private naLinhaDeVisao(d: TreinadorMapa): boolean {
+    const [dx, dy] = DELTA[d.direcao];
+    for (let k = 1; k <= d.visao; k++) {
+      const x = d.x + dx * k;
+      const y = d.y + dy * k;
+      if (this.solido(x, y)) return false;
+      if (x === this.jogador.x && y === this.jogador.y) return true;
+    }
+    return false;
+  }
+
+  private async verificarTreinadores(): Promise<void> {
+    if (this.desafiando || this.mudandoMapa || this.encerrada || this.npcs.size === 0) return;
+    let visto: { d: TreinadorMapa; ficha: Ficha } | null = null;
+    for (const n of this.npcs.values()) {
+      if (!n.d.vencido && this.naLinhaDeVisao(n.d)) { visto = n; break; }
+    }
+    if (!visto) {
+      this.ignorar = null;
+      return;
+    }
+    if (this.ignorar === visto.d.id) return;
+    await this.desafio(visto);
+  }
+
+  private esperarMs(ms: number): Promise<void> {
+    return new Promise((ok) => this.time.delayedCall(ms, () => ok()));
+  }
+
+  private async desafio(n: { d: TreinadorMapa; ficha: Ficha }): Promise<void> {
+    this.desafiando = true;
+    this.bloqueado = true;
+    this.segurando = null;
+    try {
+      await this.fila; // garante que o servidor já conhece a posição do jogador
+      this.mostrarBalao(n.ficha, "!");
+      await this.esperarMs(650);
+      const [dx, dy] = DELTA[n.d.direcao];
+      const dist = Math.abs(this.jogador.x - n.d.x) + Math.abs(this.jogador.y - n.d.y);
+      for (let k = 1; k < dist; k++) {
+        this.moverFicha(n.ficha, n.d.x + dx * k, n.d.y + dy * k, n.d.direcao, 190);
+        await this.esperarMs(200);
+      }
+      // o jogador olha para o treinador
+      const volta: Record<Direcao, Direcao> = { cima: "baixo", baixo: "cima", esquerda: "direita", direita: "esquerda" };
+      this.eu.dir = volta[n.d.direcao];
+      this.eu.sprite.setFrame(QUADROS[this.eu.dir] + 1);
+      const venceu = (await this.ganchos.aoTreinador?.(n.d)) ?? false;
+      this.bloqueado = true;
+      if (venceu) {
+        n.d.vencido = true;
+        n.ficha.nome.setColor("#8b97b8");
+      }
+      if (this.encerrada) return;
+      for (let k = dist - 1; k >= 0; k--) {
+        this.moverFicha(n.ficha, n.d.x + dx * k, n.d.y + dy * k, volta[n.d.direcao], 190);
+        await this.esperarMs(200);
+      }
+      this.moverFicha(n.ficha, n.d.x, n.d.y, n.d.direcao, 1);
+      if (!venceu) this.ignorar = n.d.id;
+    } finally {
+      this.desafiando = false;
+      this.bloqueado = false;
+    }
   }
 
   // ---------- fichas (personagens) ----------
 
-  private criarFicha(nome: string, aparencia: number, x: number, y: number, dir: Direcao, dono = false): Ficha {
+  private criarFicha(nome: string, aparencia: number, x: number, y: number, dir: Direcao, dono = false, cor?: string): Ficha {
     const sprite = this.add.sprite(px(x), py(y), `p${aparencia}`, QUADROS[dir] + 1).setOrigin(0.5, 0.875);
     const texto = this.add
-      .text(0, 0, nome, { fontFamily: "monospace", fontSize: "6px", color: dono ? "#ffffff" : "#e8f0a0", stroke: "#0b1020", strokeThickness: 2 })
+      .text(0, 0, nome, { fontFamily: "monospace", fontSize: "6px", color: cor ?? (dono ? "#ffffff" : "#e8f0a0"), stroke: "#0b1020", strokeThickness: 2 })
       .setOrigin(0.5, 1)
       .setResolution(4);
     texto.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);

@@ -1,9 +1,9 @@
 import { supabase, type Direcao, type Jogador } from "../supabase";
 import { aoTrocarTela, el, geracaoAtual, mensagem, montar } from "./dom";
-import type { Controle, Lugar, Poi } from "../game/mundo";
+import type { Controle, Lugar, Poi, TreinadorMapa } from "../game/mundo";
 import { abrirBatalha, type ResultadoBatalha } from "./batalha";
 import {
-  barraHp, carregarReferencias, COR_TIPO, especie, golpe, imagemPokemon, meuTime, minhaMochila, NOME_TIPO, nomeItem,
+  barraHp, carregarReferencias, COR_TIPO, especie, golpe, imagemPokemon, infoItem, meuTime, minhaMochila, NOME_TIPO, nomeItem,
   nomePokemon, todasEspecies, type PokemonRow,
 } from "./dados";
 import { importarDados, importarSprites } from "./mestre";
@@ -15,13 +15,19 @@ function botao(texto: string, fn: () => void, classe = "sec"): HTMLButtonElement
 }
 
 /** Painel modal reutilizável. */
-function criarModal(): { raiz: HTMLElement; abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void; aberto: () => boolean } {
+function criarModal(): { raiz: HTMLElement; abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void; aberto: () => boolean; aoFechar: (fn: (() => void) | null) => void } {
+  let ao: (() => void) | null = null;
   const titulo = el("h1", {});
   const corpo = el("div", { class: "modal-corpo" });
   const fechar = () => {
     raiz.hidden = true;
+    const f = ao;
+    ao = null;
+    f?.();
   };
-  const raiz = el("div", { class: "menu", hidden: "" }, el("div", { class: "painel modal" }, titulo, corpo, botao("Fechar", fechar)));
+  const x = el("button", { type: "button", class: "modal-x", "aria-label": "Sair do painel" }, "✕");
+  x.addEventListener("click", fechar);
+  const raiz = el("div", { class: "menu", hidden: "" }, el("div", { class: "painel modal" }, el("div", { class: "modal-topo" }, titulo, x), corpo, botao("Fechar", fechar)));
   raiz.addEventListener("click", (e) => {
     if (e.target === raiz) fechar();
   });
@@ -34,7 +40,28 @@ function criarModal(): { raiz: HTMLElement; abrir: (titulo: string, ...nos: Node
     },
     fechar,
     aberto: () => !raiz.hidden,
+    aoFechar: (fn) => {
+      ao = fn;
+    },
   };
+}
+
+const ICONES: Record<string, string> = {
+  time: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>',
+  mochila: '<path d="M6 9h12l1 11H5z"/><path d="M9 9V7a3 3 0 0 1 6 0v2"/><path d="M9 14h6"/>',
+  pokedex: '<rect x="5" y="3" width="14" height="18" rx="2.5"/><circle cx="12" cy="9" r="2.5"/><path d="M9 16h6"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+};
+/** Ícone vetorial fixo (conteúdo estático do próprio código, nunca texto de usuário). */
+function icone(nome: string): HTMLElement {
+  const s = el("span", { class: "ico", "aria-hidden": "true" });
+  s.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONES[nome]}</svg>`;
+  return s;
+}
+function botaoDock(nome: string, rotulo: string, fn: () => void): HTMLButtonElement {
+  const b = el("button", { type: "button", class: "sec botao-menu dock" }, icone(nome), el("span", { class: "dock-rot" }, rotulo));
+  b.addEventListener("click", fn);
+  return b;
 }
 
 export async function telaJogo(inicial: Jogador): Promise<void> {
@@ -94,13 +121,22 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   // ---------- painéis ----------
   const msgPainel = (): HTMLElement => el("p", { class: "msg", role: "status" });
 
+  function abas(ativa: "time" | "mochila" | "pokedex"): HTMLElement {
+    const mk = (id: "time" | "mochila" | "pokedex", rot: string, fn: () => Promise<void>) => {
+      const b = el("button", { type: "button", class: `aba${id === ativa ? " ativa" : ""}`, "aria-pressed": String(id === ativa) }, icone(id), el("span", {}, rot));
+      b.addEventListener("click", () => void fn());
+      return b;
+    };
+    return el("div", { class: "abas" }, mk("time", "Time", abrirTime), mk("mochila", "Mochila", abrirMochila), mk("pokedex", "Pokédex", abrirPokedex));
+  }
+
   async function abrirTime(): Promise<void> {
     const time = await meuTime(j.id);
     if (time.length === 0) {
-      modal.abrir("Seu time", el("p", { class: "sub" }, "Você ainda não tem Pokémon. Fale com o Professor Carvalho no laboratório, em Pallet Town."));
+      modal.abrir("Seu time", abas("time"), el("p", { class: "sub" }, "Você ainda não tem Pokémon. Fale com o Professor Carvalho no laboratório, em Pallet Town."));
       return;
     }
-    modal.abrir("Seu time", ...time.map(cartaoPokemon));
+    modal.abrir("Seu time", abas("time"), el("div", { class: "grade-time" }, ...time.map(cartaoPokemon)));
   }
 
   function cartaoPokemon(p: PokemonRow): HTMLElement {
@@ -108,8 +144,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const hp = barraHp(p.hp_atual, p.hp_max);
     const golpes = p.golpes.map((s) => {
       const g = golpe(s.id);
-      const c = el("span", { class: "chip-golpe" }, `${g.nome} ${s.pp}/${g.pp}`);
-      c.style.background = COR_TIPO[g.tipo] ?? "#888";
+      const c = el("span", { class: "chip-golpe" }, el("b", {}, g.nome), el("i", {}, `${s.pp}/${g.pp}`));
+      c.style.setProperty("--cor", COR_TIPO[g.tipo] ?? "#888");
       return c;
     });
     const tipos = e.tipos.map((t) => {
@@ -119,41 +155,69 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     });
     const fill = el("div", { class: `hp-fill ${hp.classe}` });
     fill.style.width = `${hp.pct}%`;
-    return el(
+    const base = p.nivel ** 3;
+    const prox = (p.nivel + 1) ** 3;
+    const expFill = el("div", { class: "exp-fill" });
+    expFill.style.width = `${Math.max(0, Math.min(100, ((p.exp - base) / (prox - base)) * 100))}%`;
+    const c = el(
       "div",
-      { class: "cartao-pk" },
-      imagemPokemon("frente", p.especie_id, "mini"),
+      { class: `cartao-pk${p.hp_atual <= 0 ? " caido" : ""}` },
+      el("div", { class: "cartao-img" }, imagemPokemon("frente", p.especie_id, "grande")),
       el(
         "div",
         { class: "cartao-info" },
-        el("div", { class: "cartao-topo" }, el("strong", {}, nomePokemon(p)), el("span", {}, `Lv${p.nivel}`)),
+        el("div", { class: "cartao-topo" }, el("strong", {}, nomePokemon(p)), el("span", { class: "nivel" }, `Lv${p.nivel}`)),
         el("div", { class: "tipos" }, ...tipos),
         el("div", { class: "hp" }, el("span", { class: "hp-rot" }, "HP"), el("div", { class: "hp-trilho" }, fill), el("span", { class: "hp-num" }, `${p.hp_atual}/${p.hp_max}`)),
+        el("div", { class: "exp-trilho" }, expFill),
         el("div", { class: "golpes-lista" }, ...golpes),
       ),
     );
+    c.style.setProperty("--cor", COR_TIPO[e.tipos[0]] ?? "#4f8cff");
+    return c;
   }
+
+  const ICONE_ITEM = (slug: string, cat: string): string =>
+    /ball$/.test(slug) ? "◓" : /potion|restore/.test(slug) ? "🧪" : /revive/.test(slug) ? "✨" : cat.includes("status") || /antidote|heal|awakening/.test(slug) ? "💊" : "🎒";
 
   async function abrirMochila(): Promise<void> {
     const itens = await minhaMochila(j.id);
-    const lista = itens.length
-      ? itens.map((i) => el("div", { class: "linha" }, el("span", {}, nomeItem(i.item)), el("span", {}, `x${i.qtd}`)))
-      : [el("p", { class: "sub" }, "Mochila vazia.")];
-    modal.abrir("Mochila", el("div", { class: "linha" }, el("span", {}, "Dinheiro"), el("strong", {}, `₽ ${j.dinheiro ?? 0}`)), ...lista);
+    const cartoes = itens.map((i) => {
+      const inf = infoItem(i.item);
+      const c = el("div", { class: "item-cartao" }, el("div", { class: `item-ico${/ball$/.test(i.item) ? " bola" : ""}` }, ICONE_ITEM(i.item, inf.categoria)), el("div", { class: "item-txt" }, el("strong", {}, nomeItem(i.item)), el("small", {}, inf.efeito)), el("span", { class: "item-qtd" }, `×${i.qtd}`));
+      return c;
+    });
+    modal.abrir(
+      "Mochila", abas("mochila"),
+      el("div", { class: "dinheiro-painel" }, el("span", {}, "Dinheiro"), el("strong", {}, `₽ ${j.dinheiro ?? 0}`)),
+      cartoes.length ? el("div", { class: "grade-itens" }, ...cartoes) : el("p", { class: "sub" }, "Mochila vazia."),
+    );
   }
 
   async function abrirPokedex(): Promise<void> {
     const { data } = await supabase.from("pokedex").select("especie_id, capturado").eq("jogador", j.id);
     const vistos = new Map<number, boolean>();
     for (const r of (data ?? []) as { especie_id: number; capturado: boolean }[]) vistos.set(r.especie_id, r.capturado);
+    const cap = [...vistos.values()].filter(Boolean).length;
     const celulas = todasEspecies().map((e) => {
       const v = vistos.get(e.id);
-      const c = el("div", { class: `dex ${v === undefined ? "novo" : v ? "cap" : "visto"}` }, `${String(e.id).padStart(3, "0")} ${v === undefined ? "???" : e.nome}`);
-      if (v) c.prepend("● ");
+      const c = el("div", { class: `dex ${v === undefined ? "novo" : v ? "cap" : "visto"}` });
+      c.append(el("span", { class: "dex-n" }, String(e.id).padStart(3, "0")));
+      if (v !== undefined) c.append(imagemPokemon("frente", e.id, `dex-img${v ? "" : " silhueta"}`));
+      else c.append(el("div", { class: "dex-img vazio" }, "?"));
+      c.append(el("span", { class: "dex-nome" }, v === undefined ? "???" : e.nome));
+      if (v) c.append(el("span", { class: "dex-sel", title: "Capturado" }, "●"));
       return c;
     });
-    const cap = [...vistos.values()].filter(Boolean).length;
-    modal.abrir("Pokédex", el("p", { class: "sub" }, `Vistos: ${vistos.size}   Capturados: ${cap}   de 151 (Geração 1)`), el("div", { class: "dex-grade" }, ...celulas));
+    const total = todasEspecies().length || 151;
+    const prog = el("div", { class: "dex-prog" });
+    prog.style.setProperty("--p", `${(cap / total) * 100}%`);
+    modal.abrir(
+      "Pokédex", abas("pokedex"),
+      el("p", { class: "sub" }, `Vistos: ${vistos.size}   Capturados: ${cap}   de ${total} (Geração 1)`),
+      prog,
+      el("div", { class: "dex-grade" }, ...celulas),
+    );
   }
 
   function abrirMenu(): void {
@@ -259,6 +323,36 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     if (estado === "derrota") mostrarAviso("Seus Pokémon precisam descansar: cure-os no Centro Pokémon (Viridian) ou em casa (Pallet).", 6000);
   }
 
+  /** Fala do treinador, desafio no servidor e batalha. Devolve true se o jogador o venceu. */
+  async function aoTreinador(t: TreinadorMapa): Promise<boolean> {
+    if (emBatalha) return false;
+    const aceitou = await new Promise<boolean>((ok) => {
+      const lutar = botao("Aceitar o desafio!", () => { modal.aoFechar(null); modal.fechar(); ok(true); }, "");
+      modal.abrir(`${t.classe} ${t.nome}`, el("p", { class: "fala" }, `"${t.falas.antes ?? "Vamos lutar!"}"`), lutar);
+      modal.aoFechar(() => ok(false));
+      lutar.focus();
+    });
+    if (!aceitou) return false;
+    const { data, error } = await supabase.rpc("desafiar_treinador", { p_treinador: t.id });
+    if (error || !data) {
+      mostrarAviso(error?.message ?? "Não foi possível começar o desafio.", 5000);
+      return false;
+    }
+    await carregarReferencias();
+    await lutar(data as ResultadoBatalha);
+    const { data: v } = await supabase.from("treinadores_vencidos").select("treinador").eq("treinador", t.id).maybeSingle();
+    return !!v;
+  }
+
+  async function listarTreinadores(mapaId: string): Promise<TreinadorMapa[]> {
+    const [{ data: ts }, { data: vs }] = await Promise.all([
+      supabase.from("treinadores").select("id, x, y, direcao, visao, nome, classe, aparencia, falas").eq("mapa_id", mapaId),
+      supabase.from("treinadores_vencidos").select("treinador").eq("jogador", j.id),
+    ]);
+    const venceu = new Set((vs ?? []).map((v: { treinador: string }) => v.treinador));
+    return ((ts ?? []) as Omit<TreinadorMapa, "vencido">[]).map((t) => ({ ...t, vencido: venceu.has(t.id) }));
+  }
+
   async function procurar(): Promise<void> {
     if (emBatalha) return;
     btnProcurar.disabled = true;
@@ -339,10 +433,10 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     { class: "grupo" },
     botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"),
     botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"),
-    botao("Time", () => void abrirTime(), "sec botao-menu"),
-    botao("Mochila", () => void abrirMochila(), "sec botao-menu"),
-    botao("Pokédex", () => void abrirPokedex(), "sec botao-menu"),
-    botao("Menu", abrirMenu, "sec botao-menu"),
+    botaoDock("time", "Time", () => void abrirTime()),
+    botaoDock("mochila", "Mochila", () => void abrirMochila()),
+    botaoDock("pokedex", "Pokédex", () => void abrirPokedex()),
+    botaoDock("menu", "Menu", abrirMenu),
   );
   const topo = el("div", { class: "barra" }, el("div", { class: "grupo" }, el("span", { class: "nome-jogador" }, j.nome), onde), el("div", { class: "grupo" }, dinheiro, pa));
   const rodape = el("div", { class: "barra rodape" }, formChat, botoes);
@@ -370,6 +464,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
         atualizarHud();
       },
       aviso: mostrarAviso,
+      treinadores: listarTreinadores,
+      aoTreinador,
     });
   } catch (e) {
     mostrarAviso(e instanceof Error ? e.message : "Não foi possível abrir o jogo.");

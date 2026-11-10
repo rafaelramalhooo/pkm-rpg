@@ -2,7 +2,7 @@
 import { supabase } from "../supabase";
 
 export interface Especie { id: number; nome: string; tipos: string[] }
-export interface GolpeInfo { id: number; nome: string; tipo: string; categoria: string; poder: number | null; pp: number }
+export interface GolpeInfo { id: number; slug?: string; nome: string; tipo: string; categoria: string; poder: number | null; pp: number }
 export interface GolpeSlot { id: number; pp: number }
 export interface PokemonRow {
   id: string;
@@ -18,28 +18,37 @@ export interface PokemonRow {
 
 const especies = new Map<number, Especie>();
 const golpes = new Map<number, GolpeInfo>();
+const golpesSlug = new Map<string, GolpeInfo>();
 const itens = new Map<string, string>();
+const itensInfo = new Map<string, { efeito: string; categoria: string }>();
 let carregado = false;
 
 export async function carregarReferencias(forcar = false): Promise<boolean> {
   if (carregado && !forcar) return especies.size > 0;
   const [e, g, i] = await Promise.all([
     supabase.from("especies").select("id, nome, tipos").order("id").limit(2000),
-    supabase.from("golpes").select("id, nome, tipo, categoria, poder, pp").limit(2000),
-    supabase.from("itens").select("slug, nome").limit(500),
+    supabase.from("golpes").select("id, slug, nome, tipo, categoria, poder, pp").limit(2000),
+    supabase.from("itens").select("slug, nome, efeito, categoria").limit(500),
   ]);
   especies.clear();
   golpes.clear();
+  golpesSlug.clear();
   itens.clear();
+  itensInfo.clear();
   for (const x of (e.data ?? []) as Especie[]) especies.set(x.id, x);
-  for (const x of (g.data ?? []) as GolpeInfo[]) golpes.set(x.id, x);
-  for (const x of (i.data ?? []) as { slug: string; nome: string }[]) itens.set(x.slug, x.nome);
+  for (const x of (g.data ?? []) as GolpeInfo[]) { golpes.set(x.id, x); if (x.slug) golpesSlug.set(x.slug.replace(/-/g, ""), x); }
+  for (const x of (i.data ?? []) as { slug: string; nome: string; efeito: string | null; categoria: string | null }[]) {
+    itens.set(x.slug, x.nome);
+    itensInfo.set(x.slug, { efeito: x.efeito ?? "", categoria: x.categoria ?? "" });
+  }
   carregado = true;
   return especies.size > 0;
 }
 
 export const especie = (id: number): Especie => especies.get(id) ?? { id, nome: `#${id}`, tipos: [] };
 export const golpe = (id: number): GolpeInfo => golpes.get(id) ?? { id, nome: `Golpe ${id}`, tipo: "normal", categoria: "physical", poder: null, pp: 10 };
+export const infoItem = (slug: string): { efeito: string; categoria: string } => itensInfo.get(slug) ?? { efeito: "", categoria: "" };
+export const golpePorSlug = (slug: string): GolpeInfo | undefined => golpesSlug.get(slug);
 export const nomeItem = (slug: string): string => (itens.get(slug) ?? slug).replace(/^Poke /, "Poké ");
 export const nomePokemon = (p: PokemonRow): string => p.apelido ?? especie(p.especie_id).nome;
 export const totalEspecies = (): number => especies.size;
