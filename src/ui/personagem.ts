@@ -4,6 +4,10 @@ import { el, montar, mensagem } from "./dom";
 const BASE = import.meta.env.BASE_URL as string;
 const TOTAL_APARENCIAS = 12;
 
+function marcaPainel(): HTMLElement {
+  return el("div", { class: "marca marca-grande" }, el("span", { class: "marca-logo", "aria-hidden": "true" }, el("i", {})), el("span", { class: "marca-nome" }, "PKM RPG"));
+}
+
 export function telaPersonagem(aoCriar: (j: Jogador) => void): void {
   let escolhida = 0;
   const nome = el("input", { type: "text", id: "nome", maxlength: "12", autocomplete: "off", required: "" });
@@ -50,7 +54,8 @@ export function telaPersonagem(aoCriar: (j: Jogador) => void): void {
   montar([
     el(
       "div",
-      { class: "painel" },
+      { class: "painel painel-hub" },
+      marcaPainel(),
       el("h1", {}, "Novo treinador"),
       el("p", { class: "sub" }, "Você começa em Pallet Town."),
       form,

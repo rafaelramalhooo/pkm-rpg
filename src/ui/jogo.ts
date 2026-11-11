@@ -324,7 +324,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     modal.fechar();
     controle?.bloquear(true);
     await carregarReferencias();
-    const estado = await abrirBatalha(res, j.id, fundoDoMapa(j.mapa_id));
+    const estado = await abrirBatalha(res, j.id, { fundo: fundoDoMapa(j.mapa_id), nome: j.nome, aparencia: j.aparencia });
     emBatalha = false;
     controle?.bloquear(false);
     await recarregarJogador();

@@ -377,3 +377,145 @@ h1 { color: #fff; }
 .sd-extras button { padding: 8px; }
 .sd-dir { display: none; }
 @media (max-width: 520px) { .sd-time { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sd-avatar { transform: scale(.65); } }
+
+/* ===================================================================
+   HUB v2: paleta navy / branco azulado / laranja, barra superior,
+   cartão de treinador, atalhos hexagonais, vidro fosco
+   =================================================================== */
+:root {
+  --navy: #0e1b3d; --navy2: #14284f; --navy3: #1c3464; --gelo: #eaf1ff; --laranja: #ff8a1f; --laranja2: #f26a00;
+  --vidro: rgba(14, 27, 61, .78); --borda: #2a4888;
+}
+body {
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='98' viewBox='0 0 56 98'><path d='M28 2 54 17v30L28 62 2 47V17zM0 66l28-16 28 16v30L28 112 0 96z' fill='none' stroke='%23ffffff' stroke-opacity='.35' stroke-width='1.5'/></svg>"),
+    radial-gradient(900px 260px at 18% 8%, #ffffffcc, transparent 70%),
+    radial-gradient(700px 220px at 82% 18%, #ffffffaa, transparent 70%),
+    linear-gradient(180deg, #7fb4f2 0%, #b7d6fa 55%, #e4efff 100%);
+  background-attachment: fixed; color: var(--gelo);
+}
+body.modo-jogo { padding-top: 0; }
+p.sub, .dica { color: #b9cdf3; }
+.dica { color: #3a5588; }
+.amb { color: #284479; }
+.jogo { gap: 8px; width: 100%; }
+
+/* painéis de login / personagem */
+.painel { background: var(--navy); border: 1px solid var(--borda); border-radius: 20px; box-shadow: 0 24px 60px #0a1a4a66; }
+.painel-hub { padding: 26px 24px; }
+.painel-hub h1 { text-align: center; font-size: 1.2rem; margin: 10px 0 4px; }
+.painel-hub p.sub { text-align: center; }
+.painel-hub button[type=submit] { width: 100%; margin-top: 18px; padding: 12px; font-size: 1rem; }
+label { color: #cfe0ff; }
+input[type=text], input[type=email], input[type=password] { background: #0a1530; border: 1px solid #2f4d91; color: #fff; border-radius: 12px; }
+input:focus { border-color: var(--laranja); box-shadow: 0 0 0 3px #ff8a1f33; }
+.marca { display: flex; align-items: center; gap: 10px; }
+.marca-grande { justify-content: center; }
+.marca-logo { position: relative; width: 34px; height: 34px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: linear-gradient(135deg, var(--laranja), var(--laranja2)); display: grid; place-items: center; flex: none; }
+.marca-logo i { width: 16px; height: 16px; border-radius: 50%; background: var(--navy); border: 3px solid #fff; }
+.marca-nome { font-weight: 800; letter-spacing: .08em; color: #fff; }
+.marca-grande .marca-logo { width: 48px; height: 48px; } .marca-grande .marca-logo i { width: 22px; height: 22px; }
+.marca-grande .marca-nome { font-size: 1.5rem; }
+
+/* botões: primário laranja, secundário cinza */
+button { background: linear-gradient(180deg, var(--laranja), var(--laranja2)); border: 0; color: #fff; border-radius: 12px; box-shadow: 0 3px 0 #a84600; }
+button:hover:not(:disabled) { background: linear-gradient(180deg, #ffa04a, var(--laranja)); filter: none; }
+button:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #a84600; }
+button.sec { background: #3a4660; color: #e8eefc; box-shadow: 0 3px 0 #232c40; border: 0; }
+button.sec:hover:not(:disabled) { background: #4a5878; color: #fff; }
+button.perigo { background: #c0304a; box-shadow: 0 3px 0 #7d1a2d; border: 0; }
+.aparencias button.aparencia { background-color: #0a1530; border: 1px solid #2f4d91; box-shadow: none; border-radius: 14px; }
+.aparencias button.aparencia[aria-pressed=true] { outline: 3px solid var(--laranja); }
+.aparencias button.aparencia:hover:not(:disabled) { background-color: #14284f; }
+
+/* barra superior */
+.nav { position: sticky; top: 0; z-index: 20; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px max(16px, calc((100vw - 960px) / 2)); background: var(--navy); border-bottom: 3px solid var(--laranja); box-shadow: 0 6px 20px #0a1a4a55; }
+.nav .marca-logo { width: 30px; height: 30px; } .nav .marca-logo i { width: 14px; height: 14px; }
+.nav-grupos { display: flex; align-items: center; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.nav-menu { position: relative; }
+.nav button.nav-gatilho { margin: 0; padding: 8px 12px; background: transparent; box-shadow: none; color: #d6e3ff; font-size: .85rem; border-radius: 10px; white-space: nowrap; }
+.nav button.nav-gatilho:hover, .nav-menu.aberto button.nav-gatilho { background: #1c3464; color: #fff; transform: none; }
+.nav-seta { margin-left: 4px; font-size: .7rem; opacity: .7; }
+.nav-lista { display: none; position: fixed; min-width: 190px; padding: 6px; background: var(--navy); border: 1px solid var(--borda); border-radius: 14px; box-shadow: 0 16px 40px #0009; z-index: 40; flex-direction: column; gap: 2px; }
+.nav-menu.aberto .nav-lista { display: flex; }
+.nav button.nav-item { margin: 0; text-align: left; padding: 9px 12px; background: transparent; box-shadow: none; color: #e6eeff; font-weight: 500; border-radius: 10px; font-size: .85rem; }
+.nav button.nav-item:hover { background: var(--laranja); color: #fff; transform: none; }
+@media (max-width: 700px) { .marca-nome { display: none; } .nav { padding: 6px 8px; } .nav button.nav-gatilho { padding: 8px 8px; font-size: .78rem; } }
+
+/* palco do mapa */
+.cartucho { width: min(calc(100vw - 24px), 960px); gap: 8px; }
+.tela-jogo { height: calc(100dvh - 150px); border: 3px solid var(--navy); border-radius: 18px; box-shadow: 0 12px 36px #0a1a4a66; }
+.barra.rodape { background: var(--vidro); border: 1px solid #ffffff33; border-radius: 14px; }
+.chat input { background: #0a1530; border-radius: 999px; }
+.botao-zoom { min-width: 34px; }
+
+/* cartão de treinador */
+.cartao-treinador { position: absolute; left: 10px; top: 10px; z-index: 4; display: flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; background: var(--vidro); backdrop-filter: blur(10px); border: 1px solid #ffffff44; border-radius: 999px; line-height: 1.2; box-shadow: 0 8px 24px #0007; max-width: calc(100% - 20px); }
+.tc-emblema { flex: none; width: 56px; height: 56px; border-radius: 50%; border: 3px solid var(--laranja); background: #dbe8ff no-repeat; background-size: 168px auto; background-position: 0 -34px; image-rendering: pixelated; box-shadow: 0 0 0 3px #0e1b3d; }
+.tc-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tc-nome { font-size: .95rem; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cartao-treinador .onde { background: none; padding: 0; font-size: .7rem; color: #b9cdf3; }
+.tc-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.cartao-treinador .dinheiro, .cartao-treinador .pa { font-size: .72rem; padding: 1px 9px; border-radius: 999px; border: 0; box-shadow: none; }
+.cartao-treinador .dinheiro { background: #ffffff22; color: #ffe08a; }
+.cartao-treinador .pa { background: var(--laranja); color: #fff; }
+.cartao-treinador .pa.zerado { background: #c0304a; color: #fff; }
+@media (max-width: 700px) { .tc-emblema { width: 44px; height: 44px; background-size: 132px auto; background-position: 0 -27px; } }
+
+/* atalhos hexagonais */
+.hex-dock { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 4; display: flex; flex-direction: column; gap: 0; line-height: 1; }
+.hex-dock button.hex { position: relative; margin: 0; width: 58px; height: 64px; margin: -6px 0 0; padding: 0; border-radius: 0; border: 0; box-shadow: none; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: linear-gradient(160deg, #2a4a90, var(--navy)); color: #fff; display: grid; place-items: center; transition: background .15s, transform .12s; }
+.hex-dock button.hex:hover:not(:disabled) { background: linear-gradient(160deg, var(--laranja), var(--laranja2)); transform: scale(1.08); }
+.hex-dock .hex .ico svg { width: 24px; height: 24px; }
+.hex-rot { position: absolute; bottom: 7px; left: 0; right: 0; font-size: .5rem; font-weight: 700; letter-spacing: .02em; text-align: center; }
+.hex-dock .hex .ico { transform: translateY(-5px); }
+.acao { background: linear-gradient(180deg, var(--laranja), var(--laranja2)); color: #fff; border: 0; box-shadow: 0 3px 0 #a84600, 0 8px 18px #0007; }
+.aviso { background: var(--vidro); border: 1px solid #ffffff44; }
+.dpad button { background: var(--vidro); border: 1px solid #ffffff44; box-shadow: none; border-radius: 50%; }
+
+/* janelas (vidro fosco sobre o hub) */
+.menu { background: rgba(10, 24, 66, .55); backdrop-filter: blur(10px); }
+.modal { background: linear-gradient(180deg, #0f2150f5, #0a1634f5); border: 1px solid var(--borda); border-radius: 20px; width: min(94vw, 600px); }
+.modal-topo { border-bottom: 1px solid #ffffff14; }
+.modal button.modal-x { background: #3a4660; box-shadow: none; }
+.modal > button { background: #3a4660; box-shadow: 0 3px 0 #232c40; }
+.abas { background: #0a1530; border: 1px solid #2a4888; }
+.modal .aba { background: transparent; box-shadow: none; color: #b9cdf3; }
+.modal .aba:hover:not(.ativa) { background: #1c3464; color: #fff; }
+.modal .aba.ativa { background: linear-gradient(180deg, var(--laranja), var(--laranja2)); box-shadow: 0 3px 0 #a84600; color: #fff; }
+.dinheiro-painel { background: linear-gradient(135deg, #1c3464, #0e1b3d); border: 1px solid var(--borda); }
+
+/* time: 6 cartões coloridos por tipo, marca d'água de Poké Bola */
+.grade-time { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.cartao-pk { border: 0; border-radius: 18px; background: linear-gradient(150deg, color-mix(in srgb, var(--cor, #4f8cff) 80%, #fff 5%), color-mix(in srgb, var(--cor, #4f8cff) 45%, #0a1634)); box-shadow: 0 6px 16px #0006; color: #fff; }
+.cartao-pk::after { content: ""; position: absolute; right: -26px; bottom: -26px; width: 120px; height: 120px; border-radius: 50%; opacity: .22; pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, #fff 0 14%, #000 14% 22%, transparent 22%), linear-gradient(#fff 0 46%, #000 46% 54%, transparent 54%); border: 6px solid #fff; background-blend-mode: normal; }
+.cartao-pk > * { position: relative; z-index: 1; }
+.cartao-topo .nivel { background: #0006; color: #fff; }
+.cartao-pk .chip-tipo { background: #0005 !important; border: 1px solid #ffffff55; }
+.cartao-pk .chip-golpe { background: #0005; border: 1px solid #ffffff33; }
+.hp-trilho { background: #0007; }
+.hp-rot { color: #fff; } .hp-num { color: #fff; }
+.exp-trilho { background: #0005; } .exp-fill { background: #fff; }
+.cartao-vazio { min-height: 120px; border-radius: 18px; background: #0a1530; border: 2px dashed #2a4888; display: grid; place-items: center; color: #3d5fa8; font-size: 2.2rem; font-weight: 300; }
+
+/* mochila e loja: cartões de item */
+.item-cartao { background: #ffffff10; border: 1px solid #ffffff1f; border-radius: 16px; }
+.item-cartao:hover { border-color: var(--laranja); }
+.item-ico { background: #ffffff18; }
+.item-qtd { color: var(--laranja); font-size: 1.05rem; }
+.dex { background: #ffffff0e; border: 1px solid #ffffff1a; }
+.dex.cap { background: linear-gradient(180deg, #2a4a90, #14284f); border-color: var(--laranja); }
+.dex-prog::after { background: linear-gradient(90deg, var(--laranja), #ffd27a); }
+.fala { border-left-color: var(--laranja); }
+body.modo-jogo { padding-left: 0; padding-right: 0; }
+.nav-grupos { flex: 1; justify-content: flex-end; }
+
+/* a batalha mantém o visual próprio (azul), independente dos botões do hub */
+.batalha button { background: linear-gradient(135deg, var(--acc), var(--acc2)); border: 1px solid var(--gb2); border-radius: 10px; box-shadow: none; }
+.batalha button:hover:not(:disabled) { background: linear-gradient(135deg, var(--acc), var(--acc2)); filter: brightness(1.15); }
+.batalha button:active:not(:disabled) { transform: scale(.97); box-shadow: none; }
+.batalha button.sec { background: #131c33; color: var(--gb3); }
+.batalha button.sec:hover:not(:disabled) { background: #1d2a4d; filter: none; }
+.modal { width: min(94vw, 660px); }
+.cartao-vazio { min-height: 0; height: 100%; min-height: 96px; }

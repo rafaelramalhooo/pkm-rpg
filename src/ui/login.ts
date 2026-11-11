@@ -1,6 +1,10 @@
 import { supabase } from "../supabase";
 import { el, montar, mensagem } from "./dom";
 
+function marcaPainel(): HTMLElement {
+  return el("div", { class: "marca marca-grande" }, el("span", { class: "marca-logo", "aria-hidden": "true" }, el("i", {})), el("span", { class: "marca-nome" }, "PKM RPG"));
+}
+
 export function telaLogin(): void {
   const email = el("input", { type: "email", id: "email", autocomplete: "username", required: "" });
   const senha = el("input", { type: "password", id: "senha", autocomplete: "current-password", required: "" });
@@ -36,8 +40,9 @@ export function telaLogin(): void {
   montar([
     el(
       "div",
-      { class: "painel" },
-      el("h1", {}, "pkm-rpg"),
+      { class: "painel painel-hub" },
+      marcaPainel(),
+      el("h1", {}, "Entrar na aventura"),
       el("p", { class: "sub" }, "Acesso só por convite do Mestre."),
       form,
     ),
