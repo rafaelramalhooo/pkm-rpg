@@ -51,6 +51,8 @@ const ICONES: Record<string, string> = {
   mochila: '<path d="M6 9h12l1 11H5z"/><path d="M9 9V7a3 3 0 0 1 6 0v2"/><path d="M9 14h6"/>',
   pokedex: '<rect x="5" y="3" width="14" height="18" rx="2.5"/><circle cx="12" cy="9" r="2.5"/><path d="M9 16h6"/>',
   menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  mapa: '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
+  conta: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
 };
 /** Ícone vetorial fixo (conteúdo estático do próprio código, nunca texto de usuário). */
 function icone(nome: string): HTMLElement {
@@ -58,10 +60,51 @@ function icone(nome: string): HTMLElement {
   s.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONES[nome]}</svg>`;
   return s;
 }
-function botaoDock(nome: string, rotulo: string, fn: () => void): HTMLButtonElement {
-  const b = el("button", { type: "button", class: "sec botao-menu dock" }, icone(nome), el("span", { class: "dock-rot" }, rotulo));
-  b.addEventListener("click", fn);
-  return b;
+type ItemMenu = { rotulo: string; fn: () => void; oculto?: boolean };
+
+/** Barra superior com menus suspensos (clique para abrir; fecha ao clicar fora ou escolher). */
+function barraNavegacao(grupos: { rotulo: string; itens: () => ItemMenu[] }[], marca: HTMLElement): { raiz: HTMLElement; fecharTudo: () => void } {
+  const abertos: HTMLElement[] = [];
+  const fecharTudo = () => {
+    for (const g of abertos) {
+      g.classList.remove("aberto");
+      g.querySelector("button")?.setAttribute("aria-expanded", "false");
+    }
+  };
+  const lista = grupos.map((g) => {
+    const caixa = el("div", { class: "nav-menu" });
+    const gatilho = el("button", { type: "button", class: "nav-gatilho", "aria-haspopup": "true", "aria-expanded": "false" }, g.rotulo, el("span", { class: "nav-seta", "aria-hidden": "true" }, "▾"));
+    const painel = el("div", { class: "nav-lista", role: "menu" });
+    gatilho.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const abrir = !caixa.classList.contains("aberto");
+      fecharTudo();
+      if (!abrir) return;
+      painel.replaceChildren(
+        ...g.itens().filter((i) => !i.oculto).map((i) => {
+          const b = el("button", { type: "button", class: "nav-item", role: "menuitem" }, i.rotulo);
+          b.addEventListener("click", () => {
+            fecharTudo();
+            i.fn();
+          });
+          return b;
+        }),
+      );
+      caixa.classList.add("aberto");
+      gatilho.setAttribute("aria-expanded", "true");
+      const r = gatilho.getBoundingClientRect();
+      painel.style.top = `${r.bottom + 6}px`;
+      painel.style.left = `${Math.max(8, Math.min(r.left, window.innerWidth - 208))}px`;
+    });
+    caixa.append(gatilho, painel);
+    abertos.push(caixa);
+    return caixa;
+  });
+  document.addEventListener("click", fecharTudo);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") fecharTudo();
+  });
+  return { raiz: el("nav", { class: "nav", "aria-label": "Menu principal" }, marca, el("div", { class: "nav-grupos" }, ...lista)), fecharTudo };
 }
 
 export async function telaJogo(inicial: Jogador): Promise<void> {
@@ -88,11 +131,16 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   const pa = el("span", { class: "pa" });
   const dinheiro = el("span", { class: "dinheiro" });
   const onde = el("span", { class: "onde" });
+  const nomeTreinador = el("strong", { class: "tc-nome" });
+  const emblema = el("span", { class: "tc-emblema", "aria-hidden": "true" });
+  const BASE = import.meta.env.BASE_URL as string;
   const atualizarHud = () => {
     pa.textContent = `PA ${j.pa}/${paMax}`;
     pa.classList.toggle("zerado", j.pa === 0);
     dinheiro.textContent = `₽ ${j.dinheiro ?? 0}`;
     onde.textContent = lugar ? lugar.nome_mapa : "";
+    nomeTreinador.textContent = j.nome;
+    emblema.style.backgroundImage = `url(${BASE}assets/personagens/p${j.aparencia ?? 0}.png)`;
   };
   atualizarHud();
 
@@ -116,7 +164,14 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     return b;
   };
   dpad.append(dir("cima", "▲"), dir("esquerda", "◀"), dir("direita", "▶"), dir("baixo", "▼"));
-  tela.append(aviso, acoes, dpad);
+  const cartaoTreinador = el("div", { class: "cartao-treinador" }, emblema, el("div", { class: "tc-info" }, nomeTreinador, onde, el("div", { class: "tc-chips" }, dinheiro, pa)));
+  const hexDock = el("div", { class: "hex-dock", "aria-label": "Atalhos" });
+  const hex = (nome: string, rotulo: string, fn: () => void) => {
+    const b = el("button", { type: "button", class: "hex", "aria-label": rotulo, title: rotulo }, icone(nome), el("span", { class: "hex-rot" }, rotulo));
+    b.addEventListener("click", fn);
+    return b;
+  };
+  tela.append(aviso, cartaoTreinador, hexDock, acoes, dpad);
 
   // ---------- painéis ----------
   const msgPainel = (): HTMLElement => el("p", { class: "msg", role: "status" });
@@ -136,7 +191,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       modal.abrir("Seu time", abas("time"), el("p", { class: "sub" }, "Você ainda não tem Pokémon. Fale com o Professor Carvalho no laboratório, em Pallet Town."));
       return;
     }
-    modal.abrir("Seu time", abas("time"), el("div", { class: "grade-time" }, ...time.map(cartaoPokemon)));
+    const vazios = Array.from({ length: Math.max(0, 6 - time.length) }, () => el("div", { class: "cartao-vazio", "aria-label": "Espaço livre" }, el("span", {}, "+")));
+    modal.abrir("Seu time", abas("time"), el("div", { class: "grade-time" }, ...time.map(cartaoPokemon), ...vazios));
   }
 
   function cartaoPokemon(p: PokemonRow): HTMLElement {
@@ -272,6 +328,22 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     });
     nos.push(form, botao("Sair", () => void supabase.auth.signOut(), ""));
     modal.abrir(j.nome, ...nos);
+  }
+
+  function abrirInfoLugar(): void {
+    if (!lugar) return void mostrarAviso("Ainda carregando o mapa...");
+    const nos: Node[] = [el("p", { class: "sub" }, lugar.poi ? lugar.poi.descricao : `Você está em ${lugar.nome_mapa}.`)];
+    if (lugar.poi) nos.push(botao("Interagir", () => void abrirPoi(lugar!.poi!), ""));
+    modal.abrir(lugar.nome_mapa, ...nos);
+  }
+
+  function abrirAjuda(): void {
+    modal.abrir(
+      "Como jogar",
+      el("p", { class: "sub" }, "Setas ou WASD para andar (no celular, use os botões na tela). E, Espaço ou Enter interagem."),
+      el("p", { class: "sub" }, "Entre na grama alta e procure Pokémon: cada busca custa 1 Ponto de Aventura (PA). O Mestre repõe os PA."),
+      el("p", { class: "sub" }, "Fale com o Professor Carvalho em Pallet Town para receber seu primeiro Pokémon. Treinadores avistados desafiam você ao cruzar o olhar."),
+    );
   }
 
   async function abrirReset(): Promise<void> {
@@ -436,21 +508,39 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     chat.value = "";
     chat.blur();
   });
-  const botoes = el(
-    "div",
-    { class: "grupo" },
-    botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"),
-    botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"),
-    botaoDock("time", "Time", () => void abrirTime()),
-    botaoDock("mochila", "Mochila", () => void abrirMochila()),
-    botaoDock("pokedex", "Pokédex", () => void abrirPokedex()),
-    botaoDock("menu", "Menu", abrirMenu),
+  const botoes = el("div", { class: "grupo" }, botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"), botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"));
+  hexDock.append(
+    hex("time", "Time", () => void abrirTime()),
+    hex("mochila", "Mochila", () => void abrirMochila()),
+    hex("pokedex", "Pokédex", () => void abrirPokedex()),
+    hex("conta", "Conta", abrirMenu),
   );
-  const topo = el("div", { class: "barra" }, el("div", { class: "grupo" }, el("span", { class: "nome-jogador" }, j.nome), onde), el("div", { class: "grupo" }, dinheiro, pa));
+
+  const fechaPaineis = () => modal.fechar();
+  const marca = el("div", { class: "marca" }, el("span", { class: "marca-logo", "aria-hidden": "true" }, el("i", {})), el("span", { class: "marca-nome" }, "PKM RPG"));
+  const { raiz: nav } = barraNavegacao(
+    [
+      { rotulo: "Início", itens: () => [{ rotulo: "Voltar ao mapa", fn: fechaPaineis }, { rotulo: "Onde estou", fn: () => abrirInfoLugar() }] },
+      {
+        rotulo: "Explorar",
+        itens: () => [
+          { rotulo: "Procurar Pokémon (1 PA)", fn: () => void procurar(), oculto: !lugar?.naGrama },
+          { rotulo: "Interagir", fn: () => { if (lugar?.poi) void abrirPoi(lugar.poi); }, oculto: !lugar?.poi },
+          { rotulo: "Aproximar o mapa", fn: () => controle?.zoom(1) },
+          { rotulo: "Afastar o mapa", fn: () => controle?.zoom(-1) },
+        ],
+      },
+      { rotulo: "Minhas coisas", itens: () => [{ rotulo: "Time", fn: () => void abrirTime() }, { rotulo: "Mochila", fn: () => void abrirMochila() }, { rotulo: "Pokédex", fn: () => void abrirPokedex() }] },
+      { rotulo: "Cidade", itens: () => [{ rotulo: "Lugar atual", fn: () => abrirInfoLugar() }] },
+      { rotulo: "Informações", itens: () => [{ rotulo: "Como jogar", fn: () => abrirAjuda() }] },
+      { rotulo: "Minha conta", itens: () => [{ rotulo: "Meu perfil e senha", fn: abrirMenu }, { rotulo: "Ferramentas do Mestre", fn: abrirMenu, oculto: j.papel !== "mestre" }, { rotulo: "Sair", fn: () => void supabase.auth.signOut() }] },
+    ],
+    marca,
+  );
   const rodape = el("div", { class: "barra rodape" }, formChat, botoes);
   const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage · Ctrl + / Ctrl − ajustam o zoom · entre na grama alta e procure Pokémon");
 
-  const minha = montar([el("div", { class: "jogo" }, el("div", { class: "cartucho" }, topo, tela, rodape), dica, modal.raiz)], true);
+  const minha = montar([el("div", { class: "jogo" }, nav, el("div", { class: "cartucho" }, tela, rodape), dica, modal.raiz)], true);
 
   const { iniciarMundo } = await import("../game/mundo");
   if (minha !== geracaoAtual()) return;
