@@ -62,7 +62,9 @@ function caixa(classe: string): Caixa {
 }
 
 /** Abre a batalha. Resolve quando o jogador fecha (com o estado final). */
-export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, fundoCena = "campo"): Promise<EstadoFinal> {
+export interface OpcoesBatalha { fundo?: string; nome?: string; aparencia?: number }
+export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: OpcoesBatalha = {}): Promise<EstadoFinal> {
+  const fundoCena = opcoes.fundo ?? "campo";
   return new Promise((resolver) => {
     let ocupado = true;
     let ultima: Resposta | null = null;
@@ -71,16 +73,26 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, fundoCen
     let nomeTreinador = "";
 
     const fundo = el("div", { class: "sd-fundo" });
-    fundo.style.backgroundImage = `url(${import.meta.env.BASE_URL}assets/batalha/${fundoCena}.png)`;
+    fundo.style.backgroundImage = `url(${import.meta.env.BASE_URL}assets/batalha/${fundoCena}.jpg)`;
     const campoAdv = el("div", { class: "sd-campo adv" });
     const campoJog = el("div", { class: "sd-campo jog" });
     const cxAdv = caixa("adv");
     const cxJog = caixa("jog");
-    const cena = el("div", { class: "sd-cena" }, fundo, el("div", { class: "sd-chao adv" }), el("div", { class: "sd-chao jog" }), campoAdv, campoJog, cxAdv.raiz, cxJog.raiz);
     const msg = el("div", { class: "sd-msg", role: "status", "aria-live": "polite" });
+    const turnoEl = el("div", { class: "sd-selo" }, "Turno 1");
+    const palco = el("div", { class: "sd-palco" }, fundo, campoAdv, campoJog, cxAdv.raiz, cxJog.raiz, turnoEl, msg);
+    // faixas laterais, como no Showdown: nome do treinador, avatar e as bolas do time
+    const avatar = el("div", { class: "sd-avatar" });
+    if (opcoes.aparencia !== undefined) avatar.style.backgroundImage = `url(${import.meta.env.BASE_URL}assets/personagens/p${opcoes.aparencia}.png)`;
+    const bolasJog = el("div", { class: "sd-bolas" });
+    const nomeAdvEl = el("div", { class: "sd-tnome" }, "Selvagem");
+    const bolasAdv = el("div", { class: "sd-bolas" });
+    const ladoJog = el("div", { class: "sd-lado jog" }, el("div", { class: "sd-tnome" }, opcoes.nome ?? "Você"), avatar, bolasJog);
+    const ladoAdv = el("div", { class: "sd-lado adv" }, nomeAdvEl, bolasAdv);
+    const cena = el("div", { class: "sd-cena" }, ladoJog, palco, ladoAdv);
     const controles = el("div", { class: "sd-controles" });
-    const log = el("div", { class: "sd-log" }, el("div", { class: "sd-log-tit" }, "Registro da batalha"));
-    const raiz = el("div", { class: "batalha sd" }, el("div", { class: "sd-moldura" }, el("div", { class: "sd-esq" }, cena, msg, controles), el("div", { class: "sd-dir" }, log)));
+    const log = el("div", { class: "sd-log" });
+    const raiz = el("div", { class: "batalha sd" }, el("div", { class: "sd-moldura" }, cena, controles));
     document.body.append(raiz);
     // sprites em tamanho natural (como no Showdown), reduzidos só quando o palco encolhe
     cena.addEventListener("load", (ev) => {
@@ -88,7 +100,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, fundoCen
       if (t instanceof HTMLImageElement && t.closest(".sd-campo")) t.style.setProperty("--nw", String(t.naturalWidth));
     }, true);
     msg.textContent = "Carregando a batalha...";
-    new ResizeObserver(() => cena.style.setProperty("--k", String(Math.min(1, cena.clientWidth / 640)))).observe(cena);
+    new ResizeObserver(() => cena.style.setProperty("--k", String(Math.min(1, palco.clientWidth / 438)))).observe(palco);
 
     let imgAdv: HTMLElement | null = null;
     let imgJog: HTMLElement | null = null;
@@ -126,9 +138,10 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, fundoCen
     }
 
     function dizer(texto: string, ms = 850, classe = ""): Promise<void> {
-      msg.textContent = texto;
-      log.append(el("div", { class: `sd-linha ${classe}` }, texto));
-      log.scrollTop = log.scrollHeight;
+      // caixa de texto sobre o palco: mostra as últimas linhas, a mais antiga vai esmaecendo
+      if (!msg.firstElementChild || msg.firstChild?.nodeType === 3) msg.textContent = "";
+      msg.append(el("div", { class: `sd-linha ${classe}` }, texto));
+      while (msg.children.length > 3) msg.firstElementChild?.remove();
       return esperar(ms);
     }
     const nomeAdv = (n: string) => (tipoBatalha === "selvagem" ? `${n} selvagem` : `${n} inimigo`);
@@ -203,6 +216,15 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, fundoCen
       }
       imgAdv?.animate([{ filter: "brightness(6)", transform: "scale(.2)", opacity: 0 }, { filter: "brightness(1)", transform: "scale(1)", opacity: 1 }], { duration: 500, fill: "forwards" });
       await esperar(500);
+    }
+
+    function laterais(r: Resposta): void {
+      turnoEl.textContent = `Turno ${r.batalha.turno}`;
+      const bola = (m: MembroSim | null) => el("i", { class: `mini-bola${m ? (m.hp > 0 ? "" : " caida") : " vazia"}` });
+      bolasJog.replaceChildren(...Array.from({ length: 6 }, (_, i) => bola(r.jogador[i] ?? null)));
+      const n = Math.max(1, r.adversario.length);
+      bolasAdv.replaceChildren(...Array.from({ length: tipoBatalha === "treinador" ? 6 : n }, (_, i) => bola(r.adversario[i] ?? null)));
+      nomeAdvEl.textContent = tipoBatalha === "treinador" ? (nomeTreinador || "Treinador") : "Selvagem";
     }
 
     // ---------- eventos do servidor (fora do protocolo do Showdown) ----------
@@ -432,6 +454,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, fundoCen
     async function tocarResposta(r: Resposta): Promise<void> {
       tipoBatalha = r.batalha.tipo;
       if (r.treinador) nomeTreinador = r.treinador;
+      laterais(r);
       for (const e of r.antes) await tocarEvento(e);
       for (const l of r.linhas) await linha(r, l);
       for (const e of r.depois) await tocarEvento(e);
@@ -482,6 +505,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, fundoCen
           esperar(2500),
         ]);
         if (r.treinador) nomeTreinador = r.treinador;
+        laterais(r);
         if (r.linhas.length === 0) {
           // batalha retomada: desenha direto o estado atual
           for (const l of ["jog", "adv"] as const) {
