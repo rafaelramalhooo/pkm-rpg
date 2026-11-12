@@ -572,3 +572,33 @@ body.modo-jogo { padding-left: 0; padding-right: 0; }
 .oferta-btns button { line-height: 1.2; white-space: nowrap; }
 
 .logo-rafar { display: block; width: 100%; border-radius: 14px; margin-bottom: 10px; box-shadow: 0 6px 18px #0a1a4a88; }
+
+/* ===== Painel do treinador retangular (paisagem) ===== */
+.modal:has(.dash-wide), .modal:has(.mm-caixa) { width: min(96vw, 940px); max-width: 96vw; }
+.dash-wide { display: grid; grid-template-columns: minmax(250px, 340px) 1fr; gap: 18px; align-items: start; }
+.dash-esq, .dash-dir { min-width: 0; }
+.dash-wide .dash-grade { grid-template-columns: repeat(2, 1fr); }
+.dash-wide .dash-time { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.dash-wide .dash-pk { margin-bottom: 0; }
+@media (max-width: 640px) { .dash-wide { grid-template-columns: 1fr; } .dash-wide .dash-time { grid-template-columns: 1fr; } }
+
+/* ===== Mapa Mundi ===== */
+.mm-caixa { border-radius: 14px; background: #0b2a44; border: 1px solid #ffffff33; padding: 6px; }
+.mm-svg { display: block; width: 100%; height: auto; max-height: 62vh; user-select: none; }
+.mm-via { stroke: #ffffff33; stroke-width: 1.2; stroke-dasharray: 2 2; }
+.mm-via.aberta { stroke: #9ad7ff; stroke-dasharray: none; stroke-width: 1.4; }
+.mm-no { cursor: pointer; outline: none; }
+.mm-hit { fill: transparent; }
+.mm-ponto { fill: #5b6b80; stroke: #0b2a44; stroke-width: .6; transition: fill .15s; }
+.mm-no.livre .mm-ponto { fill: #7fd1ff; }
+.mm-no.cidade.livre .mm-ponto { fill: #ffd25e; }
+.mm-no.atual .mm-ponto { fill: #6dff9a; stroke: #fff; stroke-width: 1; }
+.mm-no.sel .mm-ponto { stroke: #fff; stroke-width: 1.4; }
+.mm-no:focus-visible .mm-ponto { stroke: #fff; stroke-width: 1.4; }
+.mm-nome { font-size: 3.6px; fill: #eaf6ff; paint-order: stroke; stroke: #0b2a44; stroke-width: .9px; }
+.mm-nome.pequeno { font-size: 3px; opacity: .85; }
+.mm-no.trancado .mm-nome { fill: #8da0b5; }
+.mm-info { margin: 10px 2px 6px; font-size: .9rem; }
+.mm-legenda { display: flex; gap: 12px; font-size: .72rem; opacity: .85; margin-bottom: 8px; flex-wrap: wrap; }
+.mm-leg::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; background: #5b6b80; }
+.mm-leg.atual::before { background: #6dff9a; } .mm-leg.livre::before { background: #7fd1ff; }

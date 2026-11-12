@@ -63,6 +63,8 @@ export interface Controle {
   recarregarJogador(): Promise<Jogador | null>;
   /** "Estou preso": o servidor leva o jogador ao tile livre alcançável mais próximo. */
   destravar(): Promise<void>;
+  /** Viagem pelo Mapa Mundi (validada no servidor). */
+  viajar(mapa: string): Promise<boolean>;
   /** O jogador falou com um treinador ao lado dele (ele só desafia se o jogador puxar conversa). */
   conversar(id: string): Promise<void>;
   /** +1 aproxima, -1 afasta, 0 volta ao automático. */
@@ -555,6 +557,31 @@ class CenaMundo extends Phaser.Scene {
     }
   }
 
+  /** Mapa Mundi: o servidor valida e leva o jogador ao mapa escolhido. */
+  async viajar(mapa: string): Promise<boolean> {
+    if (!this.mapa || this.encerrada || this.mudandoMapa) return false;
+    this.mudandoMapa = true;
+    await this.fila;
+    const { data, error } = await supabase.rpc("viajar", { p_mapa: mapa });
+    if (this.encerrada) return false;
+    if (error || !data) {
+      this.ganchos.aviso(error?.message ?? "Não foi possível viajar.");
+      this.mudandoMapa = false;
+      return false;
+    }
+    const s = data as Jogador;
+    this.jogador = { ...this.jogador, ...s };
+    this.ganchos.aoJogador(this.jogador);
+    this.andando = false;
+    if (s.mapa_id !== this.mapa.id) await this.entrarNoMapa(s.mapa_id);
+    else {
+      this.colocar(this.eu, s.x, s.y);
+      this.mudandoMapa = false;
+      this.avisarLugar();
+    }
+    return true;
+  }
+
   /** Volta ao estado que o servidor conhece (após erro ou recusa). */
   private async ressincronizar(): Promise<void> {
     const j = await this.recarregar();
@@ -677,5 +704,6 @@ export async function iniciarMundo(pai: HTMLElement, jogador: Jogador, ganchos: 
     zoom: (p) => cena.zoom(p),
     conversar: (id) => cena.conversar(id),
     destravar: () => cena.destravar(),
+    viajar: (m) => cena.viajar(m),
   };
 }

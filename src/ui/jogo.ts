@@ -7,6 +7,7 @@ import {
   nomePokemon, todasEspecies, type PokemonRow,
 } from "./dados";
 import { importarDados, importarSprites } from "./mestre";
+import { abrirMapaMundi } from "./mapamundi";
 
 function botao(texto: string, fn: () => void, classe = "sec"): HTMLButtonElement {
   const b = el("button", { type: "button", class: classe }, texto);
@@ -391,8 +392,10 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     });
     const atalhos = el("div", { class: "dash-atalhos" },
       botao("Time", () => void abrirTime()), botao("Mochila", () => void abrirMochila()), botao("Pokédex", () => void abrirPokedex()), botao("Personagens", () => void abrirPersonagens()));
-    modal.abrir("Painel do treinador", cab, grade, el("label", {}, "Time ativo"),
-      linhas.length ? el("div", { class: "dash-time" }, ...linhas) : el("p", { class: "sub" }, "Você ainda não tem Pokémon. Fale com o Professor Carvalho no laboratório."), atalhos);
+    modal.abrir("Painel do treinador", el("div", { class: "dash-wide" },
+      el("div", { class: "dash-esq" }, cab, grade, atalhos),
+      el("div", { class: "dash-dir" }, el("label", {}, "Time ativo"),
+        linhas.length ? el("div", { class: "dash-time" }, ...linhas) : el("p", { class: "sub" }, "Você ainda não tem Pokémon. Fale com o Professor Carvalho no laboratório."))));
   }
 
   // ---------- Personagens (até 2) e reinício ----------
@@ -724,6 +727,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
         rotulo: "Explorar",
         itens: () => [
           { rotulo: "Buscar Pokémon (1 PA)", fn: () => void procurar(), oculto: !oferta },
+          { rotulo: "Mapa Mundi", fn: () => void abrirMapaMundi(modal, (m) => controle?.viajar(m) ?? Promise.resolve(false), mostrarAviso), oculto: emBatalha },
           { rotulo: "Interagir", fn: () => { interagir(); }, oculto: !(lugar?.poi || lugar?.npc) },
           { rotulo: "Estou preso (destravar)", fn: () => void controle?.destravar() },
           { rotulo: "Aproximar o mapa", fn: () => controle?.zoom(1) },
