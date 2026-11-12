@@ -15,6 +15,8 @@ export interface PokemonRow {
   golpes: GolpeSlot[];
   posicao: number | null;
   brilhante?: boolean;
+  caixa?: number | null;
+  slot_caixa?: number | null;
 }
 
 const especies = new Map<number, Especie>();

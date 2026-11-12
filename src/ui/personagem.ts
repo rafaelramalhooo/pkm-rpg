@@ -5,7 +5,7 @@ const BASE = import.meta.env.BASE_URL as string;
 const TOTAL_APARENCIAS = 12;
 
 function marcaPainel(): HTMLElement {
-  return el("div", { class: "marca marca-grande" }, el("span", { class: "marca-logo", "aria-hidden": "true" }, el("i", {})), el("span", { class: "marca-nome" }, "PKM RPG"));
+  return el("img", { class: "logo-rafar", src: `${BASE}assets/logo-rafar.png`, alt: "Rafar: Um novo começo" });
 }
 
 export function telaPersonagem(aoCriar: (j: Jogador) => void): void {

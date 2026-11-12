@@ -677,3 +677,54 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .batalha.sd { padding: 4px; }
 }
 @media (orientation: landscape) and (max-height: 540px) and (pointer: coarse) { .dpad button { width: 48px; height: 48px; } .dpad { width: 144px; height: 144px; } .dpad .d-cima, .dpad .d-baixo { left: 48px; } .dpad .d-esquerda, .dpad .d-direita { top: 48px; } }
+
+/* ===== Etapa 1: barra única, logo e faixa de eventos dentro do mapa ===== */
+.marca-img { height: 34px; width: auto; display: block; filter: drop-shadow(0 2px 3px #0008); }
+.logo-rafar { display: block; width: min(100%, 360px); margin: 0 auto 10px; border-radius: 0; box-shadow: none; filter: drop-shadow(0 6px 10px #0a1a4acc); }
+.nav { padding: 4px max(10px, calc((100vw - 1500px) / 2)); }
+.nav-grupos { gap: 2px; }
+.nav button.nav-atalho { margin: 0; display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; background: #16294f; color: #fff; border: 1px solid #ffffff22; border-radius: 10px; font-size: .8rem; box-shadow: none; white-space: nowrap; }
+.nav button.nav-atalho:hover { background: var(--laranja); transform: none; }
+.nav button.nav-atalho .ico svg { width: 18px; height: 18px; }
+.cartucho { width: min(calc(100vw - 16px), 1500px); gap: 6px; }
+.dica { display: none; }
+.tela-jogo { border-radius: 12px; }
+@media not all and (orientation: landscape) and (max-height: 540px) { .tela-jogo { height: calc(100dvh - 118px); } }
+.faixa-evento { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 3; max-width: 70%; }
+@media (max-width: 700px) {
+  .nav-atalho-rot { display: none; }
+  .nav button.nav-atalho { padding: 6px 8px; }
+  .faixa-evento { top: 6px; }
+}
+
+.mm-estrela { stroke-width: 1.4; stroke-linejoin: round; pointer-events: none; filter: drop-shadow(0 0 2px #000a); }
+.mm-estrela.inicio { fill: #5be37d; stroke: #0d5a2a; }
+.mm-estrela.liga { fill: #ffd23c; stroke: #a1281c; }
+.mm-no.cidade .mm-ponto { }
+.mm-leg.est { font-weight: 700; }
+.mm-leg.est.inicio { color: #5be37d; } .mm-leg.est.liga { color: #ffd23c; }
+.mm-leg.est::before { display: none; }
+
+.sd-alerta { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 120; max-width: min(92vw, 640px); padding: 9px 16px; border-radius: 12px; background: #b3261e; color: #fff; font-weight: 700; font-size: .85rem; text-align: center; border: 1px solid #ffb4ab; box-shadow: 0 8px 24px #000a; animation: faixa-entra .3s ease; }
+.sd-alerta[hidden] { display: none; }
+.aviso.erro { background: #b3261e; color: #fff; border-color: #ffb4ab; }
+
+/* caixas */
+.cx-corpo { display: grid; gap: 10px; }
+.cx-aviso { margin: 0; padding: 8px 10px; border-radius: 10px; font-size: .78rem; background: #3a2a10; color: #ffe0a0; border: 1px solid #ffd25e55; }
+.cx-aviso.ok { background: #10361f; color: #b8ffd0; border-color: #5be37d66; }
+.cx-abas { display: flex; gap: 6px; flex-wrap: wrap; }
+.cx-abas button.ativo { background: var(--laranja); color: #fff; }
+.cx-grade { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.cx-slot { margin: 0 !important; aspect-ratio: 1; padding: 2px !important; border-radius: 14px; background: #0f1a36; border: 1px solid #ffffff2a; box-shadow: none; display: grid; place-items: center; }
+.cx-slot.vazio { background: #0a1226; border-style: dashed; opacity: .7; }
+.cx-slot.sel { outline: 3px solid var(--laranja); background: #1b2d5c; }
+.cx-mini { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: .62rem; color: #cfe0ff; }
+.cx-mini .pk-img { width: 46px; height: 46px; }
+.cx-detalhe { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; min-height: 36px; font-size: .82rem; }
+.cx-detalhe button { margin: 0; }
+.cx-time { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.cx-membro { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 12px; background: var(--vidro); border: 1px solid #ffffff2a; }
+.cx-membro button { margin: 0; padding: 4px 8px; font-size: .72rem; }
+.cx-nome { flex: 1; font-size: .74rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aviso.erro { bottom: auto; top: 10px; z-index: 30; font-weight: 700; }

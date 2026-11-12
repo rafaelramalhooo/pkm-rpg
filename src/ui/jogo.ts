@@ -8,6 +8,7 @@ import {
 } from "./dados";
 import { importarDados, importarSprites } from "./mestre";
 import { abrirMapaMundi } from "./mapamundi";
+import { abrirCaixas } from "./caixa";
 import { abrirOrganizar } from "./organizar";
 import { abrirGestao } from "./gestao";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
@@ -122,8 +123,9 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   const tela = el("div", { class: "tela-jogo" });
   const aviso = el("div", { class: "aviso", role: "status", hidden: "" });
   let temporizador: number | undefined;
-  const mostrarAviso = (texto: string, ms = 3200) => {
+  const mostrarAviso = (texto: string, ms = 3200, erro = false) => {
     aviso.textContent = texto;
+    aviso.classList.toggle("erro", erro);
     aviso.hidden = false;
     window.clearTimeout(temporizador);
     temporizador = window.setTimeout(() => {
@@ -207,13 +209,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   };
   dpad.append(dir("cima", "▲"), dir("esquerda", "◀"), dir("direita", "▶"), dir("baixo", "▼"));
   const cartaoTreinador = el("div", { class: "cartao-treinador" }, emblema, el("div", { class: "tc-info" }, nomeTreinador, onde, el("div", { class: "tc-chips" }, dinheiro, pa)));
-  const hexDock = el("div", { class: "hex-dock", "aria-label": "Atalhos" });
-  const hex = (nome: string, rotulo: string, fn: () => void) => {
-    const b = el("button", { type: "button", class: "hex", "aria-label": rotulo, title: rotulo }, icone(nome), el("span", { class: "hex-rot" }, rotulo));
-    b.addEventListener("click", fn);
-    return b;
-  };
-  tela.append(aviso, cartaoTreinador, hexDock, acoes, cartaoOferta, dpad);
+  tela.append(aviso, cartaoTreinador, acoes, cartaoOferta, dpad);
 
   // ---------- painéis ----------
   const msgPainel = (): HTMLElement => el("p", { class: "msg", role: "status" });
@@ -234,7 +230,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       return;
     }
     const vazios = Array.from({ length: Math.max(0, 6 - time.length) }, () => el("div", { class: "cartao-vazio", "aria-label": "Espaço livre" }, el("span", {}, "+")));
-    modal.abrir("Seu time", abas("time"), el("div", { class: "grade-time" }, ...time.map(cartaoPokemon), ...vazios));
+    modal.abrir("Seu time", abas("time"), el("div", { class: "grade-time" }, ...time.map(cartaoPokemon), ...vazios), botao("Ver Caixas (consulta)", () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud), "sec"));
   }
 
   function cartaoPokemon(p: PokemonRow): HTMLElement {
@@ -628,8 +624,10 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           return b;
         })));
       } else nos.push(el("p", { class: "sub" }, "Professor Carvalho: \"Cuide bem do seu parceiro!\""));
+      nos.push(botao("Acessar as Caixas", () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud), "sec"));
     } else if (p.tipo === "centro" || p.tipo === "casa_jogador" || p.acao === "cura") {
       nos.push(botao("Curar meu time", () => void curar(msg), ""));
+      if (p.tipo === "centro") nos.push(botao("Acessar as Caixas", () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud), "sec"));
     } else if (p.acao === "dica" || p.acao === "quadro") {
       const lista = p.acao === "dica" ? p.dicas : p.textos;
       if (lista?.length) nos.push(el("p", { class: "sub" }, `“${lista[Math.floor(Math.random() * lista.length)]}”`));
@@ -716,16 +714,9 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     chat.blur();
   });
   const botoes = el("div", { class: "grupo" }, botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"), botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"));
-  hexDock.append(
-    hex("painel", "Painel", () => void abrirDashboard()),
-    hex("time", "Time", () => void abrirTime()),
-    hex("mochila", "Mochila", () => void abrirMochila()),
-    hex("pokedex", "Pokédex", () => void abrirPokedex()),
-    hex("conta", "Conta", abrirMenu),
-  );
 
   const fechaPaineis = () => modal.fechar();
-  const marca = el("div", { class: "marca" }, el("span", { class: "marca-logo", "aria-hidden": "true" }, el("i", {})), el("span", { class: "marca-nome" }, "PKM RPG"));
+  const marca = el("img", { class: "marca-img", src: `${import.meta.env.BASE_URL}assets/logo-rafar.png`, alt: "Rafar" });
   const { raiz: nav } = barraNavegacao(
     [
       { rotulo: "Início", itens: () => [{ rotulo: "Painel do treinador", fn: () => void abrirDashboard() }, { rotulo: "Voltar ao mapa", fn: fechaPaineis }, { rotulo: "Onde estou", fn: () => abrirInfoLugar() }] },
@@ -740,7 +731,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           { rotulo: "Afastar o mapa", fn: () => controle?.zoom(-1) },
         ],
       },
-      { rotulo: "Minhas coisas", itens: () => [{ rotulo: "Time", fn: () => void abrirTime() }, { rotulo: "Mochila", fn: () => void abrirMochila() }, { rotulo: "Pokédex", fn: () => void abrirPokedex() }] },
+      { rotulo: "Minhas coisas", itens: () => [{ rotulo: "Time", fn: () => void abrirTime() }, { rotulo: "Mochila", fn: () => void abrirMochila() }, { rotulo: "Pokédex", fn: () => void abrirPokedex() }, { rotulo: "Caixas", fn: () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud) }] },
       { rotulo: "Cidade", itens: () => [{ rotulo: "Lugar atual", fn: () => abrirInfoLugar() }, { rotulo: "Estou preso (destravar)", fn: () => void controle?.destravar() }] },
       { rotulo: "Informações", itens: () => [{ rotulo: "Como jogar", fn: () => abrirAjuda() }] },
       { rotulo: "Minha conta", itens: () => [{ rotulo: "Meus personagens / Reiniciar", fn: () => void abrirPersonagens() }, { rotulo: "Meu perfil e senha", fn: abrirMenu }, { rotulo: "Gestão do Mestre", fn: () => void abrirGestao(modal, mostrarAviso), oculto: j.papel !== "mestre" }, { rotulo: "Eventos do Mestre", fn: () => void abrirEventos(modal, mostrarAviso), oculto: j.papel !== "mestre" }, { rotulo: "Ferramentas do Mestre", fn: abrirMenu, oculto: j.papel !== "mestre" }, { rotulo: "Sair", fn: () => void supabase.auth.signOut() }] },
@@ -751,7 +742,20 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage · B busca o Pokémon da prévia · Ctrl + / Ctrl − ajustam o zoom");
 
   const faixaEventos = iniciarFaixaEventos();
-  const minha = montar([el("div", { class: "jogo" }, nav, faixaEventos, el("div", { class: "cartucho" }, tela, rodape), dica, modal.raiz)], true);
+  tela.append(faixaEventos);
+  const atalho = (nome: string, rotulo: string, fn: () => void) => {
+    const b = el("button", { type: "button", class: "nav-atalho", "aria-label": rotulo, title: rotulo }, icone(nome), el("span", { class: "nav-atalho-rot" }, rotulo));
+    b.addEventListener("click", (e) => { e.stopPropagation(); fn(); });
+    return b;
+  };
+  nav.querySelector(".nav-grupos")?.prepend(
+    atalho("painel", "Painel", () => void abrirDashboard()),
+    atalho("time", "Time", () => void abrirTime()),
+    atalho("mochila", "Mochila", () => void abrirMochila()),
+    atalho("pokedex", "Pokédex", () => void abrirPokedex()),
+  );
+  void dica;
+  const minha = montar([el("div", { class: "jogo" }, nav, el("div", { class: "cartucho" }, tela, rodape), modal.raiz)], true);
 
   const { iniciarMundo } = await import("../game/mundo");
   if (minha !== geracaoAtual()) return;

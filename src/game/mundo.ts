@@ -151,7 +151,7 @@ class CenaMundo extends Phaser.Scene {
     for (let i = 0; i < 12; i++) criarAnimacoes(this, i);
     const kb = this.input.keyboard!;
     kb.disableGlobalCapture();
-    this.teclas = kb.addKeys("UP,DOWN,LEFT,RIGHT,W,A,S,D") as Record<string, Phaser.Input.Keyboard.Key>;
+    this.teclas = kb.addKeys("UP,DOWN,LEFT,RIGHT,W,A,S,D", false) as Record<string, Phaser.Input.Keyboard.Key>;
     this.scale.on("resize", () => this.ajustarZoom());
     void this.entrarNoMapa(this.jogador.mapa_id, true);
   }
@@ -473,6 +473,8 @@ class CenaMundo extends Phaser.Scene {
   }
 
   private direcaoDoTeclado(): Direcao | null {
+    const ae = document.activeElement;
+    if (ae instanceof HTMLInputElement || ae instanceof HTMLTextAreaElement || ae instanceof HTMLSelectElement) return null;
     const t = this.teclas;
     if (t.UP.isDown || t.W.isDown) return "cima";
     if (t.DOWN.isDown || t.S.isDown) return "baixo";

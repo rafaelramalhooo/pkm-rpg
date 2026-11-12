@@ -1,6 +1,7 @@
 import { supabase } from "../supabase";
 import { el } from "./dom";
 import { imagemPokemon, nomePokemon, carregarReferencias, type PokemonRow } from "./dados";
+import { abrirCaixas } from "./caixa";
 
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
 
@@ -23,8 +24,8 @@ export async function abrirOrganizar(modal: Modal, uid: string, aviso: (t: strin
     const mover = (d: number) => { const j = i + d; [time[i], time[j]] = [time[j], time[i]]; sujo = true; desenhar(); };
     const botoes = noTime
       ? [b("↑", () => mover(-1), i === 0, "Subir"), b("↓", () => mover(1), i === time.length - 1, "Descer"),
-         b("Guardar", () => { if (time.length <= 1) { msg.textContent = "O time precisa de ao menos 1 Pokémon."; msg.className = "msg erro"; return; } time.splice(i, 1); caixa.unshift(p); sujo = true; desenhar(); }, false, "Mandar para a caixa")]
-      : [b("Ao time", () => { if (time.length >= 6) { msg.textContent = "O time já tem 6 Pokémon."; msg.className = "msg erro"; return; } caixa.splice(i, 1); time.push(p); sujo = true; desenhar(); })];
+        ]
+      : [];
     const sg = b(seguidor === p.id ? "★ Seguindo" : "Seguir", async () => {
       const novo = seguidor === p.id ? null : p.id;
       const { error: e } = await supabase.rpc("definir_seguidor", { p_pokemon: novo });
@@ -37,12 +38,15 @@ export async function abrirOrganizar(modal: Modal, uid: string, aviso: (t: strin
       el("div", { class: "org-btns" }, sg, ...botoes));
   };
 
+  const verCaixas = el("button", { type: "button", class: "sec" }, "Ver Caixas (guardar e trocar só no Centro Pokémon ou no Laboratório)");
+  verCaixas.addEventListener("click", () => void abrirCaixas(modal, uid, aviso as (t: string, ms?: number, erro?: boolean) => void, aoMudar));
+
   function desenhar(): void {
     corpo.replaceChildren(
       el("label", {}, `Time (${time.length}/6) — o primeiro entra na batalha`),
       ...time.map((p, i) => linha(p, true, i)),
-      el("label", {}, `Caixa (${caixa.length})`),
-      ...(caixa.length ? caixa.map((p, i) => linha(p, false, i)) : [el("p", { class: "sub" }, "Nenhum Pokémon guardado.")]),
+      el("label", {}, `Caixas: ${caixa.length} Pokémon guardado(s)`),
+      verCaixas,
     );
   }
   const salvar = el("button", { type: "button" }, "Salvar ordem do time");

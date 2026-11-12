@@ -94,6 +94,10 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     const log = el("div", { class: "sd-log" });
     const raiz = el("div", { class: "batalha sd" }, el("div", { class: "sd-moldura" }, cena, controles));
     document.body.append(raiz);
+    const alerta = el("div", { class: "sd-alerta", role: "alert", hidden: "" });
+    raiz.append(alerta);
+    let tAlerta = 0;
+    const alertar = (texto: string) => { alerta.textContent = texto; alerta.hidden = false; window.clearTimeout(tAlerta); tAlerta = window.setTimeout(() => { alerta.hidden = true; }, 5000); };
     // sprites em tamanho natural (como no Showdown), reduzidos só quando o palco encolhe
     cena.addEventListener("load", (ev) => {
       const t = ev.target;
@@ -479,6 +483,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
         mostrarControles(r);
       } catch (e) {
         msg.textContent = (e as Error).message;
+        alertar((e as Error).message);
         await esperar(1300);
         ocupado = false;
         if (ultima) mostrarControles(ultima);

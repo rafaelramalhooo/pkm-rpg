@@ -80,6 +80,11 @@ export async function abrirMapaMundi(
     const r = n.t === "cidade" ? 5.5 : n.t === "local" ? 4.6 : 3.4;
     const g = svg("g", { class: `mm-no ${n.t}${ok ? " livre" : " trancado"}${n.id === info.atual ? " atual" : ""}`, tabindex: "0", role: "button", "aria-label": n.nome });
     g.append(svg("circle", { cx: n.x, cy: n.y, r: r + 2.4, class: "mm-hit" }), svg("circle", { cx: n.x, cy: n.y, r, class: "mm-ponto" }));
+    if (n.id === "pallet" || n.id === "plato") {
+      const R1 = 10.5, R2 = 4.6; const pts: string[] = [];
+      for (let k = 0; k < 10; k++) { const ang = -Math.PI / 2 + (k * Math.PI) / 5; const rr = k % 2 ? R2 : R1; pts.push(`${(n.x + rr * Math.cos(ang)).toFixed(1)},${(n.y + rr * Math.sin(ang)).toFixed(1)}`); }
+      g.append(svg("polygon", { points: pts.join(" "), class: `mm-estrela ${n.id === "pallet" ? "inicio" : "liga"}` }));
+    }
     g.append(svg("text", { x: n.x, y: n.t === "cidade" || n.id === "reserva" ? n.y + r + 8 : n.y - r - 2.5, "text-anchor": "middle", class: n.t === "rota" ? "mm-nome pequeno" : "mm-nome" }, n.t === "rota" ? n.nome.replace("Rota ", "R") : n.nome));
     const escolher = () => {
       escolhido = n.id;
@@ -101,7 +106,7 @@ export async function abrirMapaMundi(
     await viajar(alvo);
   });
   const legenda = el("div", { class: "mm-legenda" },
-    el("span", { class: "mm-leg atual" }, "Você"), el("span", { class: "mm-leg livre" }, "Destino"), el("span", { class: "mm-leg cid" }, "Cidade"));
+    el("span", { class: "mm-leg atual" }, "Você"), el("span", { class: "mm-leg livre" }, "Destino"), el("span", { class: "mm-leg cid" }, "Cidade"), el("span", { class: "mm-leg est inicio" }, "★ Início"), el("span", { class: "mm-leg est liga" }, "★ Liga"));
   nodos.get(info.atual)?.classList.add("atual");
   const aqui = porId.get(info.atual);
   if (aqui) rotulo.textContent = `Você está em ${aqui.nome}. Toque em um lugar para viajar.`;
