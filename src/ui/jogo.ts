@@ -9,6 +9,7 @@ import {
 import { importarDados, importarSprites } from "./mestre";
 import { abrirMapaMundi } from "./mapamundi";
 import { abrirCaixas } from "./caixa";
+import { abrirHabilidades, abrirAcoes } from "./habilidades";
 import { abrirOrganizar } from "./organizar";
 import { abrirGestao } from "./gestao";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
@@ -392,7 +393,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
         el("div", { class: "dash-pk-info" }, el("strong", {}, nomePokemon(p)), el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`), el("div", { class: "hp-trilho" }, fill)));
     });
     const atalhos = el("div", { class: "dash-atalhos" },
-      botao("Time", () => void abrirTime()), botao("Organizar time / Seguidor", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor())), botao("Mochila", () => void abrirMochila()), botao("Pokédex", () => void abrirPokedex()), botao("Personagens", () => void abrirPersonagens()));
+      botao("Habilidades", () => void abrirHabilidades(modal, mostrarAviso, atualizarHud)), botao("Ações (PA)", () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador())), botao("Time", () => void abrirTime()), botao("Organizar time / Seguidor", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor())), botao("Mochila", () => void abrirMochila()), botao("Pokédex", () => void abrirPokedex()), botao("Personagens", () => void abrirPersonagens()));
     modal.abrir("Painel do treinador", el("div", { class: "dash-wide" },
       el("div", { class: "dash-esq" }, cab, grade, atalhos),
       el("div", { class: "dash-dir" }, el("label", {}, "Time ativo"),
@@ -731,7 +732,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           { rotulo: "Afastar o mapa", fn: () => controle?.zoom(-1) },
         ],
       },
-      { rotulo: "Minhas coisas", itens: () => [{ rotulo: "Time", fn: () => void abrirTime() }, { rotulo: "Mochila", fn: () => void abrirMochila() }, { rotulo: "Pokédex", fn: () => void abrirPokedex() }, { rotulo: "Caixas", fn: () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud) }] },
+      { rotulo: "Minhas coisas", itens: () => [{ rotulo: "Time", fn: () => void abrirTime() }, { rotulo: "Mochila", fn: () => void abrirMochila() }, { rotulo: "Pokédex", fn: () => void abrirPokedex() }, { rotulo: "Caixas", fn: () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud) }, { rotulo: "Habilidades", fn: () => void abrirHabilidades(modal, mostrarAviso, atualizarHud) }, { rotulo: "Ações (PA)", fn: () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador()) }] },
       { rotulo: "Cidade", itens: () => [{ rotulo: "Lugar atual", fn: () => abrirInfoLugar() }, { rotulo: "Estou preso (destravar)", fn: () => void controle?.destravar() }] },
       { rotulo: "Informações", itens: () => [{ rotulo: "Como jogar", fn: () => abrirAjuda() }] },
       { rotulo: "Minha conta", itens: () => [{ rotulo: "Meus personagens / Reiniciar", fn: () => void abrirPersonagens() }, { rotulo: "Meu perfil e senha", fn: abrirMenu }, { rotulo: "Gestão do Mestre", fn: () => void abrirGestao(modal, mostrarAviso), oculto: j.papel !== "mestre" }, { rotulo: "Eventos do Mestre", fn: () => void abrirEventos(modal, mostrarAviso), oculto: j.papel !== "mestre" }, { rotulo: "Ferramentas do Mestre", fn: abrirMenu, oculto: j.papel !== "mestre" }, { rotulo: "Sair", fn: () => void supabase.auth.signOut() }] },

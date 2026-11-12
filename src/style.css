@@ -728,3 +728,14 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .cx-membro button { margin: 0; padding: 4px 8px; font-size: .72rem; }
 .cx-nome { flex: 1; font-size: .74rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .aviso.erro { bottom: auto; top: 10px; z-index: 30; font-weight: 700; }
+
+/* habilidades e ações */
+.hab-classes{display:grid;gap:10px}.hab-classe{display:flex;flex-direction:column;gap:4px;text-align:left;padding:12px;border:2px solid #3a4a6a;background:#16213a;color:#fff;border-radius:10px;cursor:pointer}
+.hab-classe span{font-size:.85rem;opacity:.8}.hab-cab{margin-bottom:10px}.hab-xp{height:8px;background:#0b1224;border-radius:6px;overflow:hidden;margin:6px 0}
+.hab-xp-fill{height:100%;background:#f5c542}.hab-pontos{font-weight:700;color:#f5c542}.hab-pontos small{font-weight:400;color:#9fb0d0}
+.hab-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.hab-card{border:1px solid #3a4a6a;background:#16213a;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.hab-card p{margin:0;font-size:.82rem;opacity:.85;flex:1}.hab-card.breve{opacity:.6}.hab-topo{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.hab-ranks{display:inline-flex;gap:3px}.hab-ranks i{width:10px;height:10px;border-radius:50%;border:2px solid #f5c542}.hab-ranks i.on{background:#f5c542}
+.hab-req{color:#ff8a80}.hab-msg{min-height:1.4em;color:#9be39b;margin:6px 0}
+.acao-bloco{margin:8px 0}.acao-pks{display:flex;flex-wrap:wrap;gap:6px}.acao-pk{display:flex;align-items:center;gap:4px;font-size:.8rem}.acao-linha{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}

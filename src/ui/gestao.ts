@@ -71,7 +71,7 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
 
     const pk = f.pokemons.map((p) => {
       const ap = el("input", { type: "text", value: p.apelido ?? "", placeholder: nomeEsp.get(p.especie_id) ?? `#${p.especie_id}`, maxlength: "20" });
-      const nv = num(p.nivel, 1); nv.max = "100";
+      const nv = num(p.nivel, 1); nv.max = "1000";
       const br = el("input", { type: "checkbox" }); br.checked = p.brilhante;
       const sv = el("button", { type: "button", class: "sec" }, "Salvar");
       sv.addEventListener("click", async () => { if (await chamar("mestre_editar_pokemon", { p_id: p.id, p_campos: { apelido: ap.value, nivel: Number(nv.value), brilhante: br.checked } })) await abrirFicha(id); });
