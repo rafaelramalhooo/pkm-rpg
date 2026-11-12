@@ -563,3 +563,10 @@ body.modo-jogo { padding-left: 0; padding-right: 0; }
 .dash-pk-info .hp-trilho { height: 8px; }
 .dash-btns { display: flex; flex-wrap: wrap; gap: 6px; } .dash-btns button { margin: 0; padding: 5px 10px; font-size: .72rem; }
 .dash-atalhos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; } .dash-atalhos button { margin: 0; }
+
+/* ajuste: o mapa zera o line-height (canvas), então o cartão de prévia precisa do seu próprio */
+.oferta { line-height: 1.3; }
+.oferta-info { gap: 5px; }
+.oferta-info strong, .oferta-bioma { display: block; line-height: 1.3; }
+.oferta-btns { margin-top: 2px; line-height: 1.2; }
+.oferta-btns button { line-height: 1.2; white-space: nowrap; }
