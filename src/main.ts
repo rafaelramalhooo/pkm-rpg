@@ -4,6 +4,9 @@ import { supabase, type Jogador } from "./supabase";
 import { telaLogin, telaNovaSenha } from "./ui/login";
 import { telaPersonagem } from "./ui/personagem";
 import { telaJogo } from "./ui/jogo";
+import { vigiarVersao } from "./ui/versao";
+
+vigiarVersao();
 
 if (AMBIENTE !== "producao") {
   const tag = document.createElement("div");
