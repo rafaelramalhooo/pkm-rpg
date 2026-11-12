@@ -469,7 +469,13 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       if (error) return void mensagem(msg, error.message);
       location.reload();
     });
-    nos.push(el("label", {}, "Recomeçar"), el("p", { class: "sub" }, "Apaga time, mochila, Pokédex e vitórias do personagem atual e volta ao Laboratório. O nome e o visual ficam."), reiniciar, msg);
+    const zerar = confirmar(botao("Apagar todos os meus personagens", () => undefined, "sec"), "Apagar todos os meus personagens", "Confirmar: apagar TUDO e criar do zero?", async () => {
+      const { error } = await supabase.rpc("apagar_todos_meus_personagens");
+      if (error) return void mensagem(msg, error.message);
+      location.reload();
+    });
+    nos.push(el("label", {}, "Recomeçar"), el("p", { class: "sub" }, "Apaga time, mochila, Pokédex e vitórias do personagem atual e volta ao Laboratório. O nome e o visual ficam."), reiniciar,
+      el("label", {}, "Começar do zero"), el("p", { class: "sub" }, "Apaga TODOS os seus personagens (o atual e o reserva), com time, mochila, Pokédex e dinheiro, e leva você à criação de um novo personagem. Não dá para desfazer."), zerar, msg);
     modal.abrir("Meus personagens", ...nos);
   }
 
