@@ -886,7 +886,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   const rodape = el("div", { class: "barra rodape" }, formChat, botoes);
   const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage · M abre o Mapa Mundi · B busca o Pokémon da prévia · Ctrl + / Ctrl − ajustam o zoom");
 
-  const faixaEventos = iniciarFaixaEventos();
+  const faixaEventos = iniciarFaixaEventos(modal);
   tela.append(faixaEventos);
   const atalho = (nome: string, rotulo: string, fn: () => void) => {
     const b = el("button", { type: "button", class: "nav-atalho", "aria-label": rotulo, title: rotulo }, icone(nome), el("span", { class: "nav-atalho-rot" }, rotulo));

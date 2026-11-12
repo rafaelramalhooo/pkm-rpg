@@ -996,3 +996,12 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .mg-manut { border: 1px solid #3a4a6a; background: #101a30; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; }
 .mg-manut summary { cursor: pointer; font-weight: 700; }
 .mg-manut input[type=text] { width: 100%; margin: 6px 0; }
+
+/* ===== lote 18: Pokébola dourada de eventos ===== */
+.faixa-evento { pointer-events: none; max-width: none; }
+.ev-bola-btn { pointer-events: auto; display: inline-flex; align-items: center; gap: 8px; padding: 4px 14px 4px 6px; border-radius: 999px; cursor: pointer; font-weight: 800; font-size: .86rem; color: #3a2400; background: linear-gradient(135deg, #ffe27a, #ffb703); border: 2px solid #fff3c4; box-shadow: 0 4px 18px #ffb70388, 0 2px 8px #0007; animation: faixa-pulsa 2.4s ease-in-out infinite; }
+.ev-bola { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #4a3200; background: radial-gradient(circle at 50% 50%, #fff 0 15%, #4a3200 16% 24%, transparent 25%), linear-gradient(180deg, #ffd24a 0 46%, #4a3200 46% 54%, #fff7d6 54%); box-shadow: 0 0 8px #ffd24a; }
+.ev-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-bottom: 8px; border: 1px solid #ffd25e66; border-radius: 10px; background: #16213a; }
+.ev-card-icone { font-size: 1.6rem; }
+.ev-card div { display: flex; flex-direction: column; gap: 2px; }
+@media (prefers-reduced-motion: reduce) { .ev-bola-btn { animation: none; } }

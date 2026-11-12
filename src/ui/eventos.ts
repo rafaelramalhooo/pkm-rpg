@@ -18,16 +18,27 @@ const DURACOES: [string, number][] = [["15 min", 15], ["30 min", 30], ["1 hora",
 const hora = (iso: string) => new Date(iso).toLocaleString("pt-BR", { hour: "2-digit", minute: "2-digit", ...(Date.now() + 18 * 3600e3 < new Date(iso).getTime() ? { day: "2-digit", month: "2-digit" } : {}) });
 const resumo = (e: Evento) => e.mensagem ?? (TIPOS[e.tipo]?.texto(Number(e.valor)) ?? e.tipo);
 
-/** Faixa discreta no topo da tela com os eventos em andamento (atualiza sozinha). */
-export function iniciarFaixaEventos(): HTMLElement {
+/** Aviso de eventos: uma Pokébola dourada com "Evento Acontecendo!"; ao clicar, mostra os eventos ativos. */
+export function iniciarFaixaEventos(modal: Modal): HTMLElement {
   const faixa = el("div", { class: "faixa-evento", hidden: "", role: "status" });
   let timer = 0;
+  let lista: Evento[] = [];
+  const abrir = () => {
+    modal.abrir("🎉 Eventos acontecendo",
+      ...(lista.length ? lista.map((e) => el("div", { class: "ev-card" },
+        el("span", { class: "ev-card-icone", "aria-hidden": "true" }, TIPOS[e.tipo]?.icone ?? "🎉"),
+        el("div", {}, el("strong", {}, resumo(e)), el("span", { class: "sub" }, `Termina ${hora(e.fim)}`)))) : [el("p", { class: "sub" }, "Nenhum evento no momento.")]));
+  };
   const atualizar = async () => {
     if (!faixa.isConnected && timer) { window.clearInterval(timer); return; }
     const { data } = await supabase.rpc("eventos_ativos");
-    const lista = (Array.isArray(data) ? data : []) as Evento[];
+    lista = (Array.isArray(data) ? data : []) as Evento[];
     if (!lista.length) { faixa.hidden = true; faixa.replaceChildren(); return; }
-    faixa.replaceChildren(...lista.map((e) => el("span", { class: "faixa-item" }, `${TIPOS[e.tipo]?.icone ?? "🎉"} ${resumo(e)} · até ${hora(e.fim)}`)));
+    if (faixa.hidden || !faixa.firstChild) {
+      const b = el("button", { type: "button", class: "ev-bola-btn", "aria-label": "Evento acontecendo: ver detalhes" }, el("span", { class: "ev-bola", "aria-hidden": "true" }), el("span", { class: "ev-bola-txt" }, "Evento Acontecendo!"));
+      b.addEventListener("click", abrir);
+      faixa.replaceChildren(b);
+    }
     faixa.hidden = false;
   };
   void atualizar();
