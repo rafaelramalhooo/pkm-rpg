@@ -1,5 +1,6 @@
 import { supabase } from "../supabase";
 import { el, montar, mensagem } from "./dom";
+import { avisoManutencao } from "./acesso";
 
 function marcaPainel(): HTMLElement {
   return el("img", { class: "logo-rafar", src: `${import.meta.env.BASE_URL}assets/logo-rafar.png`, alt: "Rafar: Um novo começo" });
@@ -48,12 +49,14 @@ export function telaLogin(modo: Modo = "entrar"): void {
     }
   });
 
+  const manut = el("p", { class: "msg erro", role: "status", hidden: "" });
+  void avisoManutencao().then((t) => { if (t) { manut.textContent = `🔧 ${t} (só o Mestre pode entrar agora.)`; manut.hidden = false; } }).catch(() => undefined);
   const rodape = el("div", { class: "login-links" },
     ...(modo === "entrar" ? [troca("Criar conta", "criar"), troca("Esqueci a senha", "esqueci")] : [troca("← Voltar para Entrar", "entrar")]));
   montar([
     el("div", { class: "painel painel-hub" }, marcaPainel(),
       el("h1", {}, modo === "entrar" ? "Entrar na aventura" : modo === "criar" ? "Criar conta" : "Recuperar senha"),
-      form, rodape),
+      manut, form, rodape),
   ]);
 }
 

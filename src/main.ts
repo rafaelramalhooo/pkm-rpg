@@ -5,6 +5,7 @@ import { telaLogin, telaNovaSenha } from "./ui/login";
 import { telaPersonagem } from "./ui/personagem";
 import { telaJogo } from "./ui/jogo";
 import { vigiarVersao } from "./ui/versao";
+import { iniciarAcesso, pararAcesso } from "./ui/acesso";
 
 vigiarVersao();
 
@@ -22,9 +23,12 @@ async function rotear(userId: string | null): Promise<void> {
   if (userId === usuarioAtual) return; // o Supabase avisa a mesma sessão mais de uma vez
   usuarioAtual = userId;
   if (!userId) {
+    pararAcesso();
     telaLogin();
     return;
   }
+  if ((await iniciarAcesso()) === "bloqueado") return; // manutenção ou sessão derrubada: a própria tela de aviso já foi mostrada
+  if (usuarioAtual !== userId) return;
   const { data, error } = await supabase
     .from("jogadores")
     .select("id, nome, papel, aparencia, mapa_id, x, y, direcao, pa, dinheiro")

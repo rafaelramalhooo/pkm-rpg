@@ -11,7 +11,8 @@ import { abrirSocial, carregarPendencias } from "./social";
 import { resolverPendencias } from "./momentos";
 import { abrirMapaMundi } from "./mapamundi";
 import { abrirCaixas } from "./caixa";
-import { abrirHabilidades, abrirAcoes, acaoPA, textoEventos } from "./habilidades";
+import { abrirHabilidades, abrirAcoes, acaoPA, textoEventos, exigirClasse } from "./habilidades";
+import { aoEstado, consultar, type PingEstado } from "./acesso";
 import { abrirMochila as abrirMochilaSS } from "./mochila";
 import { abrirResumo } from "./resumo";
 import { abrirOrganizar } from "./organizar";
@@ -491,7 +492,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       "Como jogar",
       el("p", { class: "sub" }, "Setas ou WASD para andar (no celular, use os botões na tela). E, Espaço ou Enter interagem com o que está no seu tile ou ao seu lado; B busca o Pokémon da prévia."),
       el("p", { class: "sub" }, "Ande e pare: às vezes um Pokémon do bioma (grama, estrada, floresta, água...) aparece no canto inferior esquerdo. Buscá-lo custa 1 Ponto de Aventura (PA); ignorar é grátis. Seus PA se renovam com o tempo."),
-      el("p", { class: "sub" }, "Fale com o Professor Carvalho no laboratório para receber seu primeiro Pokémon. Treinadores só desafiam quando você chega ao lado deles e fala (botão Interagir ou E)."),
+      el("p", { class: "sub" }, "O Mapa Mundi abre pelo botão 🗺 ao lado do zoom ou pela tecla M. Fale com o Professor Carvalho no laboratório para receber seu primeiro Pokémon. Treinadores só desafiam quando você chega ao lado deles e fala (botão Interagir ou E)."),
     );
   }
 
@@ -815,6 +816,11 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       return;
     }
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if ((e.key === "m" || e.key === "M") && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      if (modal.aberto() && modal.raiz.querySelector(".mm-fundo")) { modal.fechar(); e.preventDefault(); }
+      else if (!emBatalha && !modal.aberto() && !document.querySelector(".classe-obrig, .manut-tela")) { abrirMundi(); e.preventDefault(); }
+      return;
+    }
     if (emBatalha || modal.aberto()) return;
     if (e.key === "e" || e.key === "E" || e.key === " " || e.key === "Enter") {
       if (!interagir() && oferta) void procurar();
@@ -836,7 +842,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     chat.value = "";
     chat.blur();
   });
-  const botoes = el("div", { class: "grupo" }, botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"), botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"));
+  const botoes = el("div", { class: "grupo" }, botao("🗺", () => { if (!emBatalha) abrirMundi(); }, "sec botao-menu botao-mapa"), botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"), botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"));
 
   const marca = el("img", { class: "marca-img", src: `${import.meta.env.BASE_URL}assets/logo-rafar.png`, alt: "Rafar" });
   const abrirMundi = (): void => void atualizarMissao().then(() => abrirMapaMundi(modal, (m) => controle?.viajar(m) ?? Promise.resolve(false), mostrarAviso, missaoAtual?.estado === "ativa" && missaoAtual.mapa_id ? { mapa_id: missaoAtual.mapa_id, mapa_nome: missaoAtual.mapa_nome ?? "", nome: missaoAtual.nome, objetivo: missaoAtual.objetivo ?? "" } : null));
@@ -845,7 +851,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       {
         rotulo: "Jogar",
         itens: () => [
-          { rotulo: "Mapa Mundi", fn: abrirMundi, oculto: emBatalha },
+          { rotulo: "Mapa Mundi (tecla M)", fn: abrirMundi, oculto: emBatalha },
           { rotulo: "Buscar Pokémon (1 PA)", fn: () => void procurar(), oculto: !oferta },
           { rotulo: "Interagir", fn: () => { interagir(); }, oculto: !(lugar?.poi || lugar?.npc) },
           { rotulo: "Desistir da missão", fn: abrirDesistirMissao, oculto: missaoAtual?.estado !== "ativa" },
@@ -878,7 +884,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     marca,
   );
   const rodape = el("div", { class: "barra rodape" }, formChat, botoes);
-  const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage · B busca o Pokémon da prévia · Ctrl + / Ctrl − ajustam o zoom");
+  const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage · M abre o Mapa Mundi · B busca o Pokémon da prévia · Ctrl + / Ctrl − ajustam o zoom");
 
   const faixaEventos = iniciarFaixaEventos();
   tela.append(faixaEventos);
@@ -929,7 +935,11 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     return;
   }
   controle = iniciado;
+  const checarClasse = (d: Pick<PingEstado, "personagem" | "classe" | "mestre">): void => { if (d.personagem && !d.classe && !d.mestre) void exigirClasse(mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }); };
+  void consultar().then((d) => { if (d) checarClasse(d); });
+  const sairDoPing = aoEstado(checarClasse);
   aoTrocarTela(() => {
+    sairDoPing();
     window.clearInterval(tempoSocial);
     window.clearInterval(tempoMissao);
     window.removeEventListener("keydown", aoTecla);

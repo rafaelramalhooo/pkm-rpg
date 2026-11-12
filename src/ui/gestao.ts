@@ -2,7 +2,7 @@ import { supabase } from "../supabase";
 import { el } from "./dom";
 
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
-interface Resumo { id: string; nome: string; papel: string; pa: number; dinheiro: number; mapa_id: string; insignias: string[]; campeao: boolean; email: string | null; pokemons: number; maior_nivel: number }
+interface Resumo { id: string; nome: string; papel: string; pa: number; dinheiro: number; mapa_id: string; insignias: string[]; campeao: boolean; email: string | null; pokemons: number; maior_nivel: number; online?: boolean; visto_ha?: number | null; classe_rpg?: string | null }
 interface Pk { id: string; especie_id: number; apelido: string | null; nivel: number; hp_atual: number; hp_max: number; posicao: number | null; brilhante: boolean }
 interface Ficha {
   jogador: { id: string; nome: string; papel: string; pa: number; dinheiro: number; mapa_id: string; x: number; y: number; insignias: string[]; campeao: boolean };
@@ -21,7 +21,7 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
     supabase.from("mapas").select("id, nome").order("nome").limit(100),
   ]);
   if (error) { aviso(error.message); return; }
-  const jogadores = (lista ?? []) as Resumo[];
+  let jogadores = (lista ?? []) as Resumo[];
   const especies = (esp ?? []) as { id: number; nome: string }[];
   const nomeEsp = new Map(especies.map((e) => [e.id, e.nome]));
   const itens = (its ?? []) as { slug: string; nome: string }[];
@@ -38,16 +38,75 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
   const esq = el("div", { class: "mg-lista" });
   const dir = el("div", { class: "mg-ficha" }, el("p", { class: "sub" }, "Escolha um usuário na lista."));
   const busca = el("input", { type: "search", placeholder: "Buscar por nome ou e-mail…" });
+  const soOnline = el("input", { type: "checkbox" });
+  const contador = el("strong", { class: "mg-online-n" }, "");
+  const filtro = el("label", { class: "mg-chk" }, soOnline, "só online");
+  const tempoVisto = (s: number | null | undefined): string => (s == null ? "nunca entrou" : s < 60 ? `visto há ${s}s` : s < 3600 ? `visto há ${Math.floor(s / 60)} min` : s < 86400 ? `visto há ${Math.floor(s / 3600)} h` : `visto há ${Math.floor(s / 86400)} d`);
   const desenharLista = () => {
     const q = busca.value.trim().toLowerCase();
-    esq.replaceChildren(...jogadores.filter((j) => !q || j.nome.toLowerCase().includes(q) || (j.email ?? "").toLowerCase().includes(q)).map((j) => {
-      const b = el("button", { type: "button", class: "mg-item" }, el("strong", {}, `${j.papel === "mestre" ? "👑 " : ""}${j.nome}`),
-        el("span", {}, `${j.pokemons} Pokémon · maior Nv ${j.maior_nivel} · ${j.insignias.length} insígnias`), el("span", { class: "sub" }, j.email ?? ""));
-      b.addEventListener("click", () => void abrirFicha(j.id));
-      return b;
-    }));
+    const on = jogadores.filter((j) => j.online).length;
+    contador.textContent = `🟢 ${on} online agora · ${jogadores.length} contas`;
+    esq.replaceChildren(...jogadores
+      .filter((j) => (!q || j.nome.toLowerCase().includes(q) || (j.email ?? "").toLowerCase().includes(q)) && (!soOnline.checked || j.online))
+      .sort((a, b) => Number(!!b.online) - Number(!!a.online) || a.nome.localeCompare(b.nome))
+      .map((j) => {
+        const b = el("button", { type: "button", class: "mg-item" },
+          el("strong", {}, el("span", { class: `mg-bolinha ${j.online ? "on" : ""}`, title: j.online ? "Online agora" : "Offline" }), `${j.papel === "mestre" ? "👑 " : ""}${j.nome}`),
+          el("span", {}, `${j.online ? "online · " : `${tempoVisto(j.visto_ha)} · `}${j.mapa_id} · ${j.classe_rpg ?? "sem classe"}`),
+          el("span", {}, `${j.pokemons} Pokémon · maior Nv ${j.maior_nivel} · ${j.insignias.length} insígnias`), el("span", { class: "sub" }, j.email ?? ""));
+        b.addEventListener("click", () => void abrirFicha(j.id));
+        return b;
+      }));
   };
   busca.addEventListener("input", desenharLista);
+  soOnline.addEventListener("change", desenharLista);
+  // atualização quase em tempo real: a cada 5 s enquanto o painel estiver aberto
+  const timerOnline = window.setInterval(async () => {
+    if (!esq.isConnected || esq.closest(".menu")?.hasAttribute("hidden")) { window.clearInterval(timerOnline); return; }
+    const { data: l } = await supabase.rpc("mestre_jogadores");
+    if (Array.isArray(l)) { jogadores = l as Resumo[]; desenharLista(); }
+  }, 5000);
+
+  // ----- manutenção e derrubar todos -----
+  const manMsg = el("input", { type: "text", maxlength: "200", placeholder: "Motivo para os jogadores (ex.: Manutenção, volto em 10 min)" });
+  const manEstado = el("span", { class: "sub" }, "");
+  const manLigar = el("button", { type: "button", class: "sec" }, "Ativar manutenção");
+  const manDesligar = el("button", { type: "button", class: "sec" }, "Liberar o jogo");
+  const derrubar = el("button", { type: "button", class: "sec perigo" }, "Derrubar todos agora");
+  const lerManutencao = async () => {
+    const { data: a } = await supabase.rpc("estado_acesso");
+    const e = a as { manutencao?: boolean; mensagem?: string } | null;
+    manEstado.textContent = e?.manutencao ? `🔧 LIGADA: "${e.mensagem}"` : "Jogo liberado para todos.";
+    manLigar.textContent = e?.manutencao ? "Atualizar mensagem" : "Ativar manutenção";
+    manDesligar.disabled = !e?.manutencao;
+    if (e?.manutencao && !manMsg.value) manMsg.value = e.mensagem ?? "";
+  };
+  manLigar.addEventListener("click", async () => {
+    const { error: e } = await supabase.rpc("mestre_manutencao", { p_ativo: true, p_mensagem: manMsg.value });
+    if (e) return void dizer(e.message, false);
+    dizer("Manutenção ativada: só você consegue jogar. Quem está em batalha termina a luta antes de ver o aviso."); await lerManutencao();
+  });
+  manDesligar.addEventListener("click", async () => {
+    const { error: e } = await supabase.rpc("mestre_manutencao", { p_ativo: false, p_mensagem: "" });
+    if (e) return void dizer(e.message, false);
+    dizer("Jogo liberado. Os jogadores voltam sozinhos em poucos segundos."); await lerManutencao();
+  });
+  let armado = false;
+  derrubar.addEventListener("click", async () => {
+    if (!armado) {
+      armado = true; derrubar.textContent = "Confirmar: desconectar todos os jogadores?";
+      window.setTimeout(() => { armado = false; derrubar.textContent = "Derrubar todos agora"; }, 5000);
+      return;
+    }
+    armado = false; derrubar.textContent = "Derrubar todos agora";
+    const { error: e } = await supabase.rpc("mestre_derrubar_todos");
+    if (e) return void dizer(e.message, false);
+    dizer("Pronto: todos os jogadores conectados serão desconectados em até 5 segundos (você não).");
+  });
+  void lerManutencao();
+  const painelManut = el("details", { class: "mg-manut" }, el("summary", {}, "🔧 Manutenção e acesso"),
+    el("p", { class: "sub" }, "Com a manutenção ligada, só o Mestre consegue entrar e jogar. Quem está em batalha termina a luta. Use “Derrubar todos” para desconectar quem está jogando agora."),
+    manEstado, manMsg, el("div", { class: "mg-linha" }, manLigar, manDesligar, derrubar));
 
   async function abrirFicha(id: string): Promise<void> {
     const { data, error: e } = await supabase.rpc("mestre_ficha", { p_id: id });
@@ -119,5 +178,5 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
   }
 
   desenharLista();
-  modal.abrir("Gestão do Mestre", el("div", { class: "mg-wrap" }, el("div", { class: "mg-esq" }, busca, esq), dir), msg);
+  modal.abrir("Gestão do Mestre", painelManut, el("div", { class: "mg-wrap" }, el("div", { class: "mg-esq" }, el("div", { class: "mg-online" }, contador, filtro), busca, esq), dir), msg);
 }

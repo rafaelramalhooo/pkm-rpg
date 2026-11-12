@@ -1,7 +1,7 @@
 import { supabase } from "../supabase";
 import { el } from "./dom";
 
-interface Evento { id: string; tipo: string; valor: number; mensagem: string | null; fim: string }
+interface Evento { id: string; tipo: string; valor: number; mensagem: string | null; inicio?: string; fim: string }
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
 
 const TIPOS: Record<string, { nome: string; icone: string; valores: number[]; texto: (v: number) => string }> = {
@@ -40,17 +40,22 @@ export async function abrirEventos(modal: Modal, aviso: (t: string) => void): Pr
   const msg = el("p", { class: "msg" }, "");
   const lista = el("div", { class: "ev-lista" });
   const carregar = async () => {
-    const { data } = await supabase.rpc("eventos_ativos");
+    const [{ data }, { data: ag }] = await Promise.all([supabase.rpc("eventos_ativos"), supabase.rpc("eventos_agendados")]);
     const evs = (Array.isArray(data) ? data : []) as Evento[];
-    lista.replaceChildren(...(evs.length ? evs.map((e) => {
-      const b = el("button", { type: "button", class: "sec" }, "Encerrar");
+    const agendados = (Array.isArray(ag) ? ag : []) as Evento[];
+    const linha = (e: Evento, futuro: boolean): HTMLElement => {
+      const b = el("button", { type: "button", class: "sec" }, futuro ? "Cancelar" : "Encerrar");
       b.addEventListener("click", async () => {
         const { error } = await supabase.rpc("encerrar_evento", { p_id: e.id });
         if (error) { aviso(error.message); return; }
         await carregar();
       });
-      return el("div", { class: "ev-item" }, el("span", {}, `${TIPOS[e.tipo]?.icone ?? ""} ${resumo(e)} · até ${hora(e.fim)}`), b);
-    }) : [el("p", { class: "sub" }, "Nenhum evento em andamento.")]));
+      return el("div", { class: "ev-item" }, el("span", {}, `${TIPOS[e.tipo]?.icone ?? ""} ${resumo(e)} · ${futuro && e.inicio ? `começa ${hora(e.inicio)} · ` : ""}até ${hora(e.fim)}`), b);
+    };
+    lista.replaceChildren(
+      ...(evs.length ? evs.map((e) => linha(e, false)) : [el("p", { class: "sub" }, "Nenhum evento em andamento.")]),
+      el("label", {}, "Agendados"),
+      ...(agendados.length ? agendados.map((e) => linha(e, true)) : [el("p", { class: "sub" }, "Nenhum evento agendado.")]));
   };
 
   const tipo = el("select", {}, ...Object.entries(TIPOS).map(([k, t]) => el("option", { value: k }, `${t.icone} ${t.nome}`)));
@@ -60,6 +65,13 @@ export async function abrirEventos(modal: Modal, aviso: (t: string) => void): Pr
   duracao.value = "60";
   const quando = el("input", { type: "datetime-local", hidden: "" });
   duracao.addEventListener("change", () => { quando.hidden = duracao.value !== "data"; if (!quando.hidden && !quando.value) { const d = new Date(Date.now() + 3600e3); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); quando.value = d.toISOString().slice(0, 16); } });
+  const inicio = el("select", {}, el("option", { value: "agora" }, "Agora"), el("option", { value: "data" }, "Em uma data e hora…"));
+  const quandoIni = el("input", { type: "datetime-local", hidden: "" });
+  inicio.addEventListener("change", () => {
+    quandoIni.hidden = inicio.value !== "data";
+    if (!quandoIni.hidden && !quandoIni.value) { const d = new Date(Date.now() + 3600e3); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); quandoIni.value = d.toISOString().slice(0, 16); }
+    iniciar.textContent = inicio.value === "data" ? "Agendar evento" : "Iniciar evento agora";
+  });
   const texto = el("input", { type: "text", maxlength: "90", placeholder: "Mensagem para os jogadores (opcional)" });
   const preencherValores = () => {
     const t = TIPOS[tipo.value];
@@ -74,16 +86,18 @@ export async function abrirEventos(modal: Modal, aviso: (t: string) => void): Pr
     iniciar.disabled = true;
     const num = Number(String(valor.value).replace(",", "."));
     const porData = duracao.value === "data";
+    const agendar = inicio.value === "data";
+    if (agendar && !quandoIni.value) { iniciar.disabled = false; msg.textContent = "Escolha a data e a hora de início."; msg.className = "msg erro"; return; }
     if (porData && !quando.value) { iniciar.disabled = false; msg.textContent = "Escolha a data e a hora de término."; msg.className = "msg erro"; return; }
-    const { error } = await supabase.rpc("criar_evento", { p_tipo: tipo.value, p_valor: num, p_minutos: porData ? null : Number(duracao.value), p_mensagem: texto.value.trim() || null, p_fim: porData ? new Date(quando.value).toISOString() : null });
+    const { error } = await supabase.rpc("criar_evento", { p_tipo: tipo.value, p_valor: num, p_minutos: porData ? null : Number(duracao.value), p_mensagem: texto.value.trim() || null, p_fim: porData ? new Date(quando.value).toISOString() : null, p_inicio: agendar ? new Date(quandoIni.value).toISOString() : null });
     iniciar.disabled = false;
     if (error) { msg.textContent = error.message; msg.className = "msg erro"; return; }
-    msg.textContent = "Evento iniciado! A faixa aparece para os jogadores em até 1 minuto."; msg.className = "msg ok";
+    msg.textContent = agendar ? "Evento agendado! Ele começa sozinho na data marcada." : "Evento iniciado! A faixa aparece para os jogadores em até 1 minuto."; msg.className = "msg ok";
     texto.value = "";
     await carregar();
   });
   await carregar();
   modal.abrir("Eventos do Mestre",
-    el("label", {}, "Regra"), tipo, el("label", {}, "Intensidade"), valor, dica, el("label", {}, "Duração"), duracao, quando, el("label", {}, "Mensagem"), texto, iniciar, msg,
+    el("p", { class: "sub" }, "Vários eventos podem acontecer ao mesmo tempo. Se dois do mesmo tipo coincidirem, vale o criado por último."), el("label", {}, "Regra"), tipo, el("label", {}, "Intensidade"), valor, dica, el("label", {}, "Começa"), inicio, quandoIni, el("label", {}, "Duração"), duracao, quando, el("label", {}, "Mensagem"), texto, iniciar, msg,
     el("label", {}, "Em andamento"), lista);
 }
