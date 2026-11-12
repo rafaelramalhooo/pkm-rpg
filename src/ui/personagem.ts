@@ -57,7 +57,7 @@ export function telaPersonagem(aoCriar: (j: Jogador) => void): void {
       { class: "painel painel-hub" },
       marcaPainel(),
       el("h1", {}, "Novo treinador"),
-      el("p", { class: "sub" }, "Você começa em Pallet Town."),
+      el("p", { class: "sub" }, "Você começa dentro do Laboratório do Professor Carvalho."),
       form,
     ),
   ]);

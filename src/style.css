@@ -388,7 +388,6 @@ h1 { color: #fff; }
 }
 body {
   background:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='98' viewBox='0 0 56 98'><path d='M28 2 54 17v30L28 62 2 47V17zM0 66l28-16 28 16v30L28 112 0 96z' fill='none' stroke='%23ffffff' stroke-opacity='.35' stroke-width='1.5'/></svg>"),
     radial-gradient(900px 260px at 18% 8%, #ffffffcc, transparent 70%),
     radial-gradient(700px 220px at 82% 18%, #ffffffaa, transparent 70%),
     linear-gradient(180deg, #7fb4f2 0%, #b7d6fa 55%, #e4efff 100%);
@@ -524,3 +523,43 @@ body.modo-jogo { padding-left: 0; padding-right: 0; }
 .sd-caixa .sd-hp { width: 75%; }
 .sd-caixa .sd-hp-trilho { height: .86em; }
 .sd-caixa .sd-hp-num { font-size: .5em; }
+
+/* atalhos retangulares com espaço entre eles */
+.hex-dock { gap: 10px; }
+.hex-dock button.hex { clip-path: none; width: 68px; height: 62px; margin: 0; border-radius: 14px; border: 1px solid #ffffff44; background: var(--vidro); backdrop-filter: blur(8px); box-shadow: 0 6px 16px #0006; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 4px; }
+.hex-dock button.hex:hover:not(:disabled) { background: linear-gradient(160deg, var(--laranja), var(--laranja2)); transform: translateY(-2px); }
+.hex-dock .hex .ico { transform: none; } .hex-dock .hex .ico svg { width: 24px; height: 24px; }
+.hex-rot { position: static; font-size: .62rem; font-weight: 700; line-height: 1; }
+
+/* ===== prévia de encontro ===== */
+.oferta { position: absolute; left: 10px; bottom: 10px; z-index: 4; display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 8px; max-width: min(300px, 70%);
+  background: var(--vidro); border: 1px solid #ffffff44; border-radius: 16px; backdrop-filter: blur(10px); color: #fff; animation: oferta-entra .25s ease-out; }
+.oferta[hidden] { display: none; }
+.oferta .pk-img { width: 64px; height: 64px; flex: none; display: flex; align-items: center; justify-content: center; }
+.oferta .pk-img img { max-width: 64px; max-height: 64px; image-rendering: pixelated; }
+.oferta-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.oferta-info strong { font-size: .85rem; }
+.oferta-bioma { font-size: .62rem; letter-spacing: .04em; text-transform: uppercase; opacity: .8; }
+.oferta-btns { display: flex; gap: 6px; }
+.oferta-btns button { margin: 0; padding: 5px 10px; font-size: .72rem; border-radius: 10px; }
+.oferta-ignorar { background: transparent; border: 1px solid #ffffff55; }
+@keyframes oferta-entra { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (pointer: coarse), (max-width: 700px) { .oferta { bottom: 150px; } }
+
+/* ===== dashboard e personagens ===== */
+.dash-cab { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.dash-cab > div { display: flex; flex-direction: column; gap: 2px; }
+.dash-nome { font-size: 1.1rem; }
+.dash-avatar { flex: none; width: 56px; height: 56px; }
+.dash-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 8px 0 12px; }
+.dash-tile { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 14px; background: var(--vidro); border: 1px solid #ffffff33; }
+.dash-tile strong { font-size: 1.25rem; } .dash-tile span { font-size: .68rem; opacity: .8; }
+.dash-time { display: grid; gap: 8px; }
+.dash-pk { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: var(--vidro); border: 1px solid #ffffff33; margin-bottom: 8px; }
+.dash-pk.ativo { border-color: #7fd1ff; } .dash-pk.caido { opacity: .6; }
+.dash-pk .pk-img { width: 52px; height: 52px; flex: none; display: flex; align-items: center; justify-content: center; }
+.dash-pk .pk-img img { max-width: 52px; max-height: 52px; image-rendering: pixelated; }
+.dash-pk-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; font-size: .78rem; }
+.dash-pk-info .hp-trilho { height: 8px; }
+.dash-btns { display: flex; flex-wrap: wrap; gap: 6px; } .dash-btns button { margin: 0; padding: 5px 10px; font-size: .72rem; }
+.dash-atalhos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; } .dash-atalhos button { margin: 0; }
