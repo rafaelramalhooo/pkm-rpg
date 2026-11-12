@@ -65,7 +65,7 @@ language sql stable security definer set search_path = public as $$
     'agora', now()) $$;
 grant execute on function public.estado_acesso() to anon, authenticated;
 
-create or replace function public.ping() returns jsonb
+create or replace function public.rafar_ping() returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare v_m jsonb; v_j public.jogadores;
 begin
@@ -84,7 +84,7 @@ begin
     'classe', v_j.classe_rpg,
     'em_batalha', exists (select 1 from public.batalhas where jogador = auth.uid() and estado = 'ativa'));
 end $$;
-grant execute on function public.ping() to authenticated;
+grant execute on function public.rafar_ping() to authenticated;
 
 create or replace function public.mestre_manutencao(p_ativo boolean, p_mensagem text default null) returns jsonb
 language plpgsql security definer set search_path = public as $$
@@ -135,7 +135,7 @@ begin
   begin
     v_uid := nullif(current_setting('request.jwt.claims', true)::jsonb ->> 'sub', '')::uuid;
     v_path := coalesce(current_setting('request.path', true), '');
-    if v_uid is not null and v_path !~ '/rpc/(ping|estado_acesso)$' then
+    if v_uid is not null and v_path !~ '/rpc/(rafar_ping|estado_acesso)$' then
       select (papel = 'mestre') into v_mestre from public.jogadores where id = v_uid;
       if not coalesce(v_mestre, false) then
         select valor into v_man from public.config where chave = 'manutencao';

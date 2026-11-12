@@ -1,4 +1,4 @@
-// Presença (batimento a cada 4 s), manutenção e "derrubar todos". Tudo é decidido no servidor (função ping); aqui só se reage.
+// Presença (batimento a cada 4 s), manutenção e "derrubar todos". Tudo é decidido no servidor (função rafar_ping); aqui só se reage.
 import { supabase } from "../supabase";
 
 export interface PingEstado {
@@ -17,7 +17,7 @@ const ouvintes = new Set<(e: PingEstado) => void>();
 
 /** Chama o servidor: registra que estou online e devolve o estado do acesso. */
 export async function consultar(): Promise<PingEstado | null> {
-  const { data, error } = await supabase.rpc("ping");
+  const { data, error } = await supabase.rpc("rafar_ping");
   if (error || !data) return null;
   return data as PingEstado;
 }
