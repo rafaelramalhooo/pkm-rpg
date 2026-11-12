@@ -125,5 +125,63 @@ export async function abrirMapaMundi(
   }
   const aqui = porId.get(info.atual);
   if (aqui) rotulo.textContent = `Você está em ${aqui.nome}. Toque em um lugar para viajar.`;
-  modal.abrir("Mapa Mundi", ...(missao ? [el("div", { class: "mm-missao-info" }, el("strong", {}, `Missão: ${missao.nome}`), el("span", {}, `${missao.objetivo} (${missao.mapa_nome})`))] : []), el("div", { class: "mm-topo" }, rotulo, ir), el("div", { class: "mm-caixa" }, mapa as unknown as Node), legenda);
+  // ---- zoom e arrastar (botões, roda do mouse, arrastar e pinça no celular) ----
+  const W0 = 410, H0 = 615, ZMAX = 4;
+  let z = 1, cx = W0 / 2, cy = H0 / 2;
+  const aplicar = () => {
+    const w = W0 / z, h = H0 / z;
+    cx = Math.min(W0 - w / 2, Math.max(w / 2, cx)); cy = Math.min(H0 - h / 2, Math.max(h / 2, cy));
+    mapa.setAttribute("viewBox", `${cx - w / 2} ${cy - h / 2} ${w} ${h}`);
+    mapa.style.touchAction = z > 1 ? "none" : "pan-y";
+    mapa.classList.toggle("mm-ampliado", z > 1);
+    pct.textContent = `${Math.round(z * 100)}%`;
+  };
+  const noPonto = (clientX: number, clientY: number) => {
+    const r = mapa.getBoundingClientRect(); const w = W0 / z, h = H0 / z;
+    const esc = Math.min(r.width / w, r.height / h); // preserveAspectRatio "meet"
+    const ox = r.left + (r.width - w * esc) / 2, oy = r.top + (r.height - h * esc) / 2;
+    return { x: cx - w / 2 + (clientX - ox) / esc, y: cy - h / 2 + (clientY - oy) / esc, esc };
+  };
+  const zoomar = (novo: number, clientX?: number, clientY?: number) => {
+    novo = Math.min(ZMAX, Math.max(1, novo));
+    const r = mapa.getBoundingClientRect();
+    const px = clientX ?? r.left + r.width / 2, py = clientY ?? r.top + r.height / 2;
+    const antes = noPonto(px, py);
+    z = novo;
+    const depois = noPonto(px, py);
+    cx += antes.x - depois.x; cy += antes.y - depois.y;
+    aplicar();
+  };
+  const pct = el("span", { class: "mm-zoom-pct" }, "100%");
+  const bt = (t: string, titulo: string, f: () => void) => { const b = el("button", { type: "button", class: "mm-zbtn", title: titulo, "aria-label": titulo }, t) as HTMLButtonElement; b.addEventListener("click", f); return b; };
+  const controles = el("div", { class: "mm-zoom" }, bt("+", "Aproximar", () => zoomar(z * 1.5)), pct, bt("−", "Afastar", () => zoomar(z / 1.5)), bt("⟲", "Voltar ao tamanho inicial", () => { z = 1; cx = W0 / 2; cy = H0 / 2; aplicar(); }));
+  mapa.addEventListener("wheel", (e) => { e.preventDefault(); zoomar(z * (e.deltaY < 0 ? 1.2 : 1 / 1.2), e.clientX, e.clientY); }, { passive: false });
+  const dedos = new Map<number, { x: number; y: number }>();
+  let moveu = false, distAntes = 0;
+  mapa.addEventListener("pointerdown", (e) => { dedos.set(e.pointerId, { x: e.clientX, y: e.clientY }); moveu = false; distAntes = 0; });
+  mapa.addEventListener("pointermove", (e) => {
+    const d = dedos.get(e.pointerId); if (!d) return;
+    if (dedos.size === 2) {
+      dedos.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      const [a, b] = [...dedos.values()];
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      if (distAntes) zoomar(z * (dist / distAntes), (a.x + b.x) / 2, (a.y + b.y) / 2);
+      distAntes = dist; moveu = true; return;
+    }
+    if (z <= 1) return;
+    const dx = e.clientX - d.x, dy = e.clientY - d.y;
+    if (!moveu && Math.hypot(dx, dy) < 5) return;
+    moveu = true;
+    const esc = noPonto(0, 0).esc;
+    cx -= dx / esc; cy -= dy / esc;
+    dedos.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    aplicar();
+  });
+  const soltar = (e: PointerEvent) => { dedos.delete(e.pointerId); distAntes = 0; };
+  mapa.addEventListener("pointerup", soltar); mapa.addEventListener("pointercancel", soltar); mapa.addEventListener("pointerleave", soltar);
+  // depois de arrastar/pinçar, o clique não escolhe destino sem querer
+  mapa.addEventListener("click", (e) => { if (moveu) { e.stopPropagation(); e.preventDefault(); moveu = false; } }, true);
+  const caixa = el("div", { class: "mm-caixa" }, mapa as unknown as Node, controles);
+  aplicar();
+  modal.abrir("Mapa Mundi", ...(missao ? [el("div", { class: "mm-missao-info" }, el("strong", {}, `Missão: ${missao.nome}`), el("span", {}, `${missao.objetivo} (${missao.mapa_nome})`))] : []), el("div", { class: "mm-topo" }, rotulo, ir), caixa, legenda);
 }
