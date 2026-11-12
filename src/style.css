@@ -739,3 +739,39 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .hab-ranks{display:inline-flex;gap:3px}.hab-ranks i{width:10px;height:10px;border-radius:50%;border:2px solid #f5c542}.hab-ranks i.on{background:#f5c542}
 .hab-req{color:#ff8a80}.hab-msg{min-height:1.4em;color:#9be39b;margin:6px 0}
 .acao-bloco{margin:8px 0}.acao-pks{display:flex;flex-wrap:wrap;gap:6px}.acao-pk{display:flex;align-items:center;gap:4px;font-size:.8rem}.acao-linha{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* ===== Minhas Coisas (estilo Sword & Shield) ===== */
+.ss-topo{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:linear-gradient(90deg,#d6282f,#a81b22);border-radius:10px 10px 0 0;color:#fff;font-weight:800}
+.ss-din{background:#0007;padding:2px 10px;border-radius:99px}
+.ss-tela{display:grid;grid-template-columns:minmax(150px,34%) 1fr;gap:8px;background:#f2f2f2;padding:8px;color:#1a1a1a;max-height:46vh;min-height:210px}
+.ss-time{display:flex;flex-direction:column;gap:5px;overflow:auto}.ss-pk{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:10px;border:2px solid #cfcfcf;background:#fff;color:#1a1a1a;text-align:left;cursor:default}
+.ss-pk.alvo{cursor:pointer;border-color:#e63946;animation:ss-pulsa 1s infinite alternate}.ss-pk.caido{opacity:.7}.ss-pk.vazio{justify-content:center;opacity:.35}
+@keyframes ss-pulsa{to{box-shadow:0 0 0 3px #e6394655}}
+.ss-pk img{width:34px;height:34px;image-rendering:pixelated}.ss-pk-info{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}.ss-pk-info strong{font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ss-pk-info small{font-size:.66rem;opacity:.7}
+.ss-hp{height:6px;background:#cfd3da;border-radius:99px;overflow:hidden}.ss-hp i{display:block;height:100%}.ss-hp i.ok{background:#35c75f}.ss-hp i.medio{background:#f5c542}.ss-hp i.baixo{background:#ff5a4f}
+.ss-dir{display:flex;flex-direction:column;min-height:0;gap:6px}.ss-bolsos{display:flex;gap:4px;flex-wrap:wrap}
+.ss-bolso{background:#d9d9d9;color:#333;border:0;border-radius:99px;padding:4px 10px;font-weight:700;font-size:.78rem;cursor:pointer;margin:0}.ss-bolso small{margin-left:4px;opacity:.6}.ss-bolso.ativo{background:#e63946;color:#fff}
+.ss-itens{display:flex;flex-direction:column;overflow:auto;border-top:3px solid #e63946;background:#fff;border-radius:6px;flex:1}
+.ss-item{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:6px;padding:8px 10px;border:0;border-bottom:1px solid #e3e3e3;background:#fff;color:#1a1a1a;text-align:left;margin:0;border-radius:0;cursor:pointer}
+.ss-item.sel{background:#fff2c4;box-shadow:inset 4px 0 0 #e63946;font-weight:800}.ss-qtd{font-weight:700;opacity:.75}.ss-ico{font-size:1.1rem}
+.ss-desc{background:#1b1f2a;color:#fff;border-radius:0 0 10px 10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:52px}.ss-desc p{margin:0;font-size:.88rem}
+.ss-usar{background:#e63946;color:#fff;border:0;border-radius:99px;padding:8px 18px;font-weight:800;margin:0;cursor:pointer;white-space:nowrap}
+@media (max-width:700px){.ss-tela{grid-template-columns:1fr;max-height:52vh}.ss-time{flex-direction:row;overflow-x:auto}.ss-pk{min-width:130px}}
+/* ===== Resumo do Pokémon (estilo Arceus) ===== */
+.rs-tela{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:linear-gradient(160deg,#1d2a24,#0e1713);border:1px solid #cdb77a66;border-radius:12px;padding:12px;color:#f3ecd6}
+.rs-retrato{display:grid;place-items:center;border-radius:50%;aspect-ratio:1;max-width:210px;margin:0 auto;background:radial-gradient(circle,color-mix(in srgb,var(--cor) 55%,#0000),#0000 72%)}.rs-retrato img{width:78%;image-rendering:pixelated}
+.rs-nome{display:flex;justify-content:space-between;align-items:baseline;font-size:1.1rem;margin-top:6px}.rs-exp small{display:block;margin:6px 0 3px;opacity:.75;font-size:.72rem}
+.rs-dir{display:flex;flex-direction:column;gap:6px;align-items:center}.hexa{width:100%;max-width:270px}.rs-info{opacity:.75}
+.rs-golpes{display:grid;grid-template-columns:1fr 1fr;gap:5px;width:100%}.rs-golpe{display:flex;justify-content:space-between;gap:4px;padding:6px 14px;color:#fff;font-size:.78rem;background:var(--cor);clip-path:polygon(8% 0,100% 0,92% 100%,0 100%);text-shadow:0 1px 2px #0008}
+.cartao-pk.clicavel{cursor:pointer}
+@media (max-width:700px){.rs-tela{grid-template-columns:1fr}}
+/* ===== HUD do time sobre o mapa (estilo Arceus) ===== */
+.hud-time{position:absolute;left:8px;top:84px;display:flex;flex-direction:column;gap:6px;z-index:6}
+.hud-pk{width:42px;height:42px;border-radius:50%;padding:0;margin:0;border:0;cursor:pointer;background:conic-gradient(var(--hpc,#4be37d) var(--pct,100%),#0007 0);display:grid;place-items:center;box-shadow:0 2px 6px #0007}
+.hud-pk::before{content:"";position:absolute;width:34px;height:34px;border-radius:50%;background:#16213aee}.hud-pk img{position:relative;width:30px;height:30px;image-rendering:pixelated}.hud-pk.caido{filter:grayscale(1)}
+@media (max-width:700px){.hud-pk{width:34px;height:34px}.hud-pk::before{width:27px;height:27px}.hud-pk img{width:24px;height:24px}.hud-time{top:70px}}
+/* ===== Batalha (estilo Arceus): caixas curvas e golpes inclinados ===== */
+.sd-caixa{border-radius:28px 6px 28px 6px!important;border:2px solid #fff!important;background:linear-gradient(#fffffff2,#dce8e0f2)!important}
+.sd-caixa.jog{border-radius:6px 28px 6px 28px!important}
+.sd-golpe{clip-path:polygon(5% 0,100% 0,95% 100%,0 100%);border:0!important;border-radius:0!important;padding:10px 18px!important}
+.sd-golpe:hover:not(:disabled){transform:translateX(4px)}

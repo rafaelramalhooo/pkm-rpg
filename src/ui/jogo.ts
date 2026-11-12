@@ -3,13 +3,15 @@ import { aoTrocarTela, el, geracaoAtual, mensagem, montar } from "./dom";
 import type { Controle, Lugar, Poi, TreinadorMapa } from "../game/mundo";
 import { abrirBatalha, type ResultadoBatalha } from "./batalha";
 import {
-  barraHp, carregarReferencias, COR_TIPO, especie, golpe, imagemPokemon, infoItem, meuTime, minhaMochila, NOME_TIPO, nomeItem,
+  barraHp, carregarReferencias, COR_TIPO, especie, golpe, imagemPokemon, meuTime, NOME_TIPO, nomeItem,
   nomePokemon, todasEspecies, type PokemonRow,
 } from "./dados";
 import { importarDados, importarSprites } from "./mestre";
 import { abrirMapaMundi } from "./mapamundi";
 import { abrirCaixas } from "./caixa";
 import { abrirHabilidades, abrirAcoes } from "./habilidades";
+import { abrirMochila as abrirMochilaSS } from "./mochila";
+import { abrirResumo } from "./resumo";
 import { abrirOrganizar } from "./organizar";
 import { abrirGestao } from "./gestao";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
@@ -141,7 +143,25 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   const nomeTreinador = el("strong", { class: "tc-nome" });
   const emblema = el("span", { class: "tc-emblema", "aria-hidden": "true" });
   const BASE = import.meta.env.BASE_URL as string;
+  // Coluna do time sobre o mapa (estilo Arceus): ícones com anel de HP; toque abre o resumo.
+  const hudTime = el("div", { class: "hud-time", "aria-label": "Seu time" });
+  let tempoHudTime: number | undefined;
+  const atualizarHudTime = () => {
+    window.clearTimeout(tempoHudTime);
+    tempoHudTime = window.setTimeout(async () => {
+      const time = await meuTime(j.id);
+      hudTime.replaceChildren(...time.map((p) => {
+        const pct = p.hp_max > 0 ? Math.max(0, Math.min(100, (p.hp_atual / p.hp_max) * 100)) : 0;
+        const b = el("button", { type: "button", class: `hud-pk${p.hp_atual <= 0 ? " caido" : ""}`, title: `${nomePokemon(p)} Nv ${p.nivel}` }, imagemPokemon("frente", p.especie_id, "mini", p.brilhante));
+        b.style.setProperty("--pct", `${pct}%`);
+        b.style.setProperty("--hpc", pct > 50 ? "#4be37d" : pct > 20 ? "#f5c542" : "#ff5a4f");
+        b.addEventListener("click", () => abrirResumo(modal, p));
+        return b;
+      }));
+    }, 500);
+  };
   const atualizarHud = () => {
+    atualizarHudTime();
     pa.textContent = `PA ${j.pa}/${paMax}`;
     pa.classList.toggle("zerado", j.pa === 0);
     dinheiro.textContent = `₽ ${j.dinheiro ?? 0}`;
@@ -210,7 +230,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   };
   dpad.append(dir("cima", "▲"), dir("esquerda", "◀"), dir("direita", "▶"), dir("baixo", "▼"));
   const cartaoTreinador = el("div", { class: "cartao-treinador" }, emblema, el("div", { class: "tc-info" }, nomeTreinador, onde, el("div", { class: "tc-chips" }, dinheiro, pa)));
-  tela.append(aviso, cartaoTreinador, acoes, cartaoOferta, dpad);
+  tela.append(aviso, cartaoTreinador, hudTime, acoes, cartaoOferta, dpad);
 
   // ---------- painéis ----------
   const msgPainel = (): HTMLElement => el("p", { class: "msg", role: "status" });
@@ -269,24 +289,13 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       ),
     );
     c.style.setProperty("--cor", COR_TIPO[e.tipos[0]] ?? "#4f8cff");
+    c.classList.add("clicavel");
+    c.addEventListener("click", () => abrirResumo(modal, p, () => void abrirTime()));
     return c;
   }
 
-  const ICONE_ITEM = (slug: string, cat: string): string =>
-    /ball$/.test(slug) ? "◓" : /potion|restore/.test(slug) ? "🧪" : /revive/.test(slug) ? "✨" : cat.includes("status") || /antidote|heal|awakening/.test(slug) ? "💊" : "🎒";
-
   async function abrirMochila(): Promise<void> {
-    const itens = await minhaMochila(j.id);
-    const cartoes = itens.map((i) => {
-      const inf = infoItem(i.item);
-      const c = el("div", { class: "item-cartao" }, el("div", { class: `item-ico${/ball$/.test(i.item) ? " bola" : ""}` }, ICONE_ITEM(i.item, inf.categoria)), el("div", { class: "item-txt" }, el("strong", {}, nomeItem(i.item)), el("small", {}, inf.efeito)), el("span", { class: "item-qtd" }, `×${i.qtd}`));
-      return c;
-    });
-    modal.abrir(
-      "Mochila", abas("mochila"),
-      el("div", { class: "dinheiro-painel" }, el("span", {}, "Dinheiro"), el("strong", {}, `₽ ${j.dinheiro ?? 0}`)),
-      cartoes.length ? el("div", { class: "grade-itens" }, ...cartoes) : el("p", { class: "sub" }, "Mochila vazia."),
-    );
+    await abrirMochilaSS(modal, j.id, j.dinheiro ?? 0, mostrarAviso, atualizarHud, abas("mochila"));
   }
 
   async function abrirPokedex(): Promise<void> {

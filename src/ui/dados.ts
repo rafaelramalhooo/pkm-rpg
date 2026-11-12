@@ -17,6 +17,7 @@ export interface PokemonRow {
   brilhante?: boolean;
   caixa?: number | null;
   slot_caixa?: number | null;
+  atk?: number; def?: number; spa?: number; spd?: number; spe?: number; natureza?: string; amizade?: number;
 }
 
 const especies = new Map<number, Especie>();
