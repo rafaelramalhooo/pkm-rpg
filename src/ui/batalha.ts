@@ -2,6 +2,7 @@
 // que roda o simulador oficial do Showdown). Aqui só enviamos a intenção do jogador e tocamos o que volta.
 import { supabase } from "../supabase";
 import { el } from "./dom";
+import { mostrarEvolucao, resolverPendencias } from "./momentos";
 import { COR_TIPO, golpePorSlug, iconeBola, imagemPokemon, minhaMochila, NOME_TIPO, nomeItem, urlSprite } from "./dados";
 
 interface MembroSim { orig: number; id?: string; hp: number; maxhp: number; status: string | null; nome: string; nivel: number; especie: string; num: number; ativo: boolean; pp: number[] }
@@ -262,7 +263,8 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
         case "insignia": await dizer(`Você conquistou a Insígnia ${str(e.nome).replace(/^./, (c) => c.toUpperCase())} de ${str(e.lider)}!`, 2200, "forte"); break;
         case "campeao": await dizer(`${str(e.nome)} foi derrotada! Você é o novo Campeão de Rafar!`, 2600, "forte"); break;
         case "aprendeu": await dizer(e.esqueceu ? `${str(e.nome)} esqueceu ${str(e.esqueceu)} e aprendeu ${str(e.golpe)}!` : `${str(e.nome)} aprendeu ${str(e.golpe)}!`, 1500, "forte"); break;
-        case "evolucao": await dizer(`O quê? ${str(e.nome)} está evoluindo...`, 1400, "forte"); await dizer(`${str(e.nome)} evoluiu para ${str(e.para)}!`, 2200, "forte"); break;
+        case "evolucao": await dizer(`O quê? ${str(e.nome)} está evoluindo...`, 900, "forte"); await mostrarEvolucao(Number(e.de_id ?? e.especie_id), Number(e.especie_id), str(e.nome), str(e.para)); break;
+        case "aprender": await dizer(`${str(e.nome)} quer aprender ${str(e.golpe)}!`, 900, "forte"); await resolverPendencias(); break;
         default: break;
       }
     }

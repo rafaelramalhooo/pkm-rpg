@@ -54,6 +54,7 @@ export async function abrirMapaMundi(
   modal: { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void },
   viajar: (mapa: string) => Promise<boolean>,
   aviso: (t: string) => void,
+  missao: { mapa_id: string; mapa_nome: string; nome: string; objetivo: string } | null = null,
 ): Promise<void> {
   const { data, error } = await supabase.rpc("mapa_mundi");
   if (error || !data) { aviso(error?.message ?? "Não foi possível abrir o Mapa Mundi."); return; }
@@ -108,7 +109,15 @@ export async function abrirMapaMundi(
   const legenda = el("div", { class: "mm-legenda" },
     el("span", { class: "mm-leg atual" }, "Você"), el("span", { class: "mm-leg livre" }, "Destino"), el("span", { class: "mm-leg cid" }, "Cidade"), el("span", { class: "mm-leg est inicio" }, "★ Início"), el("span", { class: "mm-leg est liga" }, "★ Liga"));
   nodos.get(info.atual)?.classList.add("atual");
+  if (missao) {
+    const alvo = porId.get(missao.mapa_id);
+    if (alvo) {
+      const pino = svg("g", { class: "mm-missao", transform: `translate(${alvo.x} ${alvo.y - 12})` },
+        svg("circle", { r: 7.5, class: "mm-missao-aura" }), svg("circle", { r: 5.4, class: "mm-missao-ponto" }), svg("text", { y: 3, "text-anchor": "middle", class: "mm-missao-txt" }, "!"));
+      mapa.append(pino);
+    }
+  }
   const aqui = porId.get(info.atual);
   if (aqui) rotulo.textContent = `Você está em ${aqui.nome}. Toque em um lugar para viajar.`;
-  modal.abrir("Mapa Mundi", el("div", { class: "mm-topo" }, rotulo, ir), el("div", { class: "mm-caixa" }, mapa as unknown as Node), legenda);
+  modal.abrir("Mapa Mundi", ...(missao ? [el("div", { class: "mm-missao-info" }, el("strong", {}, `Missão: ${missao.nome}`), el("span", {}, `${missao.objetivo} (${missao.mapa_nome})`))] : []), el("div", { class: "mm-topo" }, rotulo, ir), el("div", { class: "mm-caixa" }, mapa as unknown as Node), legenda);
 }

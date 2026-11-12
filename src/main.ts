@@ -1,7 +1,7 @@
 import "./style.css";
 import { AMBIENTE } from "./config";
 import { supabase, type Jogador } from "./supabase";
-import { telaLogin } from "./ui/login";
+import { telaLogin, telaNovaSenha } from "./ui/login";
 import { telaPersonagem } from "./ui/personagem";
 import { telaJogo } from "./ui/jogo";
 
@@ -13,6 +13,7 @@ if (AMBIENTE !== "producao") {
 }
 
 let usuarioAtual: string | null | undefined; // undefined = ainda não roteado
+let recuperando = /type=recovery/.test(window.location.hash); // abriu pelo link "Esqueci a senha"
 
 async function rotear(userId: string | null): Promise<void> {
   if (userId === usuarioAtual) return; // o Supabase avisa a mesma sessão mais de uma vez
@@ -37,9 +38,15 @@ async function rotear(userId: string | null): Promise<void> {
 
 supabase.auth.onAuthStateChange((evento, sessao) => {
   const id = sessao?.user.id ?? null;
+  if (evento === "PASSWORD_RECOVERY") recuperando = true;
+  if (recuperando) {
+    if (!id) return;
+    telaNovaSenha(() => { recuperando = false; usuarioAtual = undefined; window.history.replaceState(null, "", window.location.pathname); void rotear(id); });
+    return;
+  }
   // Ignora renovações de token do mesmo usuário.
   if (evento === "TOKEN_REFRESHED") return;
   void rotear(id);
 });
 
-void supabase.auth.getSession().then(({ data }) => rotear(data.session?.user.id ?? null));
+void supabase.auth.getSession().then(({ data }) => { if (!recuperando) void rotear(data.session?.user.id ?? null); });

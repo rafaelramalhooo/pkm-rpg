@@ -810,3 +810,87 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .ss-pk{min-width:118px;padding:3px 5px}.ss-pk img,.ss-pk>span{width:28px;height:28px}
   .ss-itens{min-height:140px}
 }
+
+/* ===== momentos: evolução animada e escolha de golpe ===== */
+.momento { position: fixed; inset: 0; z-index: 9000; display: grid; place-items: center; padding: 16px; background: radial-gradient(circle at 50% 40%, #1b2f66e6, #050914f5 70%); animation: mom-entra .3s ease-out; }
+.momento.sai { opacity: 0; transition: opacity .2s; }
+@keyframes mom-entra { from { opacity: 0; } to { opacity: 1; } }
+.evo-cartao, .mg-cartao { width: min(94vw, 460px); max-height: 94dvh; overflow-y: auto; background: linear-gradient(180deg, #0f1d44, #070d1f); border: 1px solid var(--borda); border-radius: 24px; padding: 18px; text-align: center; box-shadow: 0 30px 90px #000d, 0 0 60px #4a7dff33; display: flex; flex-direction: column; gap: 10px; }
+.evo-faixa, .mg-faixa { align-self: center; padding: 3px 14px; border-radius: 99px; font-size: .72rem; font-weight: 800; letter-spacing: .22em; background: linear-gradient(90deg, #4a7dff, #9a6bff); color: #fff; }
+.evo-palco { position: relative; height: 230px; display: grid; place-items: center; }
+.evo-aura { position: absolute; width: 210px; height: 210px; border-radius: 50%; background: radial-gradient(circle, #8fb4ff88, #4a7dff00 70%); animation: evo-aura 1.6s ease-in-out infinite; }
+@keyframes evo-aura { 50% { transform: scale(1.25); opacity: .65; } }
+.evo-palco .evo-sprite { position: absolute; width: 170px; height: 170px; display: grid; place-items: center; transition: opacity .08s; }
+.evo-palco .evo-sprite img { max-width: 100%; max-height: 100%; image-rendering: pixelated; object-fit: contain; }
+.evo-palco .evo-sprite.silhueta img { filter: brightness(0) invert(1) drop-shadow(0 0 14px #fff); }
+.evo-brilho { position: absolute; inset: -20px; border-radius: 50%; background: #fff; opacity: 0; pointer-events: none; }
+.evo-palco.explode .evo-brilho { animation: evo-flash .9s ease-out; }
+@keyframes evo-flash { 0% { opacity: 0; transform: scale(.2); } 35% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0; transform: scale(1.6); } }
+.evo-novo.revela { animation: evo-pop .7s cubic-bezier(.2, 1.6, .4, 1); }
+.evo-novo.revela img { filter: drop-shadow(0 0 16px #8fb4ffcc); }
+@keyframes evo-pop { 0% { transform: scale(.3); } 100% { transform: scale(1); } }
+.evo-estrela { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px; background: #ffe27a; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); opacity: 0; }
+.evo-palco.explode .evo-estrela { animation: evo-estrela 1.2s ease-out var(--d) both; }
+@keyframes evo-estrela { 0% { opacity: 1; transform: rotate(var(--a)) translateY(0) scale(.6); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-120px) scale(1.4); } }
+.evo-texto { margin: 0; font-size: 1.15rem; font-weight: 700; }
+.evo-dica { color: var(--suave, #9fb0d8); }
+.momento.fim .evo-aura { background: radial-gradient(circle, #ffe27a66, #ffe27a00 70%); }
+.evo-ok { margin-top: 4px; }
+.mg-cartao h2 { margin: 0; font-size: 1.2rem; }
+.mg-novo { display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
+.mg-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mg-golpe { margin: 0; display: flex; flex-direction: column; gap: 2px; text-align: left; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--cor, #888); background: color-mix(in srgb, var(--cor, #888) 18%, #0a1230); color: #fff; box-shadow: none; }
+.mg-golpe.novo { cursor: default; border-style: dashed; background: color-mix(in srgb, var(--cor, #888) 30%, #0a1230); }
+.mg-golpe.sel { outline: 3px solid #ff6b6b; background: color-mix(in srgb, #ff6b6b 30%, #0a1230); }
+.mg-nome { font-weight: 800; }
+.mg-meta { font-size: .78rem; opacity: .85; }
+@media (prefers-reduced-motion: reduce) { .evo-aura, .evo-estrela { animation: none !important; } }
+
+/* ===== mochila retangular (só itens) ===== */
+.mc-bolsos { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.mc-bolsos .ss-bolso { flex: 0 0 auto; margin: 0; white-space: nowrap; }
+.mc-itens { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: 40dvh; overflow-y: auto; padding-right: 2px; align-content: start; scrollbar-width: thin; }
+.mc-itens .ss-item { margin: 0; min-width: 0; }
+.mc-itens > p, .mc-itens > button.sec, .mc-itens > .mc-pks { grid-column: 1 / -1; }
+.mc-pks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mc-pk { margin: 0; display: flex; align-items: center; gap: 8px; text-align: left; padding: 8px 10px; border-radius: 14px; background: #101c3d; border: 1px solid var(--borda); color: #fff; box-shadow: none; min-width: 0; }
+.mc-pk.caido { opacity: .6; }
+.mc-pk-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.mc-desc { padding: 10px 12px; border-radius: 14px; background: #0a1430; border: 1px solid var(--borda); }
+.mc-desc p { margin: 0 0 6px; }
+@media (max-width: 460px) { .mc-itens, .mc-pks { grid-template-columns: 1fr; } }
+.hab-total { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-size: .78rem; margin: 4px 0; color: #bcd0ff; }
+.hab-total span:last-child { color: #ffd27a; font-weight: 700; }
+
+/* ===== missão no Mapa Mundi e HUD ===== */
+.mm-missao { pointer-events: none; }
+.mm-missao-aura { fill: #ffd27a55; animation: mm-pulso 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.mm-missao-ponto { fill: #ffb703; stroke: #fff; stroke-width: 1; }
+.mm-missao-txt { font-size: 8px; font-weight: 900; fill: #1a1200; }
+@keyframes mm-pulso { 50% { transform: scale(1.5); opacity: .3; } }
+.mm-missao-info { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border-radius: 12px; background: #2a1f05; border: 1px solid #ffb70388; color: #ffe9b0; }
+.hud-missao { position: absolute; right: 10px; top: 10px; z-index: 4; max-width: min(46vw, 230px); padding: 8px 12px; border-radius: 14px; background: #0b1530e6; border: 1px solid #ffb70399; box-shadow: 0 6px 18px #0008; color: #fff; display: flex; flex-direction: column; gap: 2px; cursor: pointer; text-align: left; margin: 0; }
+.hud-missao strong { font-size: .8rem; color: #ffd27a; }
+.hud-missao span { font-size: .72rem; line-height: 1.25; color: #dbe6ff; }
+.hud-missao em { font-style: normal; font-size: .7rem; font-weight: 800; color: #7ae7c7; }
+.hud-missao[hidden] { display: none; }
+.fala-npc { font-size: 1.02rem; line-height: 1.45; }
+.rec-lista { display: flex; flex-wrap: wrap; gap: 6px; }
+.rec-lista span { padding: 4px 10px; border-radius: 99px; background: #14234a; border: 1px solid var(--borda); font-size: .85rem; }
+
+/* ===== jogadores: desafios e trocas ===== */
+.soc-card { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 14px; background: #101c3d; border: 1px solid #ffb70366; }
+.soc-card button { margin: 0; }
+.soc-linha { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-radius: 12px; background: #0e1938; border: 1px solid var(--borda); }
+.soc-bts { display: flex; gap: 6px; } .soc-bts button { margin: 0; padding: 6px 10px; }
+.soc-hist p { margin: 2px 0; }
+.troca-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; max-height: 24dvh; overflow-y: auto; }
+.troca-pk { margin: 0; display: flex; align-items: center; gap: 6px; text-align: left; padding: 6px 8px; font-size: .8rem; }
+.troca-pk.sel { outline: 2px solid #7ae7c7; background: #123a3a; }
+.troca-itens { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.troca-it { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: .8rem; }
+.troca-qtd { width: 56px; }
+@media (max-width: 460px) { .troca-grade, .troca-itens { grid-template-columns: 1fr; } }
+
+.login-links { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; }
+.login-links .link { background: none; border: 0; box-shadow: none; padding: 4px 2px; margin: 0; color: #8fb4ff; text-decoration: underline; font-size: .9rem; cursor: pointer; }

@@ -38,6 +38,8 @@ interface MapaDados {
 export interface TreinadorMapa {
   id: string; x: number; y: number; direcao: Direcao; visao: number; nome: string; classe: string; aparencia: number;
   falas: { antes?: string; derrota?: string }; vencido: boolean;
+  /** NPC de missão: só conversa (não desafia). */
+  missao?: boolean;
 }
 
 export interface Lugar { mapa_id: string; nome_mapa: string; x: number; y: number; naGrama: boolean; poi: Poi | null; npc: TreinadorMapa | null }
@@ -54,6 +56,8 @@ export interface Ganchos {
   treinadores?(mapaId: string): Promise<TreinadorMapa[]>;
   /** Um treinador viu o jogador. Resolve com true se o jogador o venceu. */
   aoTreinador?(t: TreinadorMapa): Promise<boolean>;
+  /** O jogador falou com um NPC de missão. */
+  aoNpcMissao?(t: TreinadorMapa): Promise<void>;
 }
 
 export interface Controle {
@@ -319,6 +323,22 @@ class CenaMundo extends Phaser.Scene {
     const n = this.npcs.get(id);
     if (!n || this.desafiando || this.mudandoMapa || this.encerrada) return;
     if (Math.abs(n.d.x - this.jogador.x) + Math.abs(n.d.y - this.jogador.y) !== 1) return;
+    if (n.d.missao) {
+      this.desafiando = true;
+      this.bloqueado = true;
+      this.segurando = null;
+      try {
+        await this.fila;
+        const rumo: Direcao = this.jogador.x > n.d.x ? "direita" : this.jogador.x < n.d.x ? "esquerda" : this.jogador.y > n.d.y ? "baixo" : "cima";
+        this.moverFicha(n.ficha, n.d.x, n.d.y, rumo, 1);
+        await this.ganchos.aoNpcMissao?.(n.d);
+        if (!this.encerrada) this.moverFicha(n.ficha, n.d.x, n.d.y, n.d.direcao, 1);
+      } finally {
+        this.desafiando = false;
+        this.bloqueado = false;
+      }
+      return;
+    }
     if (n.d.vencido) {
       this.mostrarBalao(n.ficha, n.d.falas.derrota ?? "Boa luta!");
       return;
@@ -337,7 +357,7 @@ class CenaMundo extends Phaser.Scene {
     } catch { /* sem treinadores: segue o jogo */ }
     if (this.encerrada || this.mapa?.id !== mapaId) return;
     for (const d of lista) {
-      const ficha = this.criarFicha(`${d.classe} ${d.nome}`, d.aparencia, d.x, d.y, d.direcao, false, d.vencido ? "#8b97b8" : "#ffd27a");
+      const ficha = this.criarFicha(`${d.classe} ${d.nome}`, d.aparencia, d.x, d.y, d.direcao, false, d.missao ? "#7ae7c7" : d.vencido ? "#8b97b8" : "#ffd27a");
       this.npcs.set(d.id, { d, ficha });
     }
   }

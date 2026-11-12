@@ -1,5 +1,6 @@
 import { supabase } from "../supabase";
 import { el } from "./dom";
+import { processarEventos } from "./momentos";
 import { carregarReferencias, especie, imagemPokemon, nomeItem, nomePokemon, type PokemonRow } from "./dados";
 
 /** Texto dos eventos de experiência devolvidos pelo servidor (nível, evolução, golpes). */
@@ -15,6 +16,7 @@ export async function acaoPA(rpc: string, args: Record<string, unknown>, uid: st
   const pa = j ? ` · −1 PA (restam ${(j as { pa: number }).pa})` : " · −1 PA";
   aviso(`${texto((data ?? {}) as Record<string, unknown>)}${pa}`, 5000);
   aoMudar();
+  await processarEventos((data as { eventos?: { t: string }[] } | null)?.eventos);
   return true;
 }
 
@@ -32,6 +34,17 @@ const CLASSES: { nome: string; texto: string }[] = [
   { nome: "Criador", texto: "Focado em cuidar dos Pokémon: amizade, treino intenso, caixas e (no futuro) ovos." },
   { nome: "Pesquisador", texto: "Focado em explorar o mundo: pesquisas, pesca, descontos e descobertas." },
 ];
+
+
+/** Unidade do bônus de cada habilidade (o bônus é somado a cada rank; o máximo é no rank 3). */
+const UNIDADE: Record<string, string> = {
+  instinto: "% de dano", recompensa: "% de dinheiro", mestre_treino: " XP por treino", resistencia: " PA máx.", foco: "% de precisão", cura_rapida: "% de HP",
+  lideranca: " de amizade", provocacao: " PA máx.", veterano: "% de XP", campeao: "% nos atributos", afeto: " uso(s) extra/dia", mao_amiga: "% de cura",
+  olho_brilhante: "% de brilhante", ovos: "", alimentador: " XP por cuidado", laco: "% de XP", espaco: " espaços de caixa", treino_intenso: "% de XP no treino",
+  banco_dados: "", criador_mestre: "", olhar_atento: " XP de treinador (e +₽25 por rank)", exploracao: "% de recompensa", rede_pesca: "% de chance", captura: "% de captura",
+  mochila: " por item", mapa_mental: "", economia: "% de desconto", pokedex_viva: " XP por espécie nova", intuicao: " PA máx.", cientista: "",
+};
+const fmt = (n: number): string => (Number.isInteger(n) ? String(n) : n.toFixed(1).replace(".", ","));
 
 /** Tela do Treinador: classe, nível, pontos e árvore de habilidades (compra validada no servidor). */
 export async function abrirHabilidades(modal: Modal, aviso: Aviso, aoMudar: () => void): Promise<void> {
@@ -54,7 +67,7 @@ export async function abrirHabilidades(modal: Modal, aviso: Aviso, aoMudar: () =
       });
       return b;
     });
-    modal.abrir("Escolha sua classe", el("p", { class: "sub" }, "A classe define quais habilidades você pode desenvolver. Esta escolha é permanente (só o Mestre pode redefinir)."), el("div", { class: "hab-classes" }, ...cartas));
+    modal.abrir("Escolha sua classe", el("p", { class: "sub" }, "A classe define quais habilidades você pode desenvolver. Esta escolha é permanente."), el("div", { class: "hab-classes" }, ...cartas));
     return;
   }
 
@@ -83,6 +96,8 @@ export async function abrirHabilidades(modal: Modal, aviso: Aviso, aoMudar: () =
     });
     const req = faltam.length ? el("small", { class: "hab-req" }, `Requer: ${faltam.map((r) => `${nomes.get(r.id)} rank ${r.rank}`).join(", ")}`) : null;
     const card = el("div", { class: `hab-card${h.ativo ? "" : " breve"}` }, el("div", { class: "hab-topo" }, el("strong", {}, h.nome), bolas), el("p", {}, h.descricao));
+    const un = UNIDADE[h.id];
+    if (un) card.append(el("div", { class: "hab-total" }, el("span", {}, `Agora: ${rank ? "+" + fmt(h.bonus * rank) : "—"}${rank ? un : ""}`), el("span", {}, `Máximo (rank 3): +${fmt(h.bonus * 3)}${un}`)));
     if (req) card.append(req);
     card.append(b);
     return card;
