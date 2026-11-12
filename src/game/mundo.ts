@@ -51,6 +51,8 @@ export interface Controle {
   bloquear(sim: boolean): void;
   dizer(texto: string): void;
   recarregarJogador(): Promise<Jogador | null>;
+  /** "Estou preso": o servidor leva o jogador ao tile livre alcançável mais próximo. */
+  destravar(): Promise<void>;
   /** O jogador falou com um treinador ao lado dele (ele só desafia se o jogador puxar conversa). */
   conversar(id: string): Promise<void>;
   /** +1 aproxima, -1 afasta, 0 volta ao automático. */
@@ -200,6 +202,26 @@ class CenaMundo extends Phaser.Scene {
     this.conectar();
     this.mudandoMapa = false;
     this.avisarLugar();
+    // posição antiga dentro de uma árvore/obstáculo: o servidor traz o jogador de volta ao caminho
+    if (this.solido(this.jogador.x, this.jogador.y)) void this.destravar();
+  }
+
+  /** "Estou preso": pede ao servidor o tile livre alcançável mais próximo e reposiciona. */
+  async destravar(): Promise<void> {
+    if (!this.mapa || this.encerrada) return;
+    const antes = `${this.jogador.x},${this.jogador.y}`;
+    const { data, error } = await supabase.rpc("destravar");
+    if (error || !data) {
+      this.ganchos.aviso(error?.message ?? "Não foi possível destravar.");
+      return;
+    }
+    const s = data as Jogador;
+    this.jogador = { ...this.jogador, ...s };
+    this.ganchos.aoJogador(this.jogador);
+    this.andando = false;
+    this.colocar(this.eu, s.x, s.y);
+    this.avisarLugar();
+    this.ganchos.aviso(antes === `${s.x},${s.y}` ? "Você não está preso: este lugar tem saída." : "Pronto! Levei você ao caminho livre mais próximo.");
   }
 
   private nivelZoom: number | null = (() => {
@@ -644,5 +666,6 @@ export async function iniciarMundo(pai: HTMLElement, jogador: Jogador, ganchos: 
     recarregarJogador: () => cena.recarregar(),
     zoom: (p) => cena.zoom(p),
     conversar: (id) => cena.conversar(id),
+    destravar: () => cena.destravar(),
   };
 }
