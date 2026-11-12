@@ -63,7 +63,13 @@ export async function abrirMapaMundi(
   const porId = new Map(NOS.map((n) => [n.id, { ...n, x: n.x * SX, y: n.y * SY }]));
   let escolhido: string | null = null;
 
-  const mapa = svg("svg", { viewBox: "50 20 320 520", class: "mm-svg", role: "img", "aria-label": "Mapa Mundi de Rafar" });
+  const mapa = svg("svg", { viewBox: "0 0 410 615", class: "mm-svg", role: "img", "aria-label": "Mapa Mundi de Rafar" });
+  // fundo: ilustração do mundo de Rafar (as posições dos lugares seguem os pixels da imagem 1024×1536, escala 0,4)
+  mapa.append(svg("image", { href: `${import.meta.env.BASE_URL}assets/mapamundi.jpg`, x: 0, y: 0, width: 409.6, height: 614.4, preserveAspectRatio: "none", class: "mm-fundo" }));
+  for (const [a, b] of LIGACOES) {
+    const A = porId.get(a)!, B = porId.get(b)!;
+    mapa.append(svg("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: "mm-via-sombra" }));
+  }
   for (const [a, b] of LIGACOES) {
     const A = porId.get(a)!, B = porId.get(b)!;
     mapa.append(svg("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: "mm-via aberta" }));

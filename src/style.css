@@ -948,3 +948,12 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .duelo-opcao { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; width: 100%; margin: 6px 0; padding: 10px 12px; border-radius: 12px; background: #ffffff10; border: 2px solid #ffffff33; color: #eaf2ff; }
 .duelo-opcao span { font-size: .78rem; opacity: .85; line-height: 1.3; }
 .duelo-opcao.sel { border-color: #6fb7ff; background: #2a5bd733; }
+
+/* Mapa Mundi com ilustração de fundo */
+.mm-fundo { pointer-events: none; }
+.mm-svg { border-radius: 10px; }
+.mm-via-sombra { stroke: #06182cb8; stroke-width: 4.2; stroke-linecap: round; pointer-events: none; }
+.mm-via.aberta { stroke: #fff6c9; stroke-width: 1.8; stroke-linecap: round; stroke-dasharray: 3 2.4; }
+.mm-ponto { stroke: #0b2a44; stroke-width: 1; filter: drop-shadow(0 0 1.5px #000c); }
+.mm-nome { font-weight: 700; stroke-width: 3px; stroke: #06182c; }
+.mm-caixa { padding: 4px; background: #06182c; }
