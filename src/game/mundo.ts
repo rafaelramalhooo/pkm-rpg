@@ -132,6 +132,8 @@ class CenaMundo extends Phaser.Scene {
   private fila: Promise<void> = Promise.resolve();
   private encerrada = false;
   private timerTrack?: number;
+  private timerReconectar?: number;
+  private falhasCanal = 0;
   private npcs = new Map<string, { d: TreinadorMapa; ficha: Ficha }>();
   private desafiando = false;
   private matos: { s: Phaser.GameObjects.Image; fase: number; ate: number }[] = [];
@@ -731,8 +733,16 @@ class CenaMundo extends Phaser.Scene {
     canal.on("presence", { event: "sync" }, () => this.sincronizar(canal.presenceState<Presenca>()));
     canal.on("broadcast", { event: "mov" }, ({ payload }) => this.aoMover(payload as { id: string; x: number; y: number; dir: Direcao }));
     canal.on("broadcast", { event: "chat" }, ({ payload }) => this.aoChat(payload as { id: string; texto: string }));
-    canal.subscribe((status) => {
-      if (status === "SUBSCRIBED") this.rastrear(true);
+    canal.subscribe((status, erro) => {
+      if (this.canal !== canal || this.encerrada) return; // canal antigo ou jogo encerrado
+      if (status === "SUBSCRIBED") { this.falhasCanal = 0; this.rastrear(true); return; }
+      if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        console.warn(`[tempo real] canal mapa:${this.mapa.id} -> ${status}`, erro?.message ?? "");
+        this.falhasCanal += 1;
+        if (this.falhasCanal === 3) this.ganchos.aviso("Conexão em tempo real instável: os outros jogadores podem demorar a aparecer. Tentando reconectar...");
+        window.clearTimeout(this.timerReconectar);
+        this.timerReconectar = window.setTimeout(() => { if (!this.encerrada) this.conectar(); }, Math.min(30_000, 3000 * this.falhasCanal));
+      }
     });
     this.canal = canal;
   }
@@ -800,6 +810,7 @@ class CenaMundo extends Phaser.Scene {
   desconectar(): void {
     this.encerrada = true;
     window.clearTimeout(this.timerTrack);
+    window.clearTimeout(this.timerReconectar);
     if (this.canal) void supabase.removeChannel(this.canal);
     this.canal = undefined;
   }
