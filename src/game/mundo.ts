@@ -737,15 +737,25 @@ class CenaMundo extends Phaser.Scene {
     this.canal = canal;
   }
 
+  /** Presença no canal: no máximo 1 envio a cada 4 s (o Realtime limita a taxa de presença por cliente; passos usam broadcast "mov"). */
+  private ultimoTrack = 0;
+  private ultimaPresenca = "";
   private rastrear(agora = false): void {
     if (!this.canal || this.encerrada) return;
-    window.clearTimeout(this.timerTrack);
     const enviar = () => {
+      this.timerTrack = 0;
+      if (!this.canal || this.encerrada) return;
       const p: Presenca = { nome: this.jogador.nome, aparencia: this.jogador.aparencia, x: this.jogador.x, y: this.jogador.y, dir: this.jogador.direcao };
-      void this.canal?.track(p);
+      const chave = JSON.stringify(p);
+      if (!agora && chave === this.ultimaPresenca) return;
+      this.ultimaPresenca = chave;
+      this.ultimoTrack = Date.now();
+      void this.canal.track(p);
     };
-    if (agora) enviar();
-    else this.timerTrack = window.setTimeout(enviar, 500);
+    if (agora) { window.clearTimeout(this.timerTrack); this.timerTrack = 0; enviar(); return; }
+    if (this.timerTrack) return; // já há um envio agendado
+    const espera = Math.max(500, 4000 - (Date.now() - this.ultimoTrack));
+    this.timerTrack = window.setTimeout(enviar, espera);
   }
 
   private sincronizar(estado: Record<string, Presenca[]>): void {
