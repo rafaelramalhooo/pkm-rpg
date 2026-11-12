@@ -2,7 +2,7 @@
 import { supabase } from "../supabase";
 
 export interface Especie { id: number; nome: string; tipos: string[] }
-export interface GolpeInfo { id: number; slug?: string; nome: string; tipo: string; categoria: string; poder: number | null; pp: number }
+export interface GolpeInfo { id: number; slug?: string; nome: string; tipo: string; categoria: string; poder: number | null; pp: number; precisao?: number | null; prioridade?: number; descricao?: string | null }
 export interface GolpeSlot { id: number; pp: number }
 export interface PokemonRow {
   id: string;
@@ -31,7 +31,7 @@ export async function carregarReferencias(forcar = false): Promise<boolean> {
   if (carregado && !forcar) return especies.size > 0;
   const [e, g, i] = await Promise.all([
     supabase.from("especies").select("id, nome, tipos").order("id").limit(2000),
-    supabase.from("golpes").select("id, slug, nome, tipo, categoria, poder, pp").limit(2000),
+    supabase.from("golpes").select("id, slug, nome, tipo, categoria, poder, pp, precisao, prioridade, descricao").limit(2000),
     supabase.from("itens").select("slug, nome, efeito, categoria").limit(500),
   ]);
   especies.clear();

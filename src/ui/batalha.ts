@@ -2,6 +2,7 @@
 // que roda o simulador oficial do Showdown). Aqui só enviamos a intenção do jogador e tocamos o que volta.
 import { supabase } from "../supabase";
 import { el } from "./dom";
+import { dicaGolpe } from "./dica";
 import { mostrarEvolucao, resolverPendencias } from "./momentos";
 import { COR_TIPO, golpePorSlug, iconeBola, imagemPokemon, minhaMochila, NOME_TIPO, nomeItem, urlSprite } from "./dados";
 
@@ -105,7 +106,31 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       if (t instanceof HTMLImageElement && t.closest(".sd-campo")) t.style.setProperty("--nw", String(t.naturalWidth));
     }, true);
     msg.textContent = "Carregando a batalha...";
-    new ResizeObserver(() => cena.style.setProperty("--k", String(Math.min(1, palco.clientWidth / 438)))).observe(palco);
+    // alinha cada Pokémon à sua caixa de HP: o topo do sprite encosta na base da caixa e os pés ficam acima da mensagem
+    const alinhar = () => {
+      const H = palco.clientHeight, W = palco.clientWidth;
+      if (!H || !W) return;
+      const k = Math.min(1, W / 438);
+      cena.style.setProperty("--k", String(k));
+      const lados: Array<[HTMLElement, HTMLElement, number, number]> = [
+        [campoAdv, cxAdv.raiz, 0.56 * H, 0.42],
+        [campoJog, cxJog.raiz, Math.max(H * 0.5, msg.offsetTop - 6), 0.42],
+      ];
+      for (const [campo, caixaEl, pes, larg] of lados) {
+        const img = campo.querySelector("img");
+        if (!(img instanceof HTMLImageElement) || !img.naturalWidth) continue;
+        const nw = img.naturalWidth, nh = img.naturalHeight;
+        const bh = caixaEl.offsetHeight || 36;
+        const s = Math.max(0.5, Math.min(1.75 * k, (pes - bh - 6) / nh, (larg * W) / nw));
+        img.style.width = `${Math.round(nw * s)}px`;
+        campo.style.top = `${Math.round(pes)}px`;
+        caixaEl.style.top = `${Math.max(2, Math.round(pes - nh * s - bh))}px`;
+      }
+    };
+    new ResizeObserver(alinhar).observe(palco);
+    cena.addEventListener("load", (ev) => { if (ev.target instanceof HTMLImageElement && ev.target.closest(".sd-campo")) requestAnimationFrame(alinhar); }, true);
+    new MutationObserver(() => requestAnimationFrame(alinhar)).observe(msg, { childList: true, characterData: true, subtree: true });
+    new MutationObserver(() => requestAnimationFrame(alinhar)).observe(cxAdv.raiz, { attributes: true, attributeFilter: ["style"] });
 
     let imgAdv: HTMLElement | null = null;
     let imgJog: HTMLElement | null = null;
@@ -421,6 +446,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
           el("span", { class: "g-pp" }, `PP ${g.pp}/${g.maxpp}`),
         );
         x.disabled = g.desativado || g.pp <= 0;
+        dicaGolpe(x, () => info);
         x.addEventListener("click", () => void agir({ acao: "golpe", n: g.n }));
         return x;
       });

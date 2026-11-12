@@ -1,4 +1,5 @@
 import { el } from "./dom";
+import { dicaPorId, dicaGolpe } from "./dica";
 import { barraHp, COR_TIPO, especie, golpe, imagemPokemon, NOME_TIPO, nomePokemon, type PokemonRow } from "./dados";
 
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
@@ -49,6 +50,7 @@ export function abrirResumo(modal: Modal, p: PokemonRow, voltar?: () => void): v
   const golpes = p.golpes.map((s) => {
     const g = golpe(s.id);
     const b = el("div", { class: "rs-golpe" }, el("b", {}, g.nome), el("span", {}, `PP ${s.pp}/${g.pp}`));
+    dicaGolpe(b, dicaPorId(s.id), true);
     b.style.setProperty("--cor", COR_TIPO[g.tipo] ?? "#888");
     return b;
   });

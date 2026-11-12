@@ -154,25 +154,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   const nomeTreinador = el("strong", { class: "tc-nome" });
   const emblema = el("span", { class: "tc-emblema", "aria-hidden": "true" });
   const BASE = import.meta.env.BASE_URL as string;
-  // Coluna do time sobre o mapa (estilo Arceus): ícones com anel de HP; toque abre o resumo.
-  const hudTime = el("div", { class: "hud-time", "aria-label": "Seu time" });
-  let tempoHudTime: number | undefined;
-  const atualizarHudTime = () => {
-    window.clearTimeout(tempoHudTime);
-    tempoHudTime = window.setTimeout(async () => {
-      const time = await meuTime(j.id);
-      hudTime.replaceChildren(...time.map((p) => {
-        const pct = p.hp_max > 0 ? Math.max(0, Math.min(100, (p.hp_atual / p.hp_max) * 100)) : 0;
-        const b = el("button", { type: "button", class: `hud-pk${p.hp_atual <= 0 ? " caido" : ""}`, title: `${nomePokemon(p)} Nv ${p.nivel}` }, imagemPokemon("frente", p.especie_id, "mini", p.brilhante));
-        b.style.setProperty("--pct", `${pct}%`);
-        b.style.setProperty("--hpc", pct > 50 ? "#4be37d" : pct > 20 ? "#f5c542" : "#ff5a4f");
-        b.addEventListener("click", () => abrirResumo(modal, p));
-        return b;
-      }));
-    }, 500);
-  };
   const atualizarHud = () => {
-    atualizarHudTime();
     pa.textContent = `PA ${j.pa}/${paMax}`;
     pa.classList.toggle("zerado", j.pa === 0);
     dinheiro.textContent = `₽ ${j.dinheiro ?? 0}`;
@@ -241,7 +223,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   };
   dpad.append(dir("cima", "▲"), dir("esquerda", "◀"), dir("direita", "▶"), dir("baixo", "▼"));
   const cartaoTreinador = el("div", { class: "cartao-treinador" }, emblema, el("div", { class: "tc-info" }, nomeTreinador, onde, el("div", { class: "tc-chips" }, dinheiro, pa)));
-  tela.append(aviso, cartaoTreinador, hudMissao, hudTime, acoes, cartaoOferta, dpad);
+  tela.append(aviso, cartaoTreinador, hudMissao, acoes, cartaoOferta, dpad);
 
   // ---------- painéis ----------
   const msgPainel = (): HTMLElement => el("p", { class: "msg", role: "status" });
@@ -510,6 +492,9 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   async function abrirReset(): Promise<void> {
     const { data } = await supabase.from("jogadores").select("id, nome, papel").is("conta", null).order("nome");
     const msg = msgPainel();
+    const caixaMissao = el("input", { type: "checkbox", id: "reset-missao", checked: "" }) as HTMLInputElement;
+    caixaMissao.checked = true;
+    const optMissao = el("label", { class: "sub", for: "reset-missao", style: "display:flex;gap:8px;align-items:center;cursor:pointer" }, caixaMissao, "Limpar também a missão (história volta ao início)");
     const linhas = ((data ?? []) as { id: string; nome: string; papel: string }[]).map((p) => {
       const b = el("button", { type: "button", class: "sec" }, `${p.nome}${p.papel === "mestre" ? " (Mestre)" : ""}`);
       let armado = false;
@@ -525,14 +510,14 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           }, 5000);
           return;
         }
-        const { error } = await supabase.rpc("resetar_jogador", { p_jogador: p.id });
+        const { error } = await supabase.rpc("resetar_jogador", { p_jogador: p.id, p_limpar_missao: caixaMissao.checked });
         if (error) return void mensagem(msg, error.message);
         mensagem(msg, `${p.nome} voltou ao começo.`, "ok");
         if (p.id === j.id) window.setTimeout(() => location.reload(), 900);
       });
       return b;
     });
-    modal.abrir("Resetar jogador", el("p", { class: "sub" }, "Volta para o Laboratório, apaga time, mochila, Pokédex e batalha; devolve PA e dinheiro. O login e o personagem ficam."), ...linhas, msg);
+    modal.abrir("Resetar jogador", el("p", { class: "sub" }, "Volta para o Laboratório, apaga time, mochila, Pokédex e batalha; devolve PA e dinheiro. O login e o personagem ficam."), optMissao, ...linhas, msg);
   }
 
   // ---------- ações do jogo ----------
@@ -766,26 +751,40 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   });
   const botoes = el("div", { class: "grupo" }, botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"), botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"));
 
-  const fechaPaineis = () => modal.fechar();
   const marca = el("img", { class: "marca-img", src: `${import.meta.env.BASE_URL}assets/logo-rafar.png`, alt: "Rafar" });
+  const abrirMundi = (): void => void atualizarMissao().then(() => abrirMapaMundi(modal, (m) => controle?.viajar(m) ?? Promise.resolve(false), mostrarAviso, missaoAtual?.estado === "ativa" && missaoAtual.mapa_id ? { mapa_id: missaoAtual.mapa_id, mapa_nome: missaoAtual.mapa_nome ?? "", nome: missaoAtual.nome, objetivo: missaoAtual.objetivo ?? "" } : null));
   const { raiz: nav } = barraNavegacao(
     [
-      { rotulo: "Início", itens: () => [{ rotulo: "Painel do treinador", fn: () => void abrirDashboard() }, { rotulo: "Voltar ao mapa", fn: fechaPaineis }, { rotulo: "Onde estou", fn: () => abrirInfoLugar() }] },
       {
-        rotulo: "Explorar",
+        rotulo: "Jogar",
         itens: () => [
+          { rotulo: "Mapa Mundi", fn: abrirMundi, oculto: emBatalha },
           { rotulo: "Buscar Pokémon (1 PA)", fn: () => void procurar(), oculto: !oferta },
-          { rotulo: "Mapa Mundi", fn: () => void atualizarMissao().then(() => abrirMapaMundi(modal, (m) => controle?.viajar(m) ?? Promise.resolve(false), mostrarAviso, missaoAtual?.estado === "ativa" && missaoAtual.mapa_id ? { mapa_id: missaoAtual.mapa_id, mapa_nome: missaoAtual.mapa_nome ?? "", nome: missaoAtual.nome, objetivo: missaoAtual.objetivo ?? "" } : null)), oculto: emBatalha },
           { rotulo: "Interagir", fn: () => { interagir(); }, oculto: !(lugar?.poi || lugar?.npc) },
+          { rotulo: "Onde estou", fn: () => abrirInfoLugar() },
           { rotulo: "Estou preso (destravar)", fn: () => void controle?.destravar() },
-          { rotulo: "Aproximar o mapa", fn: () => controle?.zoom(1) },
-          { rotulo: "Afastar o mapa", fn: () => controle?.zoom(-1) },
+          { rotulo: "Como jogar", fn: () => abrirAjuda() },
         ],
       },
-      { rotulo: "Treinador", itens: () => [{ rotulo: "Caixas", fn: () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud) }, { rotulo: "Organizar time / Seguidor", fn: () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor()) }, { rotulo: "Habilidades", fn: () => void abrirHabilidades(modal, mostrarAviso, atualizarHud) }, { rotulo: "Ações (PA)", fn: () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador()) }, { rotulo: "Jogadores (desafios e trocas)", fn: () => void abrirSocial(modal, j.id, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }, lutarDesafio) }] },
-      { rotulo: "Cidade", itens: () => [{ rotulo: "Lugar atual", fn: () => abrirInfoLugar() }, { rotulo: "Estou preso (destravar)", fn: () => void controle?.destravar() }] },
-      { rotulo: "Informações", itens: () => [{ rotulo: "Como jogar", fn: () => abrirAjuda() }] },
-      { rotulo: "Minha conta", itens: () => [{ rotulo: "Meus personagens / Reiniciar", fn: () => void abrirPersonagens() }, { rotulo: "Meu perfil e senha", fn: abrirMenu }, { rotulo: "Gestão do Mestre", fn: () => void import("./gestao").then((m) => m.abrirGestao(modal, mostrarAviso)), oculto: j.papel !== "mestre" }, { rotulo: "Eventos do Mestre", fn: () => void abrirEventos(modal, mostrarAviso), oculto: j.papel !== "mestre" }, { rotulo: "Ferramentas do Mestre", fn: abrirMenu, oculto: j.papel !== "mestre" }, { rotulo: "Sair", fn: () => void supabase.auth.signOut() }] },
+      {
+        rotulo: "Treinador",
+        itens: () => [
+          { rotulo: "Painel do treinador", fn: () => void abrirDashboard() },
+          { rotulo: "Habilidades", fn: () => void abrirHabilidades(modal, mostrarAviso, atualizarHud) },
+          { rotulo: "Ações (PA)", fn: () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador()) },
+          { rotulo: "Jogadores (desafios e trocas)", fn: () => void abrirSocial(modal, j.id, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }, lutarDesafio) },
+          { rotulo: "Caixas", fn: () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud) },
+          { rotulo: "Organizar time / Seguidor", fn: () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor()) },
+        ],
+      },
+      { rotulo: "Minha conta", itens: () => [{ rotulo: "Meus personagens / Reiniciar", fn: () => void abrirPersonagens() }, { rotulo: "Trocar senha", fn: abrirMenu }, { rotulo: "Sair", fn: () => void supabase.auth.signOut() }] },
+      ...(j.papel === "mestre"
+        ? [{ rotulo: "Mestre", itens: () => [
+            { rotulo: "Gestão de jogadores", fn: () => void import("./gestao").then((m) => m.abrirGestao(modal, mostrarAviso)) },
+            { rotulo: "Eventos", fn: () => void abrirEventos(modal, mostrarAviso) },
+            { rotulo: "Ferramentas (importar, repor PA)", fn: abrirMenu },
+          ] }]
+        : []),
     ],
     marca,
   );

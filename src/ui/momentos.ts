@@ -1,6 +1,7 @@
 // Momentos de destaque do jogo: animação de evolução e escolha (bloqueante) de golpe novo.
 import { supabase } from "../supabase";
 import { el } from "./dom";
+import { dicaGolpe, dicaPorId } from "./dica";
 import { COR_TIPO, carregarReferencias, especie, golpe, imagemPokemon, NOME_TIPO, type GolpeSlot } from "./dados";
 
 type Evento = { t: string; [k: string]: unknown };
@@ -63,6 +64,7 @@ function cartaGolpe(id: number, extra = "", pp?: number): HTMLElement {
     el("span", { class: "mg-meta" }, el("b", {}, NOME_TIPO[g.tipo] ?? g.tipo), ` · ${g.categoria === "physical" ? "Físico" : g.categoria === "special" ? "Especial" : "Status"}`),
     el("span", { class: "mg-meta" }, `${g.poder ? `Poder ${g.poder}` : "Sem dano"} · PP ${pp ?? g.pp}`));
   b.style.setProperty("--cor", COR_TIPO[g.tipo] ?? "#888");
+  dicaGolpe(b, dicaPorId(id));
   return b;
 }
 

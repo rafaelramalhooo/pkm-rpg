@@ -894,3 +894,41 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 .login-links { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; }
 .login-links .link { background: none; border: 0; box-shadow: none; padding: 4px 2px; margin: 0; color: #8fb4ff; text-decoration: underline; font-size: .9rem; cursor: pointer; }
+
+/* ===== lote 8: golpes coloridos, selo de turno, evolução maior, celular ===== */
+.batalha .sd-golpe { background: linear-gradient(135deg, color-mix(in srgb, var(--cor) 92%, #fff 8%), color-mix(in srgb, var(--cor) 58%, #000 42%)); border: 1px solid color-mix(in srgb, var(--cor) 65%, #fff 35%); }
+.batalha .sd-golpe:hover:not(:disabled) { background: linear-gradient(135deg, color-mix(in srgb, var(--cor) 100%, #fff 18%), color-mix(in srgb, var(--cor) 68%, #000 32%)); filter: brightness(1.08); }
+.batalha .sd-golpe:disabled { filter: grayscale(.85) brightness(.7); }
+.sd-selo { padding: .32em .7em; font-size: 2.9cqw; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #dff3ff; background: linear-gradient(135deg, #0b1a3ccc, #14305fcc); border: 1px solid #6fb7ff99; border-radius: 999px; box-shadow: 0 2px 8px #0006, inset 0 1px 0 #ffffff22; backdrop-filter: blur(3px); }
+.evo-palco { height: 340px; }
+.evo-aura { width: 320px; height: 320px; }
+.evo-palco .evo-sprite { width: 255px; height: 255px; }
+.dica-golpe { position: fixed; z-index: 99999; width: min(260px, calc(100vw - 16px)); padding: 9px 11px; border-radius: 12px; border: 2px solid #6fb7ff; background: #0b1530f2; color: #eaf2ff; box-shadow: 0 8px 24px #000a; pointer-events: none; line-height: 1.3; }
+.dica-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.dica-cab strong { font-size: .95rem; }
+.dica-tipo { font-size: .66rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; color: #fff; text-shadow: 0 1px 2px #0008; }
+.dica-dados { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+.dica-dados span { font-size: .66rem; padding: 2px 7px; border-radius: 6px; background: #ffffff1c; }
+.dica-golpe p { margin: 0; font-size: .78rem; color: #cfe0ff; }
+.rs-golpe { cursor: help; }
+
+/* celular: o jogo ocupa exatamente a tela, sem cortar nem empilhar controles */
+@media (pointer: coarse) {
+  html, body.modo-jogo { height: 100%; }
+  body.modo-jogo { position: fixed; inset: 0; padding: 0; overflow: hidden; }
+  .jogo { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 0; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  .cartucho { flex: 1 1 0; min-height: 0; width: 100%; gap: 0; position: relative; }
+  .tela-jogo { flex: 1 1 0; height: auto; min-height: 0; border-width: 2px; border-radius: 0; }
+  .dica { display: none; }
+  .barra.rodape { position: absolute; right: 8px; bottom: 6px; left: auto; z-index: 6; width: min(46vw, 260px); opacity: .92; }
+  .dpad { left: 10px; bottom: 10px; width: 124px; height: 124px; }
+  .dpad button { width: 40px; height: 40px; }
+  .dpad .d-cima, .dpad .d-baixo { left: 42px; } .dpad .d-esquerda, .dpad .d-direita { top: 42px; }
+  .acoes { left: auto; right: 12px; bottom: 56px; transform: none; }
+  .oferta { left: auto; right: 12px; bottom: 56px; transform: none; }
+}
+@media (pointer: coarse) and (orientation: portrait) {
+  .barra.rodape { left: 8px; right: 8px; width: auto; bottom: 144px; }
+  .dpad { bottom: 14px; }
+  .acoes { bottom: 24px; }
+}
