@@ -1005,3 +1005,6 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .ev-card-icone { font-size: 1.6rem; }
 .ev-card div { display: flex; flex-direction: column; gap: 2px; }
 @media (prefers-reduced-motion: reduce) { .ev-bola-btn { animation: none; } }
+
+/* lote 18: aviso de manutenção discreto (não cobre o menu) */
+.manut-faixa { top: 60px; left: auto; right: 10px; z-index: 20; max-width: min(300px, 70vw); padding: 5px 12px; border-radius: 999px; font-size: .74rem; line-height: 1.25; text-align: left; pointer-events: none; box-shadow: 0 2px 10px #0006; }
