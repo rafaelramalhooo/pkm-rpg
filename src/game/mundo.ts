@@ -134,7 +134,7 @@ class CenaMundo extends Phaser.Scene {
   private timerTrack?: number;
   private npcs = new Map<string, { d: TreinadorMapa; ficha: Ficha }>();
   private desafiando = false;
-  private matos: { s: Phaser.GameObjects.Image; fase: number }[] = [];
+  private matos: { s: Phaser.GameObjects.Image; fase: number; ate: number }[] = [];
   private seg?: Phaser.GameObjects.Image;
   private segId = "";
   private sombraSeg?: Phaser.GameObjects.Ellipse;
@@ -204,7 +204,7 @@ class CenaMundo extends Phaser.Scene {
       for (let tx = 0; tx < dados.w; tx++) {
         if (dados.grama.charAt(ty * dados.w + tx) !== "1") continue;
         const s = this.add.image(tx * T + T / 2, ty * T + T, "grama-alta").setOrigin(0.5, 1).setDepth(5 + ty * T + T - 1);
-        this.matos.push({ s, fase: tx * 0.9 + ty * 0.55 });
+        this.matos.push({ s, fase: tx * 0.9 + ty * 0.55, ate: 0 });
       }
     }
     this.limparOutros();
@@ -508,9 +508,23 @@ class CenaMundo extends Phaser.Scene {
 
   override update(tempo: number): void {
     if (!this.mapa || this.encerrada) return;
+    // gramas ficam paradas; balançam só quando alguém (eu, outros jogadores ou o seguidor) passa por elas
+    const quem: { x: number; y: number }[] = [];
+    if (this.eu) quem.push(this.eu.sprite);
+    for (const f of this.outros.values()) quem.push(f.sprite);
+    if (this.seg) quem.push(this.seg);
     for (const m of this.matos) {
-      const w = Math.sin(tempo / 380 + m.fase);
-      m.s.setAngle(w * 5).setScale(1 + w * 0.04, 1 - Math.abs(w) * 0.03);
+      const cx = m.s.x, cy = m.s.y - T / 2;
+      for (const q of quem) {
+        if (Math.abs(q.x - cx) < 11 && Math.abs(q.y - 1 - cy) < 11) { m.ate = tempo + 650; break; }
+      }
+      const resta = m.ate - tempo;
+      if (resta > 0) {
+        const w = Math.sin(tempo / 70 + m.fase) * Math.min(1, resta / 650);
+        m.s.setAngle(w * 7).setScale(1 + w * 0.05, 1 - Math.abs(w) * 0.04);
+      } else if (m.s.angle !== 0 || m.s.scaleX !== 1) {
+        m.s.setAngle(0).setScale(1, 1);
+      }
     }
     const digitando = document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement;
     if (this.andando || this.mudandoMapa || this.bloqueado) return;

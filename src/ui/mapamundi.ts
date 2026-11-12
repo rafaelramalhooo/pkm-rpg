@@ -3,36 +3,36 @@ import { el } from "./dom";
 
 type No = { id: string; nome: string; x: number; y: number; t: "cidade" | "rota" | "local" };
 
-/** Mapa Mundi de Rafar (layout fixo; as ligações seguem os portais reais). */
+/** Mapa Mundi de Rafar (layout fixo, posições conforme a ilustração do mundo, em pixels da imagem 1024×1536; as ligações seguem os portais reais). */
 const NOS: No[] = [
-  { id: "porto", nome: "Porto Turquesa", x: 60, y: 60, t: "cidade" },
-  { id: "rota1", nome: "Rota 1", x: 60, y: 76, t: "rota" },
-  { id: "pallet", nome: "Vila Alvorada", x: 60, y: 92, t: "cidade" },
-  { id: "caminho_va", nome: "Vaga-Lume", x: 42, y: 60, t: "local" },
-  { id: "verdelume", nome: "Verdelume", x: 24, y: 60, t: "cidade" },
-  { id: "rota2", nome: "Rota 2", x: 48, y: 44, t: "rota" },
-  { id: "argila", nome: "Argila", x: 36, y: 28, t: "cidade" },
-  { id: "rota3", nome: "Rota 3", x: 18, y: 44, t: "rota" },
-  { id: "rota4", nome: "Rota 4", x: 12, y: 76, t: "rota" },
-  { id: "carmesim", nome: "Carmesim", x: 28, y: 94, t: "cidade" },
-  { id: "rota5", nome: "Rota 5", x: 44, y: 78, t: "rota" },
-  { id: "costa1", nome: "Costa Azul", x: 80, y: 62, t: "local" },
-  { id: "azurana", nome: "Azurana", x: 98, y: 62, t: "cidade" },
-  { id: "costa2", nome: "Costa Rosada", x: 80, y: 80, t: "local" },
-  { id: "quartzo", nome: "Quartzo Rosa", x: 98, y: 94, t: "cidade" },
-  { id: "rota7a", nome: "Rota 7", x: 108, y: 78, t: "rota" },
-  { id: "rota8", nome: "Rota 8", x: 118, y: 96, t: "rota" },
-  { id: "reserva", nome: "Reserva", x: 110, y: 108, t: "local" },
-  { id: "rota6", nome: "Rota 6", x: 68, y: 44, t: "rota" },
-  { id: "ametista", nome: "Ametista", x: 84, y: 30, t: "cidade" },
-  { id: "vale", nome: "Vale Cinzento", x: 100, y: 14, t: "local" },
-  { id: "rota10", nome: "Rota 10", x: 104, y: 36, t: "rota" },
-  { id: "obsidiana", nome: "Obsidiana", x: 120, y: 48, t: "cidade" },
-  { id: "rota9", nome: "Rota 9", x: 130, y: 64, t: "rota" },
-  { id: "ambar", nome: "Âmbar", x: 130, y: 82, t: "cidade" },
-  { id: "gruta", nome: "Gruta", x: 128, y: 28, t: "local" },
-  { id: "cromatica", nome: "Cromática", x: 130, y: 12, t: "local" },
-  { id: "plato", nome: "Platô (Liga)", x: 114, y: 4, t: "local" },
+  { id: "porto", nome: "Porto Turquesa", x: 516, y: 785, t: "cidade" },
+  { id: "rota1", nome: "Rota 1", x: 520, y: 1030, t: "rota" },
+  { id: "pallet", nome: "Vila Alvorada", x: 521, y: 1261, t: "cidade" },
+  { id: "caminho_va", nome: "Vaga-Lume", x: 385, y: 715, t: "local" },
+  { id: "verdelume", nome: "Verdelume", x: 240, y: 632, t: "cidade" },
+  { id: "rota2", nome: "Rota 2", x: 345, y: 810, t: "rota" },
+  { id: "argila", nome: "Argila", x: 190, y: 806, t: "cidade" },
+  { id: "rota3", nome: "Rota 3", x: 205, y: 720, t: "rota" },
+  { id: "rota4", nome: "Rota 4", x: 255, y: 545, t: "rota" },
+  { id: "carmesim", nome: "Carmesim", x: 270, y: 462, t: "cidade" },
+  { id: "rota5", nome: "Rota 5", x: 410, y: 590, t: "rota" },
+  { id: "costa1", nome: "Costa Azul", x: 690, y: 800, t: "local" },
+  { id: "azurana", nome: "Azurana", x: 856, y: 839, t: "cidade" },
+  { id: "costa2", nome: "Costa Rosada", x: 585, y: 705, t: "local" },
+  { id: "quartzo", nome: "Quartzo Rosa", x: 664, y: 632, t: "cidade" },
+  { id: "rota7a", nome: "Rota 7", x: 790, y: 740, t: "rota" },
+  { id: "rota8", nome: "Rota 8", x: 730, y: 480, t: "rota" },
+  { id: "reserva", nome: "Reserva", x: 867, y: 570, t: "local" },
+  { id: "rota6", nome: "Rota 6", x: 455, y: 470, t: "rota" },
+  { id: "ametista", nome: "Ametista", x: 394, y: 354, t: "cidade" },
+  { id: "vale", nome: "Vale Cinzento", x: 470, y: 290, t: "local" },
+  { id: "rota10", nome: "Rota 10", x: 505, y: 340, t: "rota" },
+  { id: "obsidiana", nome: "Obsidiana", x: 617, y: 302, t: "cidade" },
+  { id: "rota9", nome: "Rota 9", x: 705, y: 345, t: "rota" },
+  { id: "ambar", nome: "Âmbar", x: 772, y: 364, t: "cidade" },
+  { id: "gruta", nome: "Gruta", x: 697, y: 205, t: "local" },
+  { id: "cromatica", nome: "Cromática", x: 625, y: 165, t: "local" },
+  { id: "plato", nome: "Platô (Liga)", x: 548, y: 112, t: "local" },
 ];
 const LIGACOES: [string, string][] = [
   ["porto", "caminho_va"], ["caminho_va", "verdelume"], ["porto", "costa1"], ["costa1", "azurana"], ["porto", "costa2"], ["costa2", "quartzo"],
@@ -59,11 +59,11 @@ export async function abrirMapaMundi(
   const { data, error } = await supabase.rpc("mapa_mundi");
   if (error || !data) { aviso(error?.message ?? "Não foi possível abrir o Mapa Mundi."); return; }
   const info = data as { atual: string; mestre: boolean; insignias: number };
-    const SX = 2.5, SY = 1.8;
+    const SX = 0.4, SY = 0.4;
   const porId = new Map(NOS.map((n) => [n.id, { ...n, x: n.x * SX, y: n.y * SY }]));
   let escolhido: string | null = null;
 
-  const mapa = svg("svg", { viewBox: "-16 -14 376 232", class: "mm-svg", role: "img", "aria-label": "Mapa Mundi de Rafar" });
+  const mapa = svg("svg", { viewBox: "50 20 320 520", class: "mm-svg", role: "img", "aria-label": "Mapa Mundi de Rafar" });
   for (const [a, b] of LIGACOES) {
     const A = porId.get(a)!, B = porId.get(b)!;
     mapa.append(svg("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: "mm-via aberta" }));
