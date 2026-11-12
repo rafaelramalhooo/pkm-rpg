@@ -134,3 +134,11 @@ export function barraHp(atual: number, max: number): { pct: number; classe: stri
   const pct = max > 0 ? Math.max(0, Math.min(100, (atual / max) * 100)) : 0;
   return { pct, classe: pct > 50 ? "ok" : pct > 20 ? "medio" : "baixo" };
 }
+
+/** Ícone de Poké Bola com a cor de cada tipo (CSS: .bola-ico.b-<slug>). */
+export function iconeBola(slug: string): HTMLElement {
+  const i = document.createElement("span");
+  i.className = `bola-ico b-${slug}`;
+  i.setAttribute("aria-hidden", "true");
+  return i;
+}

@@ -2,7 +2,7 @@
 // que roda o simulador oficial do Showdown). Aqui só enviamos a intenção do jogador e tocamos o que volta.
 import { supabase } from "../supabase";
 import { el } from "./dom";
-import { COR_TIPO, golpePorSlug, imagemPokemon, minhaMochila, NOME_TIPO, nomeItem, urlSprite } from "./dados";
+import { COR_TIPO, golpePorSlug, iconeBola, imagemPokemon, minhaMochila, NOME_TIPO, nomeItem, urlSprite } from "./dados";
 
 interface MembroSim { orig: number; id?: string; hp: number; maxhp: number; status: string | null; nome: string; nivel: number; especie: string; num: number; ativo: boolean; pp: number[] }
 interface PedidoGolpe { n: number; id: string; nome: string; pp: number; maxpp: number; desativado: boolean }
@@ -158,9 +158,10 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       const c = cena.getBoundingClientRect();
       return { x: r.left - c.left + r.width / 2, y: r.top - c.top + r.height / 2 };
     };
+    let bolaAtual = "poke-ball";
     async function lancarBola(): Promise<void> {
       bola?.remove();
-      const b = el("div", { class: "pokebola" }, el("i", {}));
+      const b = el("div", { class: `pokebola b-${bolaAtual}` }, el("i", {}));
       cena.append(b);
       bola = b;
       const de = centro(campoJog);
@@ -236,6 +237,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     async function tocarEvento(e: Evento): Promise<void> {
       switch (e.t) {
         case "bola": {
+          bolaAtual = str(e.bola);
           await dizer(`Você lançou a ${nomeItem(str(e.bola))}!`, 400);
           await lancarBola();
           const n = Number(e.balancos);
@@ -259,7 +261,8 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
         case "nivel": await dizer(`${str(e.nome)} subiu para o nível ${str(e.nivel)}!`, 1100, "forte"); break;
         case "insignia": await dizer(`Você conquistou a Insígnia ${str(e.nome).replace(/^./, (c) => c.toUpperCase())} de ${str(e.lider)}!`, 2200, "forte"); break;
         case "campeao": await dizer(`${str(e.nome)} foi derrotada! Você é o novo Campeão de Rafar!`, 2600, "forte"); break;
-        case "aprendeu": await dizer(`${str(e.nome)} aprendeu ${str(e.golpe)}!`, 1100, "forte"); break;
+        case "aprendeu": await dizer(e.esqueceu ? `${str(e.nome)} esqueceu ${str(e.esqueceu)} e aprendeu ${str(e.golpe)}!` : `${str(e.nome)} aprendeu ${str(e.golpe)}!`, 1500, "forte"); break;
+        case "evolucao": await dizer(`O quê? ${str(e.nome)} está evoluindo...`, 1400, "forte"); await dizer(`${str(e.nome)} evoluiu para ${str(e.para)}!`, 2200, "forte"); break;
         default: break;
       }
     }
@@ -440,7 +443,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       const cura = todos.filter((i) => CURAVEIS.includes(i.item));
       msg.textContent = "Mochila";
       const lista: HTMLElement[] = [
-        ...bolas.map((i) => botao(`${nomeItem(i.item)} ×${i.qtd}`, () => void agir({ acao: "bola", item: i.item }), "sd-item")),
+        ...bolas.map((i) => { const b = botao(`${nomeItem(i.item)} ×${i.qtd}`, () => void agir({ acao: "bola", item: i.item }), "sd-item"); b.prepend(iconeBola(i.item)); return b; }),
         ...cura.map((i) => botao(`${nomeItem(i.item)} ×${i.qtd}`, () => escolherAlvo(r, i.item), "sd-item")),
       ];
       controles.replaceChildren(

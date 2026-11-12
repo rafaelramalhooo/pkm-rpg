@@ -775,3 +775,38 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .sd-caixa.jog{border-radius:6px 28px 6px 28px!important}
 .sd-golpe{clip-path:polygon(5% 0,100% 0,95% 100%,0 100%);border:0!important;border-radius:0!important;padding:10px 18px!important}
 .sd-golpe:hover:not(:disabled){transform:translateX(4px)}
+
+/* ===== Ícones das Poké Bolas ===== */
+.bola-ico{display:inline-block;width:20px;height:20px;border-radius:50%;border:2px solid #05070d;vertical-align:-4px;margin-right:6px;position:relative;flex:none;background:linear-gradient(var(--bt,#e8433a) 0 46%,#05070d 46% 54%,#fff 54% 100%)}
+.bola-ico::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#fff;border:2px solid #05070d}
+.b-poke-ball{--bt:#e8433a}.b-great-ball{--bt:#2f6fe0}.b-ultra-ball{--bt:#f5c542}.b-master-ball{--bt:#8a3fd0}.b-premier-ball{--bt:#f4f4f4}.b-safari-ball{--bt:#4a9a52}
+.pokebola.b-great-ball{background:linear-gradient(#2f6fe0 0 46%,#05070d 46% 54%,#fff 54% 100%)}
+.pokebola.b-ultra-ball{background:linear-gradient(#f5c542 0 46%,#05070d 46% 54%,#fff 54% 100%)}
+.pokebola.b-master-ball{background:linear-gradient(#8a3fd0 0 46%,#05070d 46% 54%,#fff 54% 100%)}
+.cartao-acoes{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.cartao-acao{padding:5px 10px;font-size:.74rem;margin:0}
+/* ===== Mochila: tamanho ajustado (responde à largura do painel, não da janela) ===== */
+.modal-corpo{container-type:inline-size}
+.ss-tela{height:clamp(200px,40vh,380px);max-height:none!important;min-height:0!important;overflow:hidden}
+.ss-time,.ss-itens{min-height:0;overflow-y:auto}.ss-dir{min-height:0;overflow:hidden}.ss-itens{flex:1}
+.ss-desc{position:static!important}
+@container (max-width:560px){
+  .ss-tela{grid-template-columns:1fr;grid-template-rows:auto 1fr;height:clamp(260px,52vh,440px)}
+  .ss-time{flex-direction:row;overflow-x:auto;overflow-y:hidden}.ss-pk{min-width:128px;flex:none}
+  .ss-dir{min-height:0}
+}
+/* ===== Resumo: tamanho ajustado ===== */
+.rs-tela{grid-template-columns:1fr!important;max-height:68vh;overflow:auto}
+@container (min-width:620px){.rs-tela{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)!important}}
+.rs-retrato{max-width:150px}.rs-nome{flex-wrap:nowrap;gap:8px}.rs-nome strong{min-width:0;overflow:hidden;text-overflow:ellipsis}.rs-nome .nivel{white-space:nowrap}
+.hexa{max-width:250px}.rs-golpes{grid-template-columns:1fr 1fr}.rs-golpe{padding:5px 12px;font-size:.72rem}
+/* ajustes de tamanho (Mochila e Resumo): nada encolhe; o corpo do painel rola */
+.modal-corpo > *{flex:none}
+.modal .ss-pk,.modal .ss-item,.modal .ss-bolso,.modal .ss-usar{margin:0;box-shadow:none}
+.modal .ss-pk{border-bottom:2px solid #cfcfcf}.modal .ss-item{border-radius:0;border-bottom:1px solid #e3e3e3}
+.ss-tela{height:clamp(300px,52vh,480px)!important}
+.rs-tela{max-height:none!important;overflow:visible!important}
+@container (max-width:560px){
+  .ss-tela{height:clamp(250px,42vh,400px)!important;grid-template-rows:auto minmax(0,1fr)}
+  .ss-pk{min-width:118px;padding:3px 5px}.ss-pk img,.ss-pk>span{width:28px;height:28px}
+  .ss-itens{min-height:140px}
+}

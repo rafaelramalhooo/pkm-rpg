@@ -16,7 +16,7 @@ export function hexagono(p: PokemonRow): SVGElement {
     ["HP", p.hp_max], ["Ataque", p.atk ?? 0], ["Defesa", p.def ?? 0], ["Vel.", p.spe ?? 0], ["Def. Esp.", p.spd ?? 0], ["Atq. Esp.", p.spa ?? 0],
   ];
   const escala = Math.max(60, Math.max(...stats.map((s) => s[1])) * 1.15);
-  const cx = 130, cy = 120, R = 82;
+  const cx = 150, cy = 120, R = 78;
   const pt = (i: number, f: number): string => {
     const a = -Math.PI / 2 + (i * Math.PI) / 3;
     return `${(cx + Math.cos(a) * R * f).toFixed(1)},${(cy + Math.sin(a) * R * f).toFixed(1)}`;
@@ -32,7 +32,7 @@ export function hexagono(p: PokemonRow): SVGElement {
     t2.append(document.createTextNode(String(v)));
     return [t, t2];
   }).flat();
-  return sv("svg", { viewBox: "0 0 260 250", class: "hexa", role: "img", "aria-label": "Atributos" }, anel(1), anel(0.66), anel(0.33), ...raios, valores, ...rotulos);
+  return sv("svg", { viewBox: "0 0 300 250", class: "hexa", role: "img", "aria-label": "Atributos" }, anel(1), anel(0.66), anel(0.33), ...raios, valores, ...rotulos);
 }
 
 /** Tela de resumo do Pokémon (estilo Arceus): retrato, tipos, hexágono de atributos, golpes, experiência. */

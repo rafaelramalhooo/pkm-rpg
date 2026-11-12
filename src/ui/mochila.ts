@@ -1,6 +1,6 @@
 import { supabase } from "../supabase";
 import { el } from "./dom";
-import { barraHp, imagemPokemon, infoItem, meuTime, minhaMochila, nomeItem, nomePokemon, carregarReferencias, type PokemonRow } from "./dados";
+import { barraHp, iconeBola, imagemPokemon, infoItem, meuTime, minhaMochila, nomeItem, nomePokemon, carregarReferencias, type PokemonRow } from "./dados";
 
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
 type Aviso = (t: string, ms?: number, erro?: boolean) => void;
@@ -9,10 +9,10 @@ const BOLSOS = [
   { id: "itens", rot: "Itens" }, { id: "bolas", rot: "Poké Bolas" }, { id: "remedios", rot: "Remédios" }, { id: "outros", rot: "Outros" },
 ] as const;
 type Bolso = (typeof BOLSOS)[number]["id"];
-const USAVEIS = new Set(["potion", "super-potion", "hyper-potion", "max-potion", "full-restore", "revive", "max-revive"]);
+const USAVEIS = new Set(["fire-stone", "water-stone", "thunder-stone", "leaf-stone", "moon-stone", "potion", "super-potion", "hyper-potion", "max-potion", "full-restore", "revive", "max-revive"]);
 const bolsoDe = (slug: string, cat: string): Bolso =>
   /ball$/.test(slug) ? "bolas" : /potion|restore|revive|heal|antidote|awakening|ether|elixir/.test(slug) || cat.includes("healing") || cat.includes("status") ? "remedios" : "itens";
-const icone = (slug: string): string => (/ball$/.test(slug) ? "◓" : /revive/.test(slug) ? "✨" : /potion|restore/.test(slug) ? "🧪" : /heal|antidote|awakening/.test(slug) ? "💊" : "🎒");
+const icone = (slug: string): string => (/ball$/.test(slug) ? "" : /stone/.test(slug) ? "💎" : /revive/.test(slug) ? "✨" : /potion|restore/.test(slug) ? "🧪" : /heal|antidote|awakening/.test(slug) ? "💊" : "🎒");
 
 /** Minhas Coisas — mochila no estilo Sword & Shield: time à esquerda, bolsos e itens à direita, descrição embaixo. */
 export async function abrirMochila(modal: Modal, uid: string, dinheiro: number, aviso: Aviso, aoMudar: () => void, abas: HTMLElement, bolsoInicial: Bolso = "itens"): Promise<void> {
@@ -36,7 +36,7 @@ export async function abrirMochila(modal: Modal, uid: string, dinheiro: number, 
     }));
     const doBolso = itens.filter((i) => i.qtd > 0 && bolsoDe(i.item, infoItem(i.item).categoria) === bolso);
     lista.replaceChildren(...(doBolso.length ? doBolso.map((i) => {
-      const l = el("button", { type: "button", class: `ss-item${sel === i.item ? " sel" : ""}` }, el("span", { class: "ss-ico" }, icone(i.item)), el("span", { class: "ss-nome" }, nomeItem(i.item)), el("span", { class: "ss-qtd" }, `× ${i.qtd}`));
+      const l = el("button", { type: "button", class: `ss-item${sel === i.item ? " sel" : ""}` }, el("span", { class: "ss-ico" }, /ball$/.test(i.item) ? iconeBola(i.item) : icone(i.item)), el("span", { class: "ss-nome" }, nomeItem(i.item)), el("span", { class: "ss-qtd" }, `× ${i.qtd}`));
       l.addEventListener("click", () => { sel = i.item; usando = null; redesenhar(); });
       return l;
     }) : [el("p", { class: "sub" }, "Nada neste bolso.")]));
@@ -56,9 +56,10 @@ export async function abrirMochila(modal: Modal, uid: string, dinheiro: number, 
         el("div", { class: "ss-pk-info" }, el("strong", {}, `${nomePokemon(p)}`), el("small", {}, `Nv ${p.nivel}`), el("div", { class: "ss-hp" }, fill), el("small", {}, `${p.hp_atual}/${p.hp_max}`)));
       c.addEventListener("click", async () => {
         if (!usando) return;
-        const { error } = await supabase.rpc("usar_item_fora", { p_item: usando, p_pokemon: p.id });
+        const { data: rs, error } = await supabase.rpc("usar_item_fora", { p_item: usando, p_pokemon: p.id });
         if (error) return void aviso(error.message, 4000, true);
-        aviso(`${nomeItem(usando)} usado em ${nomePokemon(p)}.`);
+        const evo = (rs as { evolucao?: { nome: string; para: string } } | null)?.evolucao;
+        aviso(evo ? `${evo.nome} evoluiu para ${evo.para}!` : `${nomeItem(usando)} usado em ${nomePokemon(p)}.`, evo ? 5000 : 3200);
         aoMudar();
         void abrirMochila(modal, uid, dinheiro, aviso, aoMudar, abas, bolso);
       });

@@ -133,6 +133,9 @@ class CenaMundo extends Phaser.Scene {
   private matos: { s: Phaser.GameObjects.Image; fase: number }[] = [];
   private seg?: Phaser.GameObjects.Image;
   private segId = "";
+  private sombraSeg?: Phaser.GameObjects.Ellipse;
+  private segTween?: Phaser.Tweens.Tween;
+  private segTex?: { f: string; b: string };
 
   constructor(jogador: Jogador, ganchos: Ganchos) {
     super("mundo");
@@ -495,39 +498,70 @@ class CenaMundo extends Phaser.Scene {
     if (d) this.passo(d);
   }
 
-  /** Pokémon que acompanha o treinador fora da bola (lido do servidor). */
+  /** Pokémon que acompanha o treinador fora da bola (lido do servidor). Anda atrás do treinador, vira para onde ele vai e saltita ao andar. */
   async atualizarSeguidor(): Promise<void> {
     const { data } = await supabase.rpc("meu_seguidor");
     if (this.encerrada) return;
     const d = data as { id: string; especie_id: number; brilhante?: boolean } | null;
-    if (!d) { this.seg?.destroy(); this.seg = undefined; this.segId = ""; return; }
-    const chave = `seg-${d.especie_id}`;
-    if (this.segId === `${d.id}`&& this.seg) return;
-    const url = await urlSprite("frente", d.especie_id);
-    if (!url || this.encerrada) return;
+    if (!d) { this.parouSeg(); this.seg?.destroy(); this.sombraSeg?.destroy(); this.seg = undefined; this.sombraSeg = undefined; this.segId = ""; return; }
+    const kf = `seg-f-${d.especie_id}`, kb = `seg-b-${d.especie_id}`;
+    if (this.segId === `${d.id}` && this.seg) return;
+    const [uf, ub] = await Promise.all([urlSprite("frente", d.especie_id), urlSprite("costas", d.especie_id)]);
+    if (!uf || this.encerrada) return;
     const pronto = () => {
       if (this.encerrada) return;
+      this.parouSeg();
       this.seg?.destroy();
-      const img = this.add.image(px(this.jogador.x), py(this.jogador.y), chave).setOrigin(0.5, 1);
-      const k = 18 / Math.max(1, img.height);
-      img.setScale(Math.min(k, 0.5));
+      this.sombraSeg?.destroy();
+      this.segTex = { f: kf, b: this.textures.exists(kb) ? kb : kf };
+      this.sombraSeg = this.add.ellipse(px(this.jogador.x), py(this.jogador.y), 12, 4, 0x000000, 0.28);
+      const img = this.add.image(px(this.jogador.x), py(this.jogador.y), kf).setOrigin(0.5, 1);
+      img.setScale(Math.min(22 / Math.max(1, img.height), 0.6));
       if (d.brilhante) img.setTint(0xc8ffd8);
       this.seg = img; this.segId = d.id;
-      this.posicionarSeguidor(this.jogador.x, this.jogador.y);
+      this.posicionarSeguidor(this.jogador.x, this.jogador.y, 0, this.jogador.direcao);
     };
-    if (this.textures.exists(chave)) { pronto(); return; }
+    const faltam: [string, string][] = [];
+    if (!this.textures.exists(kf)) faltam.push([kf, uf]);
+    if (ub && !this.textures.exists(kb)) faltam.push([kb, ub]);
+    if (!faltam.length) { pronto(); return; }
     this.load.crossOrigin = "anonymous";
-    this.load.image(chave, url);
+    for (const [k, u] of faltam) this.load.image(k, u);
     this.load.once(Phaser.Loader.Events.COMPLETE, pronto);
     this.load.start();
   }
 
-  private posicionarSeguidor(x: number, y: number, ms = 0): void {
+  private parouSeg(): void {
+    this.segTween?.stop();
+    this.segTween = undefined;
+  }
+
+  /** Move o seguidor até o tile (x, y). Com ms > 0 anima com saltinhos e vira conforme a direção. */
+  private posicionarSeguidor(x: number, y: number, ms = 0, dir?: Direcao): void {
     if (!this.seg) return;
-    this.tweens.killTweensOf(this.seg);
+    this.parouSeg();
     const alvoX = px(x), alvoY = py(y) + 1;
-    if (ms <= 0) { this.seg.setPosition(alvoX, alvoY).setDepth(9 + alvoY); return; }
-    this.tweens.add({ targets: this.seg, x: alvoX, y: alvoY, duration: ms, ease: "Linear", onUpdate: () => this.seg?.setDepth(9 + this.seg.y) });
+    if (dir && this.segTex) {
+      // costas ao subir; de frente nas demais; espelha ao ir para a direita
+      this.seg.setTexture(dir === "cima" ? this.segTex.b : this.segTex.f);
+      this.seg.setFlipX(dir === "direita");
+    }
+    if (ms <= 0) {
+      this.seg.setPosition(alvoX, alvoY).setDepth(9 + alvoY);
+      this.sombraSeg?.setPosition(alvoX, alvoY - 1).setDepth(8 + alvoY);
+      return;
+    }
+    const ix = this.seg.x, iy = this.seg.y, c = { t: 0 };
+    this.segTween = this.tweens.add({
+      targets: c, t: 1, duration: ms, ease: "Linear",
+      onUpdate: () => {
+        if (!this.seg) return;
+        const bx = ix + (alvoX - ix) * c.t, by = iy + (alvoY - iy) * c.t;
+        this.seg.setPosition(bx, by - Math.abs(Math.sin(c.t * Math.PI)) * 3).setDepth(9 + by);
+        this.sombraSeg?.setPosition(bx, by - 1).setDepth(8 + by);
+      },
+      onComplete: () => { this.seg?.setPosition(alvoX, alvoY).setDepth(9 + alvoY); this.sombraSeg?.setPosition(alvoX, alvoY - 1); },
+    });
   }
 
   private passo(d: Direcao): void {
@@ -546,7 +580,7 @@ class CenaMundo extends Phaser.Scene {
     }
     this.andando = true;
     this.ganchos.aoPasso?.();
-    this.posicionarSeguidor(this.jogador.x, this.jogador.y, PASSO_MS);
+    this.posicionarSeguidor(this.jogador.x, this.jogador.y, PASSO_MS, d);
     this.jogador.x = nx;
     this.jogador.y = ny;
     this.jogador.direcao = d;

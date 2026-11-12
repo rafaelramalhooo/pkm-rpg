@@ -2,6 +2,22 @@ import { supabase } from "../supabase";
 import { el } from "./dom";
 import { carregarReferencias, especie, imagemPokemon, nomeItem, nomePokemon, type PokemonRow } from "./dados";
 
+/** Texto dos eventos de experiência devolvidos pelo servidor (nível, evolução, golpes). */
+export function textoEventos(ev: { t: string; valor?: number; nivel?: number; nome?: string; golpe?: string; para?: string; esqueceu?: string }[]): string {
+  return ev.map((x) => (x.t === "exp" ? `+${x.valor} XP` : x.t === "nivel" ? `${x.nome} subiu para o nível ${x.nivel}!` : x.t === "evolucao" ? `${x.nome} evoluiu para ${x.para}!` : x.t === "aprendeu" ? (x.esqueceu ? `${x.nome} esqueceu ${x.esqueceu} e aprendeu ${x.golpe}!` : `${x.nome} aprendeu ${x.golpe}!`) : "")).filter(Boolean).join(" · ");
+}
+
+/** Executa uma ação que gasta PA e mostra claramente quanto foi gasto e quanto resta. */
+export async function acaoPA(rpc: string, args: Record<string, unknown>, uid: string, aviso: Aviso, aoMudar: () => void, texto: (d: Record<string, unknown>) => string): Promise<boolean> {
+  const { data, error } = await supabase.rpc(rpc, args);
+  if (error) { aviso(error.message, 4000, true); return false; }
+  const { data: j } = await supabase.from("jogadores").select("pa").eq("id", uid).maybeSingle();
+  const pa = j ? ` · −1 PA (restam ${(j as { pa: number }).pa})` : " · −1 PA";
+  aviso(`${texto((data ?? {}) as Record<string, unknown>)}${pa}`, 5000);
+  aoMudar();
+  return true;
+}
+
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
 type Aviso = (t: string, ms?: number, erro?: boolean) => void;
 
@@ -79,17 +95,9 @@ export async function abrirAcoes(modal: Modal, uid: string, aviso: Aviso, aoMuda
   await carregarReferencias();
   const msg = el("div", { class: "hab-msg" });
   const rodar = async (rpc: string, args: Record<string, unknown>, texto: (d: Record<string, unknown>) => string) => {
-    const { data, error } = await supabase.rpc(rpc, args);
-    if (error) return void aviso(error.message, 4000, true);
-    const d = (data ?? {}) as Record<string, unknown>;
-    msg.textContent = texto(d);
-    aviso(msg.textContent);
-    aoMudar();
+    await acaoPA(rpc, args, uid, (t, ms, er) => { msg.textContent = t; aviso(t, ms, er); }, aoMudar, texto);
   };
-  const eventosTxt = (d: Record<string, unknown>): string => {
-    const ev = (d.eventos ?? []) as { t: string; valor?: number; nivel?: number; nome?: string; golpe?: string }[];
-    return ev.map((x) => (x.t === "exp" ? `+${x.valor} XP` : x.t === "nivel" ? `${x.nome} subiu para o nível ${x.nivel}!` : x.t === "aprendeu" ? `${x.nome} aprendeu ${x.golpe}!` : "")).filter(Boolean).join(" · ");
-  };
+  const eventosTxt = (d: Record<string, unknown>): string => textoEventos((d.eventos ?? []) as Parameters<typeof textoEventos>[0]);
 
   const { data: pks } = await supabase.from("pokemons").select("*").eq("dono", uid).not("posicao", "is", null).order("posicao");
   const time = (pks ?? []) as PokemonRow[];
