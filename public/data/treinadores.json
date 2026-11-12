@@ -2,9 +2,9 @@
   {
     "id": "rota1_tiago",
     "mapa_id": "rota1",
-    "x": 19,
-    "y": 36,
-    "direcao": "esquerda",
+    "x": 12,
+    "y": 40,
+    "direcao": "baixo",
     "visao": 3,
     "nome": "Tiago",
     "classe": "Garoto",
