@@ -42,25 +42,27 @@ export function criar({ time, inimigos, seed }) {
   return resultado(b, 0);
 }
 
-function visivel(linhas) {
+function visivel(linhas, lado = 0) {
   const out = [];
   for (let i = 0; i < linhas.length; i++) {
     const l = linhas[i];
     if (l.startsWith("|split|")) {
-      out.push(l.slice(7) === "p1" ? linhas[i + 1] : linhas[i + 2]);
+      out.push(l.slice(7) === `p${lado + 1}` ? linhas[i + 1] : linhas[i + 2]);
       i += 2;
       continue;
     }
     out.push(l);
   }
-  return out.filter((l) => l && l !== "|" && !l.startsWith("|t:|") && !/^\|move\|p1a: [^|]*\|Splash\|/.test(l) && !/^\|(upkeep|teamsize|gen|tier|clearpoke|poke|teampreview|rule|raw|gametype|player)\b/.test(l) && !/^\|-nothing/.test(l));
+  // quem vê pelo lado 2 enxerga a si mesmo como "p1" (o cliente sempre desenha o próprio time como p1)
+  const persp = lado === 1 ? (l) => (l ?? "").replace(/\bp([12])([ab]?)(?=:)/g, (_m, n, ab) => `p${3 - Number(n)}${ab}`) : (l) => l;
+  return out.map(persp).filter((l) => l && l !== "|" && !l.startsWith("|t:|") && !/^\|move\|p1a: [^|]*\|Splash\|/.test(l) && !/^\|(upkeep|teamsize|gen|tier|clearpoke|poke|teampreview|rule|raw|gametype|player)\b/.test(l) && !/^\|-nothing/.test(l));
 }
 
-function pedido(b) {
-  const r = b.sides[0].activeRequest;
+function pedido(b, ld = 0) {
+  const r = b.sides[ld].activeRequest;
   if (!r || r.wait) return null;
   const ativo = r.active?.[0];
-  const lado = b.sides[0].pokemon;
+  const lado = b.sides[ld].pokemon;
   return {
     trocar: !!r.forceSwitch,
     golpes: ativo ? ativo.moves.filter((m) => m.id !== "splash").map((m, i) => ({ n: i + 1, id: m.id, nome: m.move, pp: m.pp, maxpp: m.maxpp, desativado: !!m.disabled })) : [],
@@ -69,16 +71,16 @@ function pedido(b) {
   };
 }
 
-function resultado(b, desde) {
-  const fim = b.ended ? (b.winner === "Jogador" ? "vitoria" : "derrota") : null;
+function resultado(b, desde, ld = 0) {
+  const fim = b.ended ? (b.winner === b.sides[ld].name ? "vitoria" : "derrota") : null;
   const dados = (lado) => lado.pokemon.map((p) => ({
     orig: p.set.happiness - 100, hp: p.hp, maxhp: p.maxhp, status: p.status || null,
     pp: p.moveSlots.filter((s) => s.id !== "splash").map((s) => s.pp),
     nome: p.name, nivel: p.level, especie: p.species.name, num: p.species.num, ativo: p.isActive,
   }));
   return {
-    estado: b.toJSON(), linhas: visivel(b.log.slice(desde)), logLen: b.log.length, pedido: fim ? null : pedido(b), fim,
-    jogador: dados(b.sides[0]), adversario: dados(b.sides[1]),
+    estado: b.toJSON(), linhas: visivel(b.log.slice(desde), ld), logLen: b.log.length, pedido: fim ? null : pedido(b, ld), fim,
+    jogador: dados(b.sides[ld]), adversario: dados(b.sides[1 - ld]),
   };
 }
 
@@ -136,6 +138,46 @@ export function passo({ estado, logLen, acao, antes }) {
 }
 
 /** devolve o estado atual (pedido, times) sem avançar a simulação */
-export function ler(estado, desde = 0) {
-  return resultado(Battle.fromJSON(JSON.parse(JSON.stringify(estado))), desde);
+export function ler(estado, desde = 0, ld = 0) {
+  return resultado(Battle.fromJSON(JSON.parse(JSON.stringify(estado))), desde, ld);
 }
+
+// ===== duelo entre dois jogadores (os dois lados são humanos; times com HP e PP cheios) =====
+/** time1/time2: membros {especie, nome, apelido, nivel, natureza, ivs, golpes:[{slug}]} */
+export function criarDuelo({ time1, time2, seed }) {
+  const b = new Battle({ formatid: "gen9customgame@@@!teampreview", seed });
+  b.setPlayer("p1", { name: "Jogador", team: time1.map(conjunto) });
+  ajustar(b.sides[0], time1.map((m) => ({ ...m, hp: 9999 })), false);
+  b.setPlayer("p2", { name: "Adversário", team: time2.map(conjunto) });
+  ajustar(b.sides[1], time2.map((m) => ({ ...m, hp: 9999 })), false);
+  return { estado: b.toJSON(), logLen: b.log.length, v: [resultado(b, 0, 0), resultado(b, 0, 1)] };
+}
+
+/** quais lados ainda precisam escolher neste momento (0 e/ou 1) */
+export function ladosPendentes(estado) {
+  const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
+  return [0, 1].filter((i) => { const r = b.sides[i].activeRequest; return !!r && !r.wait; });
+}
+
+/** testa uma escolha ("move 2", "switch 3") sem alterar nada guardado */
+export function escolhaValida(estado, ld, escolha) {
+  const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
+  const r = b.sides[ld].activeRequest;
+  if (!r || r.wait) return false;
+  return !!b.choose(`p${ld + 1}`, escolha);
+}
+
+/** aplica as escolhas ({0:"move 1", 1:"switch 2"}); lados sem pedido são ignorados. "default" = escolha automática. */
+export function passoDuelo({ estado, logLen, escolhas }) {
+  const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
+  for (const i of [0, 1]) {
+    const e = escolhas[i];
+    const r = b.sides[i].activeRequest;
+    if (!e || !r || r.wait) continue;
+    if (!b.choose(`p${i + 1}`, e)) throw new Error("Escolha inválida.");
+  }
+  return { estado: b.toJSON(), logLen: b.log.length, v: [resultado(b, logLen, 0), resultado(b, logLen, 1)] };
+}
+
+/** visão de um lado sem avançar a simulação */
+export const verDuelo = (estado, desde, ld) => resultado(Battle.fromJSON(JSON.parse(JSON.stringify(estado))), desde, ld);

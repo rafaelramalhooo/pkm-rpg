@@ -596,9 +596,13 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     if (!p) return;
     for (const d of p.desafios_recebidos) if (!vistos.has(d.id)) { vistos.add(d.id); mostrarAviso(`${d.nome} desafiou você! Abra Treinador › Jogadores.`, 7000); }
     for (const t of p.trocas_recebidas) if (!vistos.has(t.id)) { vistos.add(t.id); mostrarAviso(`${t.nome} propôs uma troca! Abra Treinador › Jogadores.`, 7000); }
-    if (p.batalha && !emBatalha && !vistos.has(p.batalha.id)) { vistos.add(p.batalha.id); mostrarAviso("Seu desafio foi aceito! Abra Treinador › Jogadores para lutar.", 8000); }
+    if (p.batalha && !emBatalha && !vistos.has(p.batalha.id)) {
+      vistos.add(p.batalha.id);
+      mostrarAviso("Seu desafio foi aceito! Entrando no duelo...", 3000);
+      window.setTimeout(() => void lutarDesafio(), 1200);
+    }
   };
-  const tempoSocial = window.setInterval(() => void verificarSocial(), 12000);
+  const tempoSocial = window.setInterval(() => void verificarSocial(), 6000);
   const tempoMissao = window.setInterval(() => { if (!document.hidden) void atualizarMissao(); }, 30000);
 
   async function listarTreinadores(mapaId: string): Promise<TreinadorMapa[]> {

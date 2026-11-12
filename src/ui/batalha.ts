@@ -13,7 +13,8 @@ interface Pedido { trocar: boolean; golpes: PedidoGolpe[]; preso: boolean; time:
 interface Evento { t: string; [k: string]: unknown }
 type EstadoFinal = "ativa" | "vitoria" | "derrota" | "fuga" | "captura";
 interface Resposta {
-  batalha: { id: string; estado: EstadoFinal; tipo: "selvagem" | "treinador"; turno: number };
+  batalha: { id: string; estado: EstadoFinal; tipo: "selvagem" | "treinador" | "duelo"; turno: number };
+  espera?: boolean; restante?: number | null;
   antes: Evento[]; linhas: string[]; depois: Evento[]; pedido: Pedido | null; fim: string | null;
   jogador: MembroSim[]; adversario: MembroSim[]; treinador?: string;
 }
@@ -71,7 +72,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     let ocupado = true;
     let ultima: Resposta | null = null;
     let estado: EstadoFinal = "ativa";
-    let tipoBatalha: "selvagem" | "treinador" = "selvagem";
+    let tipoBatalha: "selvagem" | "treinador" | "duelo" = "selvagem";
     let nomeTreinador = "";
 
     const fundo = el("div", { class: "sd-fundo" });
@@ -175,7 +176,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       while (msg.children.length > 3) msg.firstElementChild?.remove();
       return esperar(ms);
     }
-    const nomeAdv = (n: string) => (tipoBatalha === "selvagem" ? `${n} selvagem` : `${n} inimigo`);
+    const nomeAdv = (n: string) => (tipoBatalha === "selvagem" ? `${n} selvagem` : tipoBatalha === "duelo" ? `${n} de ${nomeTreinador || "oponente"}` : `${n} inimigo`);
     const quem = (l: "jog" | "adv", n: string) => (l === "jog" ? n : nomeAdv(n));
 
     // ---------- captura ----------
@@ -255,8 +256,8 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       const bola = (m: MembroSim | null) => el("i", { class: `mini-bola${m ? (m.hp > 0 ? "" : " caida") : " vazia"}` });
       bolasJog.replaceChildren(...Array.from({ length: 6 }, (_, i) => bola(r.jogador[i] ?? null)));
       const n = Math.max(1, r.adversario.length);
-      bolasAdv.replaceChildren(...Array.from({ length: tipoBatalha === "treinador" ? 6 : n }, (_, i) => bola(r.adversario[i] ?? null)));
-      nomeAdvEl.textContent = tipoBatalha === "treinador" ? (nomeTreinador || "Treinador") : "Selvagem";
+      bolasAdv.replaceChildren(...Array.from({ length: tipoBatalha !== "selvagem" ? 6 : n }, (_, i) => bola(r.adversario[i] ?? null)));
+      nomeAdvEl.textContent = tipoBatalha === "treinador" ? (nomeTreinador || "Treinador") : tipoBatalha === "duelo" ? (nomeTreinador || "Oponente") : "Selvagem";
     }
 
     // ---------- eventos do servidor (fora do protocolo do Showdown) ----------
@@ -406,6 +407,20 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       return x;
     }
 
+    function botaoDesistir(): HTMLButtonElement {
+      let armado = false;
+      const b = botao("Desistir do duelo", () => {
+        if (!armado) {
+          armado = true;
+          b.textContent = "Confirmar: desistir?";
+          window.setTimeout(() => { armado = false; b.textContent = "Desistir do duelo"; }, 4000);
+          return;
+        }
+        void agir({ acao: "fugir" });
+      }, "sec perigo");
+      return b;
+    }
+
     function iconeTime(t: PedidoTime, r: Resposta, aoClicar: () => void, desabilitar: boolean): HTMLButtonElement {
       const m = r.jogador.find((x) => x.orig === t.orig);
       const hp = pctHp(t.hp, t.maxhp);
@@ -424,7 +439,13 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     function mostrarControles(r: Resposta): void {
       ultima = r;
       const ped = r.pedido;
-      if (!ped) return;
+      if (!ped) {
+        if (r.espera && tipoBatalha === "duelo") {
+          msg.textContent = r.restante ? `Aguardando ${nomeTreinador || "o oponente"}... (${r.restante}s)` : `Aguardando ${nomeTreinador || "o oponente"}...`;
+          controles.replaceChildren(el("div", { class: "sd-sub" }, "Sua escolha foi enviada."), botaoDesistir());
+        }
+        return;
+      }
       const nomeAtivo = ativos.jog.nome;
       if (ped.trocar) {
         msg.textContent = "Escolha o próximo Pokémon!";
@@ -450,12 +471,13 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
         x.addEventListener("click", () => void agir({ acao: "golpe", n: g.n }));
         return x;
       });
-      const extras = el(
-        "div", { class: "sd-extras" },
-        botao("Mochila", () => void menuMochila(r), "sec"),
-        botao("Fugir", () => void agir({ acao: "fugir" }), "sec perigo"),
-      );
-      if (tipoBatalha === "treinador") (extras.lastElementChild as HTMLButtonElement).disabled = true;
+      const extras = el("div", { class: "sd-extras" });
+      if (tipoBatalha === "duelo") {
+        extras.append(botaoDesistir());
+      } else {
+        extras.append(botao("Mochila", () => void menuMochila(r), "sec"), botao("Fugir", () => void agir({ acao: "fugir" }), "sec perigo"));
+        if (tipoBatalha === "treinador") (extras.lastElementChild as HTMLButtonElement).disabled = true;
+      }
       controles.replaceChildren(
         el("div", { class: "sd-sub" }, "Golpes"),
         el("div", { class: "sd-golpes" }, ...golpes),
@@ -522,9 +544,10 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     }
 
     function encerrar(fim: string): void {
+      window.clearInterval(timerSonda);
       const textos: Record<string, string> = {
-        vitoria: tipoBatalha === "treinador" ? "Você venceu o treinador!" : "Vitória!",
-        derrota: "Todos os seus Pokémon desmaiaram... Cure-os no Centro Pokémon ou em casa.",
+        vitoria: tipoBatalha === "treinador" ? "Você venceu o treinador!" : tipoBatalha === "duelo" ? `Você venceu o duelo contra ${nomeTreinador || "o oponente"}!` : "Vitória!",
+        derrota: tipoBatalha === "duelo" ? `Você perdeu o duelo para ${nomeTreinador || "o oponente"}. Seus Pokémon não sofreram nada: foi só um duelo!` : "Todos os seus Pokémon desmaiaram... Cure-os no Centro Pokémon ou em casa.",
         fuga: "Você escapou.", captura: "Captura concluída!",
       };
       void dizer(textos[fim] ?? "Fim da batalha.", 0, "forte");
@@ -532,6 +555,31 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       controles.replaceChildren(ok);
       ok.focus();
     }
+
+    // duelo ao vivo: consulta o servidor de tempos em tempos (mostra a jogada do oponente e avisa que estamos presentes)
+    let sondando = false;
+    async function sondar(): Promise<void> {
+      if (tipoBatalha !== "duelo" || ocupado || sondando || estado !== "ativa") return;
+      sondando = true;
+      try {
+        const r = await chamar({ acao: "estado" });
+        if (ocupado) return;
+        if (r.linhas.length || r.fim || r.batalha.estado !== "ativa") {
+          ocupado = true;
+          controles.replaceChildren();
+          await tocarResposta(r);
+          estado = r.batalha.estado;
+          if (r.fim || estado !== "ativa") return void encerrar(r.fim ?? estado);
+          ocupado = false;
+          mostrarControles(r);
+        } else if (!!r.pedido !== !!ultima?.pedido || r.pedido?.trocar !== ultima?.pedido?.trocar) mostrarControles(r);
+        else if (!r.pedido && r.espera) mostrarControles(r);
+      } catch (e) {
+        const m = (e as Error).message;
+        if (/terminou|não está em batalha/i.test(m)) { estado = "derrota"; ocupado = true; encerrar("derrota"); }
+      } finally { sondando = false; }
+    }
+    const timerSonda = window.setInterval(() => void sondar(), 2500);
 
     // início
     void (async () => {
@@ -563,6 +611,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
         mostrarControles(r);
       } catch (e) {
         msg.textContent = (e as Error).message;
+        window.clearInterval(timerSonda);
         const ok = botao("Fechar", () => { raiz.remove(); resolver("ativa"); });
         controles.replaceChildren(ok);
       }

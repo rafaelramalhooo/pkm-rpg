@@ -27,7 +27,7 @@ export async function abrirSocial(modal: Modal, uid: string, aviso: Aviso, aoMud
   const [{ data: lista }, pend] = await Promise.all([supabase.rpc("jogadores_lista"), carregarPendencias()]);
   const jogadores = (lista ?? []) as { id: string; nome: string; aparencia: number; mapa_id: string }[];
   const reabrir = (): void => void abrirSocial(modal, uid, aviso, aoMudar, lutarAgora);
-  const nos: Node[] = [el("p", { class: "sub" }, "Desafios custam 1 PA para cada jogador. Trocas são feitas só quando os dois concordam.")];
+  const nos: Node[] = [el("p", { class: "sub" }, "Desafios custam 1 PA para cada jogador e são duelos ao vivo: os dois escolhem o golpe ao mesmo tempo. Trocas são feitas só quando os dois concordam.")];
 
   if (pend?.batalha) {
     const b = el("button", { type: "button" }, "Lutar agora: seu desafio foi aceito!");
@@ -39,8 +39,8 @@ export async function abrirSocial(modal: Modal, uid: string, aviso: Aviso, aoMud
     ac.addEventListener("click", async () => {
       const { error } = await supabase.rpc("desafio_responder", { p_desafio: d.id, p_aceitar: true });
       if (error) return void aviso(error.message, 4000, true);
-      aviso(`Desafio de ${d.nome} aceito! −1 PA. A luta será jogada por ele contra o seu time.`, 5000);
-      aoMudar(); reabrir();
+      aviso(`Desafio de ${d.nome} aceito! −1 PA. Boa luta!`, 3000);
+      aoMudar(); modal.fechar(); void lutarAgora();
     });
     re.addEventListener("click", async () => { await supabase.rpc("desafio_responder", { p_desafio: d.id, p_aceitar: false }); reabrir(); });
     nos.push(el("div", { class: "soc-card" }, el("strong", {}, `${d.nome} desafiou você!`), ac, re));
