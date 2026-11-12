@@ -8,6 +8,8 @@ import {
 } from "./dados";
 import { importarDados, importarSprites } from "./mestre";
 import { abrirMapaMundi } from "./mapamundi";
+import { abrirOrganizar } from "./organizar";
+import { abrirGestao } from "./gestao";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
 
 function botao(texto: string, fn: () => void, classe = "sec"): HTMLButtonElement {
@@ -345,6 +347,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           if (error) throw new Error(error.message);
           pr(`PA repostos (${String(data)} jogadores).`);
         })()),
+        botao("Gestão do Mestre (jogadores e fichas)", () => void abrirGestao(modal, mostrarAviso)),
         botao("Eventos (XP em dobro, brilhantes...)", () => void abrirEventos(modal, mostrarAviso), ""),
         botao("Resetar jogador...", () => void abrirReset(), ""),
         botao("+10 Poké Bolas para mim", () => void rodar(async () => {
@@ -393,7 +396,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
         el("div", { class: "dash-pk-info" }, el("strong", {}, nomePokemon(p)), el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`), el("div", { class: "hp-trilho" }, fill)));
     });
     const atalhos = el("div", { class: "dash-atalhos" },
-      botao("Time", () => void abrirTime()), botao("Mochila", () => void abrirMochila()), botao("Pokédex", () => void abrirPokedex()), botao("Personagens", () => void abrirPersonagens()));
+      botao("Time", () => void abrirTime()), botao("Organizar time / Seguidor", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor())), botao("Mochila", () => void abrirMochila()), botao("Pokédex", () => void abrirPokedex()), botao("Personagens", () => void abrirPersonagens()));
     modal.abrir("Painel do treinador", el("div", { class: "dash-wide" },
       el("div", { class: "dash-esq" }, cab, grade, atalhos),
       el("div", { class: "dash-dir" }, el("label", {}, "Time ativo"),
@@ -540,7 +543,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     modal.fechar();
     controle?.bloquear(true);
     await carregarReferencias();
-    const estado = await abrirBatalha(res, j.id, { fundo: fundoDoMapa(j.mapa_id), nome: j.nome, aparencia: j.aparencia });
+    const brilhantes = new Set((await meuTime(j.id)).filter((p) => p.brilhante).map((p) => p.especie_id));
+    const estado = await abrirBatalha(res, j.id, { fundo: fundoDoMapa(j.mapa_id), nome: j.nome, aparencia: j.aparencia, brilhantes });
     emBatalha = false;
     controle?.bloquear(false);
     await recarregarJogador();
@@ -739,7 +743,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       { rotulo: "Minhas coisas", itens: () => [{ rotulo: "Time", fn: () => void abrirTime() }, { rotulo: "Mochila", fn: () => void abrirMochila() }, { rotulo: "Pokédex", fn: () => void abrirPokedex() }] },
       { rotulo: "Cidade", itens: () => [{ rotulo: "Lugar atual", fn: () => abrirInfoLugar() }, { rotulo: "Estou preso (destravar)", fn: () => void controle?.destravar() }] },
       { rotulo: "Informações", itens: () => [{ rotulo: "Como jogar", fn: () => abrirAjuda() }] },
-      { rotulo: "Minha conta", itens: () => [{ rotulo: "Meus personagens / Reiniciar", fn: () => void abrirPersonagens() }, { rotulo: "Meu perfil e senha", fn: abrirMenu }, { rotulo: "Eventos do Mestre", fn: () => void abrirEventos(modal, mostrarAviso), oculto: j.papel !== "mestre" }, { rotulo: "Ferramentas do Mestre", fn: abrirMenu, oculto: j.papel !== "mestre" }, { rotulo: "Sair", fn: () => void supabase.auth.signOut() }] },
+      { rotulo: "Minha conta", itens: () => [{ rotulo: "Meus personagens / Reiniciar", fn: () => void abrirPersonagens() }, { rotulo: "Meu perfil e senha", fn: abrirMenu }, { rotulo: "Gestão do Mestre", fn: () => void abrirGestao(modal, mostrarAviso), oculto: j.papel !== "mestre" }, { rotulo: "Eventos do Mestre", fn: () => void abrirEventos(modal, mostrarAviso), oculto: j.papel !== "mestre" }, { rotulo: "Ferramentas do Mestre", fn: abrirMenu, oculto: j.papel !== "mestre" }, { rotulo: "Sair", fn: () => void supabase.auth.signOut() }] },
     ],
     marca,
   );

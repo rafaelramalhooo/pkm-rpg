@@ -10,6 +10,8 @@ const TIPOS: Record<string, { nome: string; icone: string; valores: number[]; te
   dinheiro: { nome: "Prêmios em dinheiro", icone: "₽", valores: [2, 3], texto: (v) => `Prêmios em dinheiro x${v}` },
   encontro: { nome: "Mais Pokémon selvagens", icone: "🌿", valores: [1.5, 2, 3], texto: (v) => `Mais Pokémon selvagens (x${v})` },
   pa_gratis: { nome: "Buscas grátis (sem gastar PA)", icone: "🎁", valores: [1], texto: () => "Buscas de Pokémon sem gastar PA" },
+  loja_desconto: { nome: "Desconto nas lojas (%)", icone: "🏷️", valores: [20], texto: (v) => `Lojas com ${v}% de desconto` },
+  pa_extra: { nome: "PA extra para todos (agora)", icone: "⚡", valores: [10], texto: (v) => `+${v} PA para todos os treinadores` },
 };
 const DURACOES: [string, number][] = [["15 min", 15], ["30 min", 30], ["1 hora", 60], ["2 horas", 120], ["6 horas", 360], ["24 horas", 1440], ["3 dias", 4320]];
 
@@ -52,21 +54,28 @@ export async function abrirEventos(modal: Modal, aviso: (t: string) => void): Pr
   };
 
   const tipo = el("select", {}, ...Object.entries(TIPOS).map(([k, t]) => el("option", { value: k }, `${t.icone} ${t.nome}`)));
-  const valor = el("select", {});
-  const duracao = el("select", {}, ...DURACOES.map(([r, m]) => el("option", { value: String(m) }, r)));
+  const valor = el("input", { type: "number", step: "any", min: "0.1", max: "1000", inputmode: "decimal" });
+  const dica = el("p", { class: "sub" }, "");
+  const duracao = el("select", {}, ...DURACOES.map(([r, m]) => el("option", { value: String(m) }, r)), el("option", { value: "data" }, "Até uma data e hora…"));
   duracao.value = "60";
+  const quando = el("input", { type: "datetime-local", hidden: "" });
+  duracao.addEventListener("change", () => { quando.hidden = duracao.value !== "data"; if (!quando.hidden && !quando.value) { const d = new Date(Date.now() + 3600e3); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); quando.value = d.toISOString().slice(0, 16); } });
   const texto = el("input", { type: "text", maxlength: "90", placeholder: "Mensagem para os jogadores (opcional)" });
   const preencherValores = () => {
     const t = TIPOS[tipo.value];
-    valor.replaceChildren(...t.valores.map((v) => el("option", { value: String(v) }, t.valores.length === 1 ? "ativado" : `x${v}`)));
-    valor.disabled = t.valores.length === 1;
+    valor.value = String(t.valores[t.valores.length > 1 ? 0 : 0]);
+    valor.disabled = tipo.value === "pa_gratis";
+    dica.textContent = tipo.value === "pa_gratis" ? "Sem intensidade: a busca simplesmente não gasta PA." : tipo.value === "loja_desconto" ? "Digite a porcentagem de desconto (1 a 90)." : tipo.value === "pa_extra" ? "Digite quantos PA dar a cada jogador (acontece agora)." : `Digite o multiplicador (ex.: ${t.valores.join(", ")}; aceita decimais como 1,5).`;
   };
   tipo.addEventListener("change", preencherValores);
   preencherValores();
   const iniciar = el("button", { type: "button" }, "Iniciar evento agora");
   iniciar.addEventListener("click", async () => {
     iniciar.disabled = true;
-    const { error } = await supabase.rpc("criar_evento", { p_tipo: tipo.value, p_valor: Number(valor.value), p_minutos: Number(duracao.value), p_mensagem: texto.value.trim() || null });
+    const num = Number(String(valor.value).replace(",", "."));
+    const porData = duracao.value === "data";
+    if (porData && !quando.value) { iniciar.disabled = false; msg.textContent = "Escolha a data e a hora de término."; msg.className = "msg erro"; return; }
+    const { error } = await supabase.rpc("criar_evento", { p_tipo: tipo.value, p_valor: num, p_minutos: porData ? null : Number(duracao.value), p_mensagem: texto.value.trim() || null, p_fim: porData ? new Date(quando.value).toISOString() : null });
     iniciar.disabled = false;
     if (error) { msg.textContent = error.message; msg.className = "msg erro"; return; }
     msg.textContent = "Evento iniciado! A faixa aparece para os jogadores em até 1 minuto."; msg.className = "msg ok";
@@ -75,6 +84,6 @@ export async function abrirEventos(modal: Modal, aviso: (t: string) => void): Pr
   });
   await carregar();
   modal.abrir("Eventos do Mestre",
-    el("label", {}, "Regra"), tipo, el("label", {}, "Intensidade"), valor, el("label", {}, "Duração"), duracao, el("label", {}, "Mensagem"), texto, iniciar, msg,
+    el("label", {}, "Regra"), tipo, el("label", {}, "Intensidade"), valor, dica, el("label", {}, "Duração"), duracao, quando, el("label", {}, "Mensagem"), texto, iniciar, msg,
     el("label", {}, "Em andamento"), lista);
 }

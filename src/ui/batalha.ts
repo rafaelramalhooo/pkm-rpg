@@ -62,7 +62,7 @@ function caixa(classe: string): Caixa {
 }
 
 /** Abre a batalha. Resolve quando o jogador fecha (com o estado final). */
-export interface OpcoesBatalha { fundo?: string; nome?: string; aparencia?: number }
+export interface OpcoesBatalha { fundo?: string; nome?: string; aparencia?: number; brilhantes?: Set<number> }
 export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: OpcoesBatalha = {}): Promise<EstadoFinal> {
   const fundoCena = opcoes.fundo ?? "campo";
   return new Promise((resolver) => {
@@ -124,10 +124,11 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       c.num.textContent = l === "jog" ? `${a.hp}/${a.max}` : `${Math.round(b.pct)}%`;
       c.bufs.replaceChildren(...Object.entries(a.bufs).filter(([, v]) => v !== 0).map(([k, v]) => el("span", { class: `sd-buf ${v > 0 ? "up" : "down"}` }, `${STAT_CURTO[k] ?? k} ${v > 0 ? "+" : ""}${v}`)));
     }
+    const selvBrilha = Boolean((inicial.batalha as { selvagem?: { brilhante?: boolean } }).selvagem?.brilhante);
     function trocarSprite(l: "jog" | "adv", num: number): void {
       const antigo = l === "jog" ? imgJog : imgAdv;
       antigo?.remove();
-      const nova = imagemPokemon(l === "jog" ? "costas" : "frente", num, l === "jog" ? "sd-spr jog" : "sd-spr adv");
+      const nova = imagemPokemon(l === "jog" ? "costas" : "frente", num, l === "jog" ? "sd-spr jog" : "sd-spr adv", l === "jog" ? Boolean(opcoes.brilhantes?.has(num)) : tipoBatalha === "selvagem" && selvBrilha);
       nova.animate([{ opacity: 0, transform: "translateY(10px) scale(.7)" }, { opacity: 1, transform: "none" }], { duration: 380, easing: "ease-out" });
       (l === "jog" ? campoJog : campoAdv).append(nova);
       if (l === "jog") imgJog = nova; else imgAdv = nova;

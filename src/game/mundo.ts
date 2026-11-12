@@ -3,6 +3,7 @@
 import Phaser from "phaser";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { supabase, type Direcao, type Jogador } from "../supabase";
+import { urlSprite } from "../ui/dados";
 
 export interface Poi {
   id: string;
@@ -63,6 +64,8 @@ export interface Controle {
   recarregarJogador(): Promise<Jogador | null>;
   /** "Estou preso": o servidor leva o jogador ao tile livre alcançável mais próximo. */
   destravar(): Promise<void>;
+  /** Relê o Pokémon seguidor (após mudar no Painel). */
+  atualizarSeguidor(): Promise<void>;
   /** Viagem pelo Mapa Mundi (validada no servidor). */
   viajar(mapa: string): Promise<boolean>;
   /** O jogador falou com um treinador ao lado dele (ele só desafia se o jogador puxar conversa). */
@@ -128,6 +131,8 @@ class CenaMundo extends Phaser.Scene {
   private npcs = new Map<string, { d: TreinadorMapa; ficha: Ficha }>();
   private desafiando = false;
   private matos: { s: Phaser.GameObjects.Image; fase: number }[] = [];
+  private seg?: Phaser.GameObjects.Image;
+  private segId = "";
 
   constructor(jogador: Jogador, ganchos: Ganchos) {
     super("mundo");
@@ -213,6 +218,8 @@ class CenaMundo extends Phaser.Scene {
     this.ajustarZoom();
     this.conectar();
     this.mudandoMapa = false;
+    this.posicionarSeguidor(this.jogador.x, this.jogador.y);
+    if (primeira) void this.atualizarSeguidor();
     this.avisarLugar();
     // posição antiga dentro de uma árvore/obstáculo: o servidor traz o jogador de volta ao caminho
     if (this.solido(this.jogador.x, this.jogador.y)) void this.destravar();
@@ -232,6 +239,7 @@ class CenaMundo extends Phaser.Scene {
     this.ganchos.aoJogador(this.jogador);
     this.andando = false;
     this.colocar(this.eu, s.x, s.y);
+    this.posicionarSeguidor(s.x, s.y);
     this.avisarLugar();
     this.ganchos.aviso(antes === `${s.x},${s.y}` ? "Você não está preso: este lugar tem saída." : "Pronto! Levei você ao caminho livre mais próximo.");
   }
@@ -485,6 +493,41 @@ class CenaMundo extends Phaser.Scene {
     if (d) this.passo(d);
   }
 
+  /** Pokémon que acompanha o treinador fora da bola (lido do servidor). */
+  async atualizarSeguidor(): Promise<void> {
+    const { data } = await supabase.rpc("meu_seguidor");
+    if (this.encerrada) return;
+    const d = data as { id: string; especie_id: number; brilhante?: boolean } | null;
+    if (!d) { this.seg?.destroy(); this.seg = undefined; this.segId = ""; return; }
+    const chave = `seg-${d.especie_id}`;
+    if (this.segId === `${d.id}`&& this.seg) return;
+    const url = await urlSprite("frente", d.especie_id);
+    if (!url || this.encerrada) return;
+    const pronto = () => {
+      if (this.encerrada) return;
+      this.seg?.destroy();
+      const img = this.add.image(px(this.jogador.x), py(this.jogador.y), chave).setOrigin(0.5, 1);
+      const k = 18 / Math.max(1, img.height);
+      img.setScale(Math.min(k, 0.5));
+      if (d.brilhante) img.setTint(0xc8ffd8);
+      this.seg = img; this.segId = d.id;
+      this.posicionarSeguidor(this.jogador.x, this.jogador.y);
+    };
+    if (this.textures.exists(chave)) { pronto(); return; }
+    this.load.crossOrigin = "anonymous";
+    this.load.image(chave, url);
+    this.load.once(Phaser.Loader.Events.COMPLETE, pronto);
+    this.load.start();
+  }
+
+  private posicionarSeguidor(x: number, y: number, ms = 0): void {
+    if (!this.seg) return;
+    this.tweens.killTweensOf(this.seg);
+    const alvoX = px(x), alvoY = py(y) + 1;
+    if (ms <= 0) { this.seg.setPosition(alvoX, alvoY).setDepth(9 + alvoY); return; }
+    this.tweens.add({ targets: this.seg, x: alvoX, y: alvoY, duration: ms, ease: "Linear", onUpdate: () => this.seg?.setDepth(9 + this.seg.y) });
+  }
+
   private passo(d: Direcao): void {
     const [dx, dy] = DELTA[d];
     const nx = this.jogador.x + dx;
@@ -501,6 +544,7 @@ class CenaMundo extends Phaser.Scene {
     }
     this.andando = true;
     this.ganchos.aoPasso?.();
+    this.posicionarSeguidor(this.jogador.x, this.jogador.y, PASSO_MS);
     this.jogador.x = nx;
     this.jogador.y = ny;
     this.jogador.direcao = d;
@@ -704,6 +748,7 @@ export async function iniciarMundo(pai: HTMLElement, jogador: Jogador, ganchos: 
     zoom: (p) => cena.zoom(p),
     conversar: (id) => cena.conversar(id),
     destravar: () => cena.destravar(),
+    atualizarSeguidor: () => cena.atualizarSeguidor(),
     viajar: (m) => cena.viajar(m),
   };
 }

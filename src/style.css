@@ -611,3 +611,69 @@ body.modo-jogo { padding-left: 0; padding-right: 0; }
 .ev-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 12px; background: var(--vidro); border: 1px solid #ffffff33; font-size: .85rem; }
 .ev-item button { margin: 0; padding: 5px 10px; font-size: .72rem; }
 .pk-img.brilhante img { filter: hue-rotate(150deg) saturate(1.25) brightness(1.08); }
+.pk-img.brilhante { position: relative; } .pk-img.brilhante::after { content: "✨"; position: absolute; top: -2px; right: -2px; font-size: .9rem; filter: drop-shadow(0 0 3px #ffe27a); animation: brilho 1.6s ease-in-out infinite; }
+@keyframes brilho { 50% { transform: scale(1.25) rotate(12deg); opacity: .7; } }
+
+/* ===== organizar time ===== */
+.org-corpo { display: grid; gap: 8px; }
+.org-linha { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: var(--vidro); border: 1px solid #ffffff33; }
+.org-linha.caido { opacity: .65; }
+.org-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; font-size: .8rem; }
+.org-btns { display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-end; }
+.org-btns button { margin: 0; padding: 4px 9px; font-size: .72rem; }
+.org-btns button.ativo { border-color: #ffd25e; color: #ffd25e; }
+
+/* ===== Gestão do Mestre ===== */
+.modal:has(.mg-wrap) { width: min(97vw, 1040px); max-width: 97vw; }
+.mg-wrap { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 14px; align-items: start; }
+.mg-esq { display: grid; gap: 8px; position: sticky; top: 0; }
+.mg-lista { display: grid; gap: 6px; max-height: 60vh; overflow: auto; }
+.mg-item { display: flex; flex-direction: column; gap: 2px; text-align: left; margin: 0; padding: 8px 10px; font-size: .8rem; }
+.mg-ficha { display: grid; gap: 10px; min-width: 0; }
+.mg-ficha h3 { margin: 0; }
+.mg-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; align-items: end; }
+.mg-campo { display: flex; flex-direction: column; gap: 3px; font-size: .74rem; } .mg-campo input, .mg-campo select { width: 100%; }
+.mg-chk { display: flex; align-items: center; gap: 6px; font-size: .8rem; }
+.mg-linha { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; } .mg-linha button { margin: 0; padding: 5px 10px; font-size: .72rem; }
+.mg-pk { padding: 8px 10px; border-radius: 12px; background: var(--vidro); border: 1px solid #ffffff33; display: grid; gap: 6px; font-size: .82rem; }
+.mg-it { min-width: 140px; font-size: .82rem; }
+.mm-topo { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 8px; position: sticky; top: 0; z-index: 3; } .mm-topo .mm-info { flex: 1; margin: 0; min-width: 160px; } .mm-topo button { margin: 0; }
+@media (max-width: 760px) { .mg-wrap { grid-template-columns: 1fr; } .mg-esq { position: static; } .mg-lista { max-height: 28vh; } }
+
+/* ===== Celular na horizontal (paisagem): mapa ocupa a tela toda, controles sobrepostos ===== */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (orientation: landscape) and (max-height: 540px) {
+  body.modo-jogo { padding: 0; }
+  .jogo { gap: 0; }
+  .nav { padding: 2px max(8px, env(safe-area-inset-left)) 2px max(8px, env(safe-area-inset-right)); gap: 6px; }
+  .nav .marca { display: none; }
+  .nav button.nav-gatilho { padding: 6px 9px; font-size: .74rem; }
+  .cartucho { width: calc(100vw - max(8px, env(safe-area-inset-left)) - max(8px, env(safe-area-inset-right))); gap: 0; }
+  .tela-jogo { height: calc(100vh - 38px); height: calc(100dvh - 38px); min-height: 0; border-width: 2px; }
+  .dica { display: none; }
+  .barra.rodape { position: fixed; right: max(8px, env(safe-area-inset-right)); bottom: max(6px, env(safe-area-inset-bottom)); z-index: 6; width: min(36vw, 320px); opacity: .9; gap: 4px; }
+  .barra.rodape .chat input { padding: 5px 7px; font-size: .75rem; }
+  .dpad { left: max(10px, env(safe-area-inset-left)); bottom: 10px; }
+  .acoes { left: auto; right: 12px; bottom: 52px; transform: none; }
+  .oferta { bottom: 52px; right: 12px; left: auto; transform: none; }
+  .aviso { bottom: auto; top: 36px; }
+  .faixa-evento { top: 40px; }
+  .menu { padding: 6px; }
+  .modal, .menu .painel { max-height: 96vh; max-height: 96dvh; }
+  .modal:not(:has(.dash-wide)):not(:has(.mg-wrap)):not(:has(.mm-caixa)) { max-width: min(96vw, 640px); }
+  .mm-svg { max-height: 56vh; }
+  /* batalha */
+  .sd-moldura { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .sd-dir { display: none; }
+  .sd-cena { aspect-ratio: auto; height: 46dvh; max-height: none; }
+  .sd-msg { min-height: 2.2em; padding: 6px 12px; }
+  .sd-controles { padding: 6px 8px; gap: 4px; min-height: 0; }
+  .sd-golpes { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .sd-golpe { padding: 6px 8px; } .sd-golpe .g-nome { font-size: .85rem; }
+  .sd-time { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+  .sd-membro { grid-template-columns: 26px 1fr; padding: 4px 5px; } .sd-membro .pk-img, .sd-membro .pk-img img { width: 26px; height: 26px; }
+  .sd-caixa { width: 34%; padding: 4px 8px 5px; font-size: .78rem; }
+  .sd-itens { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .batalha.sd { padding: 4px; }
+}
+@media (orientation: landscape) and (max-height: 540px) and (pointer: coarse) { .dpad button { width: 48px; height: 48px; } .dpad { width: 144px; height: 144px; } .dpad .d-cima, .dpad .d-baixo { left: 48px; } .dpad .d-esquerda, .dpad .d-direita { top: 48px; } }

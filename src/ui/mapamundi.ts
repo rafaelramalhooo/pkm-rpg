@@ -105,5 +105,5 @@ export async function abrirMapaMundi(
   nodos.get(info.atual)?.classList.add("atual");
   const aqui = porId.get(info.atual);
   if (aqui) rotulo.textContent = `Você está em ${aqui.nome}. Toque em um lugar para viajar.`;
-  modal.abrir("Mapa Mundi", el("div", { class: "mm-caixa" }, mapa as unknown as Node), rotulo, legenda, ir);
+  modal.abrir("Mapa Mundi", el("div", { class: "mm-topo" }, rotulo, ir), el("div", { class: "mm-caixa" }, mapa as unknown as Node), legenda);
 }
