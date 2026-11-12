@@ -932,3 +932,19 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .dpad { bottom: 14px; }
   .acoes { bottom: 24px; }
 }
+
+/* ===== lote 9/10: faixa de evento em destaque, popup de desafio, escolha de duelo ===== */
+.faixa-evento { top: 10px; gap: 8px; max-width: min(66%, 820px); }
+.faixa-item { padding: 9px 20px; border-radius: 999px; font-size: 1.02rem; font-weight: 800; letter-spacing: .01em; color: #3a2400; background: linear-gradient(135deg, #ffe27a, #ffb703); border: 2px solid #fff3c4; box-shadow: 0 4px 18px #ffb70388, 0 2px 8px #0007; text-shadow: 0 1px 0 #fff6; animation: faixa-entra .5s ease, faixa-pulsa 2.4s ease-in-out .5s infinite; }
+@keyframes faixa-pulsa { 50% { box-shadow: 0 4px 26px #ffd25ecc, 0 2px 8px #0007; transform: scale(1.03); } }
+@media (max-width: 700px) { .faixa-item { padding: 7px 14px; font-size: .86rem; } }
+@media (prefers-reduced-motion: reduce) { .faixa-item { animation: none; } }
+.soc-popup { position: fixed; inset: 0; z-index: 99990; display: grid; place-items: center; padding: 16px; background: #050a18b8; backdrop-filter: blur(3px); }
+.soc-popup-caixa { width: min(420px, 100%); padding: 18px 18px 16px; border-radius: 18px; background: linear-gradient(#142446, #0b1530); border: 2px solid #6fb7ff; box-shadow: 0 16px 48px #000a; color: #eaf2ff; text-align: center; animation: faixa-entra .3s ease; }
+.soc-popup-caixa h2 { margin: 0 0 6px; font-size: 1.15rem; }
+.soc-tag { display: inline-block; margin: 2px 0 8px; padding: 3px 12px; border-radius: 999px; font-size: .78rem; font-weight: 800; background: #ffffff1c; border: 1px solid #ffffff44; }
+.soc-popup-bts { display: grid; gap: 8px; margin-top: 12px; }
+.soc-popup-bts button { margin: 0; }
+.duelo-opcao { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; width: 100%; margin: 6px 0; padding: 10px 12px; border-radius: 12px; background: #ffffff10; border: 2px solid #ffffff33; color: #eaf2ff; }
+.duelo-opcao span { font-size: .78rem; opacity: .85; line-height: 1.3; }
+.duelo-opcao.sel { border-color: #6fb7ff; background: #2a5bd733; }

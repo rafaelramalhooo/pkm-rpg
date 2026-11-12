@@ -7,8 +7,8 @@ type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => vo
 type Aviso = (t: string, ms?: number, erro?: boolean) => void;
 
 export interface Pendencias {
-  desafios_recebidos: { id: string; de: string; nome: string }[];
-  desafios_enviados: { id: string; para: string; nome: string }[];
+  desafios_recebidos: { id: string; de: string; nome: string; amistoso?: boolean }[];
+  desafios_enviados: { id: string; para: string; nome: string; amistoso?: boolean }[];
   trocas_recebidas: { id: string; de: string; nome: string; oferta: string; pedido: string }[];
   batalha: { id: string } | null;
   historico: { de: string; para: string; estado: string; eu_desafiei: boolean }[];
@@ -58,7 +58,7 @@ export async function abrirSocial(modal: Modal, uid: string, aviso: Aviso, aoMud
   for (const e of pend?.desafios_enviados ?? []) {
     const c = el("button", { type: "button", class: "sec" }, "Cancelar");
     c.addEventListener("click", async () => { await supabase.rpc("desafio_cancelar", { p_desafio: e.id }); reabrir(); });
-    nos.push(el("div", { class: "soc-card" }, el("span", {}, `Aguardando ${e.nome} aceitar o seu desafio…`), c));
+    nos.push(el("div", { class: "soc-card" }, el("span", {}, `Aguardando ${e.nome} aceitar o seu desafio${e.amistoso ? " amistoso" : ""}…`), c));
   }
   if (pend?.historico.length) nos.push(el("div", { class: "soc-hist" }, el("small", {}, "Últimas lutas"), ...pend.historico.map((h) => el("p", { class: "sub" }, `${h.de} × ${h.para}: ${h.eu_desafiei ? `${h.de} ${TEXTO_RESULTADO[h.estado] ?? h.estado}` : `${h.de} ${TEXTO_RESULTADO[h.estado] ?? h.estado} contra você`}`))));
 
@@ -66,16 +66,35 @@ export async function abrirSocial(modal: Modal, uid: string, aviso: Aviso, aoMud
   if (!jogadores.length) nos.push(el("p", { class: "sub" }, "Ainda não há outros jogadores."));
   for (const p of jogadores) {
     const lutar = el("button", { type: "button", class: "sec" }, "Desafiar");
-    lutar.addEventListener("click", async () => {
-      const { error } = await supabase.rpc("desafio_enviar", { p_alvo: p.id });
-      if (error) return void aviso(error.message, 4000, true);
-      aviso(`Desafio enviado a ${p.nome}. Ele precisa aceitar (1 PA de cada).`, 4500); reabrir();
-    });
+    lutar.addEventListener("click", () => escolherDuelo(modal, p, aviso, reabrir));
     const trocar = el("button", { type: "button", class: "sec" }, "Trocar");
     trocar.addEventListener("click", () => void montarTroca(modal, uid, p, aviso, reabrir));
     nos.push(el("div", { class: "soc-linha" }, el("strong", {}, p.nome), el("div", { class: "soc-bts" }, lutar, trocar)));
   }
   modal.abrir("Jogadores", ...nos);
+}
+
+function escolherDuelo(modal: Modal, alvo: { id: string; nome: string }, aviso: Aviso, voltar: () => void): void {
+  let amistoso = false;
+  const opcao = (titulo: string, texto: string, valor: boolean): HTMLButtonElement => {
+    const b = el("button", { type: "button", class: "duelo-opcao" }, el("strong", {}, titulo), el("span", {}, texto));
+    b.addEventListener("click", () => { amistoso = valor; marcar(); });
+    return b;
+  };
+  const valendo = opcao("Duelo valendo (padrão)", "HP e PP são os reais: quem perder fica com os Pokémon feridos e precisa curar. O vencedor ganha XP pelos Pokémon derrotados.", false);
+  const amis = opcao("Duelo amistoso", "Todos começam com HP e PP cheios e nada muda nos Pokémon. Não dá XP. Bom para treinar e se divertir.", true);
+  const marcar = (): void => { valendo.classList.toggle("sel", !amistoso); amis.classList.toggle("sel", amistoso); };
+  marcar();
+  const enviar = el("button", { type: "button" }, `Enviar desafio a ${alvo.nome} (1 PA de cada)`);
+  enviar.addEventListener("click", async () => {
+    const { error } = await supabase.rpc("desafio_enviar", { p_alvo: alvo.id, p_amistoso: amistoso });
+    if (error) return void aviso(error.message, 4500, true);
+    aviso(`Desafio ${amistoso ? "amistoso " : ""}enviado a ${alvo.nome}. Ele precisa aceitar.`, 4500);
+    voltar();
+  });
+  const cancelar = el("button", { type: "button", class: "sec" }, "Voltar");
+  cancelar.addEventListener("click", voltar);
+  modal.abrir(`Desafiar ${alvo.nome}`, el("p", { class: "sub" }, "Escolha o tipo de duelo. Em qualquer um, a luta é ao vivo e custa 1 PA para cada jogador."), valendo, amis, enviar, cancelar);
 }
 
 async function montarTroca(modal: Modal, uid: string, alvo: { id: string; nome: string }, aviso: Aviso, voltar: () => void): Promise<void> {

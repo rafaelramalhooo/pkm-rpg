@@ -143,13 +143,13 @@ export function ler(estado, desde = 0, ld = 0) {
 }
 
 // ===== duelo entre dois jogadores (os dois lados são humanos; times com HP e PP cheios) =====
-/** time1/time2: membros {especie, nome, apelido, nivel, natureza, ivs, golpes:[{slug}]} */
+/** time1/time2: membros {especie, nome, apelido, nivel, natureza, ivs, hp?, golpes:[{slug, pp?}]} (sem hp/pp = cheio) */
 export function criarDuelo({ time1, time2, seed }) {
   const b = new Battle({ formatid: "gen9customgame@@@!teampreview", seed });
   b.setPlayer("p1", { name: "Jogador", team: time1.map(conjunto) });
-  ajustar(b.sides[0], time1.map((m) => ({ ...m, hp: 9999 })), false);
+  ajustar(b.sides[0], time1.map((m) => ({ ...m, hp: m.hp ?? 9999 })), false);
   b.setPlayer("p2", { name: "Adversário", team: time2.map(conjunto) });
-  ajustar(b.sides[1], time2.map((m) => ({ ...m, hp: 9999 })), false);
+  ajustar(b.sides[1], time2.map((m) => ({ ...m, hp: m.hp ?? 9999 })), false);
   return { estado: b.toJSON(), logLen: b.log.length, v: [resultado(b, 0, 0), resultado(b, 0, 1)] };
 }
 

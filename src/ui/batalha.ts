@@ -14,7 +14,7 @@ interface Evento { t: string; [k: string]: unknown }
 type EstadoFinal = "ativa" | "vitoria" | "derrota" | "fuga" | "captura";
 interface Resposta {
   batalha: { id: string; estado: EstadoFinal; tipo: "selvagem" | "treinador" | "duelo"; turno: number };
-  espera?: boolean; restante?: number | null;
+  espera?: boolean; restante?: number | null; canal?: string; amistoso?: boolean;
   antes: Evento[]; linhas: string[]; depois: Evento[]; pedido: Pedido | null; fim: string | null;
   jogador: MembroSim[]; adversario: MembroSim[]; treinador?: string;
 }
@@ -74,6 +74,9 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     let estado: EstadoFinal = "ativa";
     let tipoBatalha: "selvagem" | "treinador" | "duelo" = "selvagem";
     let nomeTreinador = "";
+    let amistosoDuelo = false;
+    let canalRt: ReturnType<typeof supabase.channel> | null = null;
+    const fecharCanal = (): void => { if (canalRt) { void supabase.removeChannel(canalRt); canalRt = null; } };
 
     const fundo = el("div", { class: "sd-fundo" });
     fundo.style.backgroundImage = `url(${import.meta.env.BASE_URL}assets/batalha/${fundoCena}.jpg)`;
@@ -252,7 +255,8 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     }
 
     function laterais(r: Resposta): void {
-      turnoEl.textContent = `Turno ${r.batalha.turno}`;
+      amistosoDuelo = !!r.amistoso;
+      turnoEl.textContent = `${tipoBatalha === "duelo" ? (amistosoDuelo ? "Amistoso · " : "Duelo · ") : ""}Turno ${r.batalha.turno}`;
       const bola = (m: MembroSim | null) => el("i", { class: `mini-bola${m ? (m.hp > 0 ? "" : " caida") : " vazia"}` });
       bolasJog.replaceChildren(...Array.from({ length: 6 }, (_, i) => bola(r.jogador[i] ?? null)));
       const n = Math.max(1, r.adversario.length);
@@ -545,9 +549,10 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
 
     function encerrar(fim: string): void {
       window.clearInterval(timerSonda);
+      fecharCanal();
       const textos: Record<string, string> = {
         vitoria: tipoBatalha === "treinador" ? "Você venceu o treinador!" : tipoBatalha === "duelo" ? `Você venceu o duelo contra ${nomeTreinador || "o oponente"}!` : "Vitória!",
-        derrota: tipoBatalha === "duelo" ? `Você perdeu o duelo para ${nomeTreinador || "o oponente"}. Seus Pokémon não sofreram nada: foi só um duelo!` : "Todos os seus Pokémon desmaiaram... Cure-os no Centro Pokémon ou em casa.",
+        derrota: tipoBatalha === "duelo" ? (amistosoDuelo ? `Você perdeu o duelo para ${nomeTreinador || "o oponente"}. Foi só um amistoso: seus Pokémon não sofreram nada!` : `Você perdeu o duelo para ${nomeTreinador || "o oponente"}. Cure seus Pokémon no Centro Pokémon ou em casa.`) : "Todos os seus Pokémon desmaiaram... Cure-os no Centro Pokémon ou em casa.",
         fuga: "Você escapou.", captura: "Captura concluída!",
       };
       void dizer(textos[fim] ?? "Fim da batalha.", 0, "forte");
@@ -580,12 +585,18 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       } finally { sondando = false; }
     }
     const timerSonda = window.setInterval(() => void sondar(), 2500);
+    // Realtime: o servidor avisa na hora que algo mudou (a consulta acima fica como reserva)
+    const inscrever = (nome?: string): void => {
+      if (!nome || canalRt) return;
+      canalRt = supabase.channel(nome).on("broadcast", { event: "ping" }, () => void sondar()).subscribe();
+    };
 
     // início
     void (async () => {
       try {
         const r = await chamar({ acao: "estado" });
         tipoBatalha = r.batalha.tipo;
+        if (tipoBatalha === "duelo") inscrever(r.canal);
         // baixa os sprites antes de abrir a cena, para não aparecerem aos pedaços
         await Promise.race([
           Promise.all([...r.jogador.filter((x) => x.ativo).map((x) => urlSprite("costas", x.num)), ...r.adversario.filter((x) => x.ativo).map((x) => urlSprite("frente", x.num))]),
@@ -612,6 +623,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       } catch (e) {
         msg.textContent = (e as Error).message;
         window.clearInterval(timerSonda);
+        fecharCanal();
         const ok = botao("Fechar", () => { raiz.remove(); resolver("ativa"); });
         controles.replaceChildren(ok);
       }

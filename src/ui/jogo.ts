@@ -520,6 +520,53 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     modal.abrir("Resetar jogador", el("p", { class: "sub" }, "Volta para o Laboratório, apaga time, mochila, Pokédex e batalha; devolve PA e dinheiro. O login e o personagem ficam."), optMissao, ...linhas, msg);
   }
 
+  // ---------- missões: desistir (jogador) e remover (Mestre) ----------
+  function abrirDesistirMissao(): void {
+    const msg = msgPainel();
+    let armado = false;
+    const b = botao("Desistir da missão", async () => {
+      if (!armado) {
+        armado = true;
+        b.textContent = "Confirmar: desistir da missão?";
+        b.classList.add("perigo");
+        window.setTimeout(() => { armado = false; b.classList.remove("perigo"); b.textContent = "Desistir da missão"; }, 5000);
+        return;
+      }
+      const { error } = await supabase.rpc("missao_desistir");
+      if (error) return void mensagem(msg, error.message);
+      mensagem(msg, "Você desistiu da missão. Para recomeçar, fale de novo com quem a deu.", "ok");
+      await atualizarMissao();
+    }, "");
+    modal.abrir("Desistir da missão", el("p", { class: "sub" }, `Missão atual: ${missaoAtual?.nome ?? "—"}. Ao desistir, o progresso é apagado e a missão volta ao começo. Itens já entregues e Pokémon já entregues não voltam.`), b, msg);
+  }
+
+  async function abrirMissoesMestre(): Promise<void> {
+    const msg = msgPainel();
+    const { data, error } = await supabase.rpc("mestre_missoes_jogadores");
+    if (error) return void mostrarAviso(error.message, 4000, true);
+    const lista = (data ?? []) as { jogador: string; nome: string; missao: string; missao_nome: string; estado: string; etapa: number; total: number }[];
+    const linhas = lista.map((m) => {
+      let armado = false;
+      const b = botao("Remover", async () => {
+        if (!armado) {
+          armado = true;
+          b.textContent = "Confirmar?";
+          b.classList.add("perigo");
+          window.setTimeout(() => { armado = false; b.classList.remove("perigo"); b.textContent = "Remover"; }, 5000);
+          return;
+        }
+        const { error: e } = await supabase.rpc("mestre_remover_missao", { p_jogador: m.jogador, p_missao: m.missao });
+        if (e) return void mensagem(msg, e.message);
+        mensagem(msg, `Missão removida de ${m.nome}.`, "ok");
+        void abrirMissoesMestre();
+      }, "sec");
+      const situacao = m.estado === "concluida" ? "concluída" : `etapa ${m.etapa} de ${m.total}`;
+      return el("div", { class: "ev-item" }, el("span", {}, `${m.nome} — ${m.missao_nome} (${situacao})`), b);
+    });
+    modal.abrir("Missões dos jogadores", el("p", { class: "sub" }, "Remover apaga o progresso do jogador nessa missão (ativa ou concluída) e ele pode aceitá-la de novo."),
+      lista.length ? el("div", { class: "ev-lista" }, ...linhas) : el("p", { class: "sub" }, "Nenhum jogador tem missões."), msg);
+  }
+
   // ---------- ações do jogo ----------
   async function recarregarJogador(): Promise<void> {
     const novo = await controle?.recarregarJogador();
@@ -588,13 +635,43 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     await lutar(data as ResultadoBatalha);
   }
 
+  // popup para o desafiado aceitar ou recusar na hora
+  let popupAberto = false;
+  function popupDesafio(d: { id: string; nome: string; amistoso?: boolean }): void {
+    if (popupAberto || emBatalha) return;
+    popupAberto = true;
+    const fundo = el("div", { class: "soc-popup", role: "alertdialog" });
+    const fechar = (): void => { fundo.remove(); popupAberto = false; };
+    const aceitar = botao("Aceitar (−1 PA)", async () => {
+      aceitar.disabled = true;
+      const { error } = await supabase.rpc("desafio_responder", { p_desafio: d.id, p_aceitar: true });
+      if (error) { aceitar.disabled = false; return void mostrarAviso(error.message, 5000, true); }
+      fechar();
+      modal.fechar();
+      atualizarHud();
+      void recarregarJogador();
+      void lutarDesafio();
+    }, "");
+    const recusar = botao("Recusar", async () => { await supabase.rpc("desafio_responder", { p_desafio: d.id, p_aceitar: false }); fechar(); }, "sec");
+    const depois = botao("Decidir depois", fechar, "sec");
+    fundo.append(el("div", { class: "soc-popup-caixa" },
+      el("h2", {}, `${d.nome} desafiou você!`),
+      el("p", { class: "soc-tag" }, d.amistoso ? "Duelo amistoso" : "Duelo valendo"),
+      el("p", { class: "sub" }, d.amistoso
+        ? "Todos começam com HP e PP cheios e nada muda nos seus Pokémon. Não dá XP."
+        : "HP e PP são os reais: quem perder fica com os Pokémon feridos. O vencedor ganha XP pelos Pokémon derrotados."),
+      el("p", { class: "sub" }, "Custa 1 PA para cada um. A luta é ao vivo: os dois escolhem ao mesmo tempo."),
+      el("div", { class: "soc-popup-bts" }, aceitar, recusar, depois)));
+    document.body.append(fundo);
+  }
+
   // avisos de desafios e trocas recebidos
   const vistos = new Set<string>();
   const verificarSocial = async (): Promise<void> => {
     if (document.hidden || emBatalha) return;
     const p = await carregarPendencias();
     if (!p) return;
-    for (const d of p.desafios_recebidos) if (!vistos.has(d.id)) { vistos.add(d.id); mostrarAviso(`${d.nome} desafiou você! Abra Treinador › Jogadores.`, 7000); }
+    for (const d of p.desafios_recebidos) if (!vistos.has(d.id)) { vistos.add(d.id); popupDesafio(d); }
     for (const t of p.trocas_recebidas) if (!vistos.has(t.id)) { vistos.add(t.id); mostrarAviso(`${t.nome} propôs uma troca! Abra Treinador › Jogadores.`, 7000); }
     if (p.batalha && !emBatalha && !vistos.has(p.batalha.id)) {
       vistos.add(p.batalha.id);
@@ -602,7 +679,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       window.setTimeout(() => void lutarDesafio(), 1200);
     }
   };
-  const tempoSocial = window.setInterval(() => void verificarSocial(), 6000);
+  const tempoSocial = window.setInterval(() => void verificarSocial(), 4000);
   const tempoMissao = window.setInterval(() => { if (!document.hidden) void atualizarMissao(); }, 30000);
 
   async function listarTreinadores(mapaId: string): Promise<TreinadorMapa[]> {
@@ -765,6 +842,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           { rotulo: "Mapa Mundi", fn: abrirMundi, oculto: emBatalha },
           { rotulo: "Buscar Pokémon (1 PA)", fn: () => void procurar(), oculto: !oferta },
           { rotulo: "Interagir", fn: () => { interagir(); }, oculto: !(lugar?.poi || lugar?.npc) },
+          { rotulo: "Desistir da missão", fn: abrirDesistirMissao, oculto: missaoAtual?.estado !== "ativa" },
           { rotulo: "Onde estou", fn: () => abrirInfoLugar() },
           { rotulo: "Estou preso (destravar)", fn: () => void controle?.destravar() },
           { rotulo: "Como jogar", fn: () => abrirAjuda() },
@@ -786,6 +864,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
         ? [{ rotulo: "Mestre", itens: () => [
             { rotulo: "Gestão de jogadores", fn: () => void import("./gestao").then((m) => m.abrirGestao(modal, mostrarAviso)) },
             { rotulo: "Eventos", fn: () => void abrirEventos(modal, mostrarAviso) },
+            { rotulo: "Missões dos jogadores", fn: () => void abrirMissoesMestre() },
             { rotulo: "Ferramentas (importar, repor PA)", fn: abrirMenu },
           ] }]
         : []),

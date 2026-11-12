@@ -75,21 +75,26 @@ function formatar(b: Any, meta: Any, r: Any, antes: Any[], depois: Any[]) {
 const LIMITE_TURNO_MS = 60_000;      // passou disso sem escolher, o servidor escolhe por quem demorou
 const LIMITE_AUSENCIA_MS = 120_000;  // sem sinal por tanto tempo = abandono (o outro vence)
 
-async function timeDuelo(uid: string) {
-  const { data: pks } = await admin.from("pokemons").select("*").eq("dono", uid).not("posicao", "is", null).order("posicao");
-  if (!pks?.length) throw new Error("Um dos jogadores está sem Pokémon no time.");
+async function timeDuelo(uid: string, amistoso: boolean) {
+  let q = admin.from("pokemons").select("*").eq("dono", uid).not("posicao", "is", null);
+  if (!amistoso) q = q.gt("hp_atual", 0);
+  const { data: pks } = await q.order("posicao");
+  if (!pks?.length) throw new Error("Um dos jogadores está sem Pokémon aptos.");
   const ids = new Set<number>();
   pks.forEach((p: Any) => p.golpes.forEach((g: Any) => ids.add(g.id)));
   const { data: gs } = await admin.from("golpes").select("id,slug").in("id", [...ids]);
   const slug = new Map((gs ?? []).map((g: Any) => [g.id, g.slug]));
-  const { data: es } = await admin.from("especies").select("id,nome").in("id", [...new Set(pks.map((p: Any) => p.especie_id))]);
+  const { data: es } = await admin.from("especies").select("id,nome,exp_base").in("id", [...new Set(pks.map((p: Any) => p.especie_id))]);
   const nome = new Map((es ?? []).map((e: Any) => [e.id, e.nome]));
+  const expB = new Map((es ?? []).map((e: Any) => [e.id, e.exp_base]));
   return {
     ids: pks.map((p: Any) => p.id),
+    exp: pks.map((p: Any) => ({ exp_base: Math.floor(expB.get(p.especie_id) ?? 50), nivel: p.nivel })),
     time: pks.map((p: Any) => ({
       especie: nomeEspecie(p.especie_id), nome: nome.get(p.especie_id), apelido: p.apelido, nivel: p.nivel, natureza: p.natureza,
       ivs: { hp: p.iv_hp, atk: p.iv_atk, def: p.iv_def, spa: p.iv_spa, spd: p.iv_spd, spe: p.iv_spe },
-      golpes: p.golpes.map((g: Any) => ({ slug: slug.get(g.id) })),   // sem PP: começa cheio
+      ...(amistoso ? {} : { hp: p.hp_atual }),
+      golpes: p.golpes.map((g: Any) => (amistoso ? { slug: slug.get(g.id) } : { slug: slug.get(g.id), pp: g.pp })),   // amistoso: HP e PP cheios
     })),
   };
 }
@@ -97,16 +102,41 @@ async function timeDuelo(uid: string) {
 // o oponente aparece só em porcentagem e sem PP
 const mascarar = (lista: Any[]) => lista.map((p: Any) => ({ ...p, hp: p.maxhp > 0 ? Math.round((p.hp / p.maxhp) * 100) : 0, maxhp: 100, pp: [] }));
 
-function visaoDuelo(minha: Any, mestre: Any, meta: Any, v: Any, lado: number, nomeOp: string, linhas: string[], espera: boolean, fimForcado?: string | null) {
+function visaoDuelo(minha: Any, mestre: Any, meta: Any, v: Any, lado: number, nomeOp: string, linhas: string[], espera: boolean, fimForcado?: string | null, depois: Any[] = []) {
   const fim = fimForcado ?? v.fim;
   return {
     batalha: { id: minha.id, estado: fim ?? "ativa", tipo: "duelo", turno: meta.turnoN ?? 1 },
-    antes: [], linhas, depois: [], pedido: fim || espera ? null : v.pedido, fim: fim ?? null,
+    antes: [], linhas, depois, pedido: fim || espera ? null : v.pedido, fim: fim ?? null, canal: mestre.id, amistoso: !!mestre.amistoso,
     treinador: nomeOp, espera: !fim && (espera || !v.pedido),
     restante: meta.limite ? Math.max(0, Math.ceil((meta.limite - Date.now()) / 1000)) : null,
     jogador: v.jogador.map((p: Any) => ({ ...p, id: meta.time[lado][p.orig] })),
     adversario: mascarar(v.adversario),
   };
+}
+
+// avisa os dois jogadores (Realtime) para buscarem o novo estado na hora; a consulta periódica continua como reserva
+async function avisar(canal: string) {
+  try {
+    const ch = admin.channel(canal);
+    await Promise.race([ch.send({ type: "broadcast", event: "ping", payload: {} }), new Promise((ok) => setTimeout(ok, 1500))]);
+    admin.removeChannel(ch);
+  } catch { /* sem Realtime, segue a consulta periódica */ }
+}
+
+/** duelo valendo: grava HP/PP reais dos dois lados e dá XP ao vencedor. Devolve os eventos de cada lado. */
+async function aplicarFinal(mestre: Any, meta: Any, estado: Any, logLen: number, vencedor: number): Promise<Any[][]> {
+  const eventos: Any[][] = [[], []];
+  if (mestre.amistoso) return eventos;
+  const linhas = [mestre.id, mestre.par];
+  for (const l of [0, 1]) {
+    const v = verDuelo(estado, logLen, l);
+    const time = v.jogador.map((p: Any) => ({ id: meta.time[l][p.orig], hp: p.hp, pp: p.pp }));
+    const exp = v.adversario.filter((p: Any) => p.hp <= 0).map((p: Any) => meta.exp?.[1 - l]?.[p.orig]).filter(Boolean);
+    const { data, error } = await admin.rpc("duelo_aplicar", { p_row: linhas[l], p_time: time, p_ganhou: vencedor === l, p_exp: exp, p_part: meta.part?.[l] ?? [] });
+    if (error) throw new Error(error.message);
+    eventos[l] = (data as Any[]) ?? [];
+  }
+  return eventos;
 }
 
 async function jogadorDa(batalhaId: string): Promise<{ jogador: string; nome: string }> {
@@ -152,10 +182,24 @@ async function duelo(minha: Any, uid: string, acao: string, n: number): Promise<
       meta.pend = meta.pend ?? {};
       let estado: Any = mestre.sim;
       const logLen: number = mestre.log_len;
-      const gravar = async (sim: Any, ll: number, f0: string | null, f1: string | null) => {
+      const gravar = async (sim: Any, ll: number, f0: string | null, f1: string | null, notificar = true) => {
         const { error } = await admin.rpc("duelo_gravar", { p_mestre: mestre.id, p_versao: mestre.versao, p_sim: sim, p_meta: meta, p_log_len: ll, p_fim0: f0, p_fim1: f1 });
         if (error) throw new Error(error.message);
         mestre.versao += 1;
+        if (notificar) await avisar(mestre.id);
+      };
+      const registrarPart = (vs: Any[]) => {
+        meta.part = meta.part ?? [[], []];
+        for (const l of [0, 1]) for (const p of vs[l].jogador) if (p.ativo) { const id = meta.time[l][p.orig]; if (id && !meta.part[l].includes(id)) meta.part[l].push(id); }
+      };
+      // fim do duelo: grava HP/PP/XP (se for valendo) e anexa os eventos ao relato final de cada lado
+      const concluir = async (vencedor: number): Promise<Any[][]> => {
+        const ev = await aplicarFinal(mestre, meta, mestre.sim, mestre.log_len, vencedor);
+        if (ev[0].length || ev[1].length) {
+          for (const l of [0, 1]) if (meta.finais?.[String(l)]) meta.finais[String(l)].depois = ev[l];
+          await admin.from("batalhas").update({ meta }).eq("id", mestre.id);
+        }
+        return ev;
       };
 
       // 1ª chamada: monta a simulação com os dois times
@@ -165,10 +209,12 @@ async function duelo(minha: Any, uid: string, acao: string, n: number): Promise<
         const nomeEu = (await admin.from("jogadores").select("nome").eq("id", uid).single()).data?.nome ?? "Jogador";
         eu.nome = nomeEu;
         const [d0, d1] = lado === 0 ? [eu, ladoOutro] : [ladoOutro, eu];
-        const t0 = await timeDuelo(d0.jogador), t1 = await timeDuelo(d1.jogador);
+        const t0 = await timeDuelo(d0.jogador, !!mestre.amistoso), t1 = await timeDuelo(d1.jogador, !!mestre.amistoso);
         const c = criarDuelo({ time1: t0.time, time2: t1.time, seed: [sorteio(65536), sorteio(65536), sorteio(65536), sorteio(65536)] });
         meta.time = [t0.ids, t1.ids];
+        meta.exp = [t0.exp, t1.exp];
         meta.nomes = [d0.nome, d1.nome];
+        registrarPart(c.v);
         meta.pend[outroL] = { linhas: c.v[1 - lado].linhas };
         meta.pend[meuL] = null;
         await gravar(c.estado, c.logLen, null, null);
@@ -176,7 +222,7 @@ async function duelo(minha: Any, uid: string, acao: string, n: number): Promise<
       }
 
       const nomeOp: string = meta.nomes?.[1 - lado] ?? "Oponente";
-      const finalDe = (l: number, v: Any, linhas: string[], fim: string) => visaoDuelo(l === lado ? minha : { id: "" }, mestre, meta, v, l, meta.nomes?.[1 - l] ?? "Oponente", linhas, false, fim);
+      const finalDe = (l: number, v: Any, linhas: string[], fim: string, depois: Any[] = []) => visaoDuelo(l === lado ? minha : { id: "" }, mestre, meta, v, l, meta.nomes?.[1 - l] ?? "Oponente", linhas, false, fim, depois);
 
       // desistência ou abandono do outro lado (sem sinal há muito tempo)
       let fimMeu: string | null = null;
@@ -188,7 +234,9 @@ async function duelo(minha: Any, uid: string, acao: string, n: number): Promise<
         meta.finais = { [meuL]: null, [outroL]: finalDe(1 - lado, vOutro, meta.pend[outroL]?.linhas ?? [], fimOutro) };
         meta.finais[outroL].batalha.id = lado === 0 ? mestre.par : mestre.id;
         await gravar(estado, logLen, lado === 0 ? fimMeu : fimOutro, lado === 0 ? fimOutro : fimMeu);
-        return resp(finalDe(lado, verDuelo(estado, logLen, lado), [], fimMeu));
+        mestre.sim = estado; mestre.log_len = logLen;
+        const ev = await concluir(fimMeu === "vitoria" ? lado : 1 - lado);
+        return resp(finalDe(lado, verDuelo(estado, logLen, lado), [], fimMeu, ev[lado]));
       }
 
       const pend = ladosPendentes(estado) as number[];
@@ -224,14 +272,17 @@ async function duelo(minha: Any, uid: string, acao: string, n: number): Promise<
           meta.finais = { [meuL]: null, [outroL]: finalDe(1 - lado, vOutro, meta.pend[outroL].linhas, vOutro.fim) };
           meta.finais[outroL].batalha.id = lado === 0 ? mestre.par : mestre.id;
         }
+        registrarPart(r.v);
         await gravar(r.estado, r.logLen, fim0, fim1);
-        return resp(visaoDuelo(minha, mestre, meta, r.v[lado], lado, nomeOp, [...entregueMeu, ...r.v[lado].linhas], false, r.v[lado].fim));
+        let ev: Any[][] = [[], []];
+        if (fim0) { mestre.sim = r.estado; mestre.log_len = r.logLen; ev = await concluir(fim0 === "vitoria" ? 0 : 1); }
+        return resp(visaoDuelo(minha, mestre, meta, r.v[lado], lado, nomeOp, [...entregueMeu, ...r.v[lado].linhas], false, r.v[lado].fim, ev[lado]));
       }
 
       // nada a resolver: entrega o que eu perdi, registra escolha/presença (presença só a cada 15 s) e devolve a visão atual
       const pendMeu = meta.pend[meuL];
       if (pendMeu) meta.pend[meuL] = null;
-      if (escolha || pendMeu || agora - vistoAntes > 15_000) await gravar(estado, logLen, null, null);
+      if (escolha || pendMeu || agora - vistoAntes > 15_000) await gravar(estado, logLen, null, null, !!escolha);
       const v = verDuelo(estado, logLen, lado);
       return resp(visaoDuelo(minha, mestre, meta, v, lado, nomeOp, pendMeu?.linhas ?? [], !euPreciso || !!meta.esc[meuL]));
     } catch (e) {
