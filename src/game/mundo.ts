@@ -29,11 +29,13 @@ export interface TreinadorMapa {
   falas: { antes?: string; derrota?: string }; vencido: boolean;
 }
 
-export interface Lugar { mapa_id: string; nome_mapa: string; x: number; y: number; naGrama: boolean; poi: Poi | null }
+export interface Lugar { mapa_id: string; nome_mapa: string; x: number; y: number; naGrama: boolean; poi: Poi | null; npc: TreinadorMapa | null }
 
 export interface Ganchos {
   /** O jogador mudou de lugar (ou de mapa). */
   aoLugar(l: Lugar): void;
+  /** O jogador começou um novo passo (portanto não está parado). */
+  aoPasso?(): void;
   /** O servidor devolveu o estado do jogador (posição validada). */
   aoJogador(j: Jogador): void;
   aviso(texto: string): void;
@@ -49,6 +51,8 @@ export interface Controle {
   bloquear(sim: boolean): void;
   dizer(texto: string): void;
   recarregarJogador(): Promise<Jogador | null>;
+  /** O jogador falou com um treinador ao lado dele (ele só desafia se o jogador puxar conversa). */
+  conversar(id: string): Promise<void>;
   /** +1 aproxima, -1 afasta, 0 volta ao automático. */
   zoom(passo: -1 | 0 | 1): void;
 }
@@ -109,7 +113,7 @@ class CenaMundo extends Phaser.Scene {
   private timerTrack?: number;
   private npcs = new Map<string, { d: TreinadorMapa; ficha: Ficha }>();
   private desafiando = false;
-  private ignorar: string | null = null;
+  private matos: { s: Phaser.GameObjects.Image; fase: number }[] = [];
 
   constructor(jogador: Jogador, ganchos: Ganchos) {
     super("mundo");
@@ -121,6 +125,7 @@ class CenaMundo extends Phaser.Scene {
     for (let i = 0; i < 12; i++) {
       this.load.spritesheet(`p${i}`, `${BASE}assets/personagens/p${i}.png`, { frameWidth: 16, frameHeight: 32 });
     }
+    this.load.image("grama-alta", `${BASE}assets/grama-alta.png`);
   }
 
   create(): void {
@@ -167,6 +172,15 @@ class CenaMundo extends Phaser.Scene {
     const baixo = this.add.image(0, 0, `${id}-baixo`).setOrigin(0, 0).setDepth(0);
     const cima = this.add.image(0, 0, `${id}-cima`).setOrigin(0, 0).setDepth(1000);
     this.camadas = [baixo, cima];
+    for (const m of this.matos) m.s.destroy();
+    this.matos = [];
+    for (let ty = 0; ty < dados.h; ty++) {
+      for (let tx = 0; tx < dados.w; tx++) {
+        if (dados.grama.charAt(ty * dados.w + tx) !== "1") continue;
+        const s = this.add.image(tx * T + T / 2, ty * T + T, "grama-alta").setOrigin(0.5, 1).setDepth(5 + ty * T + T - 1);
+        this.matos.push({ s, fase: tx * 0.9 + ty * 0.55 });
+      }
+    }
     this.limparOutros();
     await this.carregarNpcs(id);
     if (this.encerrada) return;
@@ -245,8 +259,26 @@ class CenaMundo extends Phaser.Scene {
   private avisarLugar(): void {
     const x = this.jogador.x;
     const y = this.jogador.y;
-    this.ganchos.aoLugar({ mapa_id: this.mapa.id, nome_mapa: this.mapa.nome, x, y, naGrama: this.naGrama(x, y), poi: this.poiEm(x, y) });
-    void this.verificarTreinadores();
+    this.ganchos.aoLugar({ mapa_id: this.mapa.id, nome_mapa: this.mapa.nome, x, y, naGrama: this.naGrama(x, y), poi: this.poiEm(x, y), npc: this.npcAoLado() });
+  }
+
+  /** Treinador logo ao lado do jogador (os NPCs só falam quando o jogador puxa conversa). */
+  private npcAoLado(): TreinadorMapa | null {
+    for (const n of this.npcs.values()) {
+      if (Math.abs(n.d.x - this.jogador.x) + Math.abs(n.d.y - this.jogador.y) === 1) return n.d;
+    }
+    return null;
+  }
+
+  async conversar(id: string): Promise<void> {
+    const n = this.npcs.get(id);
+    if (!n || this.desafiando || this.mudandoMapa || this.encerrada) return;
+    if (Math.abs(n.d.x - this.jogador.x) + Math.abs(n.d.y - this.jogador.y) !== 1) return;
+    if (n.d.vencido) {
+      this.mostrarBalao(n.ficha, n.d.falas.derrota ?? "Boa luta!");
+      return;
+    }
+    await this.desafio(n);
   }
 
   // ---------- treinadores NPC ----------
@@ -265,31 +297,6 @@ class CenaMundo extends Phaser.Scene {
     }
   }
 
-  private naLinhaDeVisao(d: TreinadorMapa): boolean {
-    const [dx, dy] = DELTA[d.direcao];
-    for (let k = 1; k <= d.visao; k++) {
-      const x = d.x + dx * k;
-      const y = d.y + dy * k;
-      if (this.solido(x, y)) return false;
-      if (x === this.jogador.x && y === this.jogador.y) return true;
-    }
-    return false;
-  }
-
-  private async verificarTreinadores(): Promise<void> {
-    if (this.desafiando || this.mudandoMapa || this.encerrada || this.npcs.size === 0) return;
-    let visto: { d: TreinadorMapa; ficha: Ficha } | null = null;
-    for (const n of this.npcs.values()) {
-      if (!n.d.vencido && this.naLinhaDeVisao(n.d)) { visto = n; break; }
-    }
-    if (!visto) {
-      this.ignorar = null;
-      return;
-    }
-    if (this.ignorar === visto.d.id) return;
-    await this.desafio(visto);
-  }
-
   private esperarMs(ms: number): Promise<void> {
     return new Promise((ok) => this.time.delayedCall(ms, () => ok()));
   }
@@ -302,15 +309,17 @@ class CenaMundo extends Phaser.Scene {
       await this.fila; // garante que o servidor já conhece a posição do jogador
       this.mostrarBalao(n.ficha, "!");
       await this.esperarMs(650);
-      const [dx, dy] = DELTA[n.d.direcao];
+      const rumo: Direcao = this.jogador.x > n.d.x ? "direita" : this.jogador.x < n.d.x ? "esquerda" : this.jogador.y > n.d.y ? "baixo" : "cima";
+      this.moverFicha(n.ficha, n.d.x, n.d.y, rumo, 1);
+      const [dx, dy] = DELTA[rumo];
       const dist = Math.abs(this.jogador.x - n.d.x) + Math.abs(this.jogador.y - n.d.y);
       for (let k = 1; k < dist; k++) {
-        this.moverFicha(n.ficha, n.d.x + dx * k, n.d.y + dy * k, n.d.direcao, 190);
+        this.moverFicha(n.ficha, n.d.x + dx * k, n.d.y + dy * k, rumo, 190);
         await this.esperarMs(200);
       }
       // o jogador olha para o treinador
       const volta: Record<Direcao, Direcao> = { cima: "baixo", baixo: "cima", esquerda: "direita", direita: "esquerda" };
-      this.eu.dir = volta[n.d.direcao];
+      this.eu.dir = volta[rumo];
       this.eu.sprite.setFrame(QUADROS[this.eu.dir] + 1);
       const venceu = (await this.ganchos.aoTreinador?.(n.d)) ?? false;
       this.bloqueado = true;
@@ -320,11 +329,11 @@ class CenaMundo extends Phaser.Scene {
       }
       if (this.encerrada) return;
       for (let k = dist - 1; k >= 0; k--) {
-        this.moverFicha(n.ficha, n.d.x + dx * k, n.d.y + dy * k, volta[n.d.direcao], 190);
+        this.moverFicha(n.ficha, n.d.x + dx * k, n.d.y + dy * k, volta[rumo], 190);
         await this.esperarMs(200);
       }
       this.moverFicha(n.ficha, n.d.x, n.d.y, n.d.direcao, 1);
-      if (!venceu) this.ignorar = n.d.id;
+      this.avisarLugar();
     } finally {
       this.desafiando = false;
       this.bloqueado = false;
@@ -430,8 +439,12 @@ class CenaMundo extends Phaser.Scene {
     return null;
   }
 
-  override update(): void {
+  override update(tempo: number): void {
     if (!this.mapa || this.encerrada) return;
+    for (const m of this.matos) {
+      const w = Math.sin(tempo / 380 + m.fase);
+      m.s.setAngle(w * 5).setScale(1 + w * 0.04, 1 - Math.abs(w) * 0.03);
+    }
     const digitando = document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement;
     if (this.andando || this.mudandoMapa || this.bloqueado) return;
     const d = this.segurando ?? (digitando ? null : this.direcaoDoTeclado());
@@ -453,6 +466,7 @@ class CenaMundo extends Phaser.Scene {
       return;
     }
     this.andando = true;
+    this.ganchos.aoPasso?.();
     this.jogador.x = nx;
     this.jogador.y = ny;
     this.jogador.direcao = d;
@@ -629,5 +643,6 @@ export async function iniciarMundo(pai: HTMLElement, jogador: Jogador, ganchos: 
     dizer: (t) => cena.dizer(t),
     recarregarJogador: () => cena.recarregar(),
     zoom: (p) => cena.zoom(p),
+    conversar: (id) => cena.conversar(id),
   };
 }

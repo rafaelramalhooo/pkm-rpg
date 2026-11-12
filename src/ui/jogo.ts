@@ -113,7 +113,6 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   let controle: Controle | null = null;
   let lugar: Lugar | null = null;
   let emBatalha = false;
-  let poiAberto = "";
   let paMax = 30;
 
   const tela = el("div", { class: "tela-jogo" });
@@ -187,7 +186,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       const { data } = await supabase.rpc("gerar_oferta");
       if (!data || emBatalha || !lugar || lugar.x !== l.x || lugar.y !== l.y || lugar.mapa_id !== l.mapa_id) return;
       mostrarOferta(data as Oferta);
-    }, 700);
+    }, 180);
   }
 
   const dpad = el("div", { class: "dpad", "aria-label": "Controles" });
@@ -473,9 +472,9 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   function abrirAjuda(): void {
     modal.abrir(
       "Como jogar",
-      el("p", { class: "sub" }, "Setas ou WASD para andar (no celular, use os botões na tela). E, Espaço ou Enter interagem."),
+      el("p", { class: "sub" }, "Setas ou WASD para andar (no celular, use os botões na tela). E, Espaço ou Enter interagem com o que está no seu tile ou ao seu lado; B busca o Pokémon da prévia."),
       el("p", { class: "sub" }, "Ande e pare: às vezes um Pokémon do bioma (grama, estrada, floresta, água...) aparece no canto inferior esquerdo. Buscá-lo custa 1 Ponto de Aventura (PA); ignorar é grátis. O Mestre repõe os PA."),
-      el("p", { class: "sub" }, "Fale com o Professor Carvalho no laboratório para receber seu primeiro Pokémon. Treinadores avistados desafiam você ao cruzar o olhar."),
+      el("p", { class: "sub" }, "Fale com o Professor Carvalho no laboratório para receber seu primeiro Pokémon. Treinadores só desafiam quando você chega ao lado deles e fala (botão Interagir ou E)."),
     );
   }
 
@@ -611,9 +610,21 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     modal.abrir(p.nome, ...nos);
   }
 
+  /** Falar com o treinador ao lado ou usar o ponto de interesse do tile. Devolve true se havia algo para interagir. */
+  function interagir(): boolean {
+    if (!lugar) return false;
+    if (lugar.npc) {
+      void controle?.conversar(lugar.npc.id);
+      return true;
+    }
+    if (lugar.poi) {
+      void abrirPoi(lugar.poi);
+      return true;
+    }
+    return false;
+  }
   btnInteragir.addEventListener("click", () => {
-    const p = lugar?.poi;
-    if (p) void abrirPoi(p);
+    interagir();
   });
 
   const aoTecla = (e: KeyboardEvent) => {
@@ -625,8 +636,11 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     if (emBatalha || modal.aberto()) return;
     if (e.key === "e" || e.key === "E" || e.key === " " || e.key === "Enter") {
-      if (oferta) void procurar();
-      else if (lugar?.poi) void abrirPoi(lugar.poi);
+      if (!interagir() && oferta) void procurar();
+      e.preventDefault();
+    }
+    if ((e.key === "b" || e.key === "B") && oferta) {
+      void procurar();
       e.preventDefault();
     }
   };
@@ -659,7 +673,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
         rotulo: "Explorar",
         itens: () => [
           { rotulo: "Buscar Pokémon (1 PA)", fn: () => void procurar(), oculto: !oferta },
-          { rotulo: "Interagir", fn: () => { if (lugar?.poi) void abrirPoi(lugar.poi); }, oculto: !lugar?.poi },
+          { rotulo: "Interagir", fn: () => { interagir(); }, oculto: !(lugar?.poi || lugar?.npc) },
           { rotulo: "Aproximar o mapa", fn: () => controle?.zoom(1) },
           { rotulo: "Afastar o mapa", fn: () => controle?.zoom(-1) },
         ],
@@ -672,7 +686,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     marca,
   );
   const rodape = el("div", { class: "barra rodape" }, formChat, botoes);
-  const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage/busca · Ctrl + / Ctrl − ajustam o zoom · pare de andar e veja se algum Pokémon apareceu");
+  const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage · B busca o Pokémon da prévia · Ctrl + / Ctrl − ajustam o zoom");
 
   const minha = montar([el("div", { class: "jogo" }, nav, el("div", { class: "cartucho" }, tela, rodape), dica, modal.raiz)], true);
 
@@ -684,13 +698,12 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       aoLugar: (l) => {
         lugar = l;
         j = { ...j, mapa_id: l.mapa_id, x: l.x, y: l.y };
-        btnInteragir.hidden = !l.poi;
+        btnInteragir.hidden = !(l.poi || l.npc);
+        btnInteragir.textContent = l.npc ? `Falar com ${l.npc.nome}` : "Interagir";
         agendarOferta(l);
         atualizarHud();
-        const chave = l.poi ? `${l.mapa_id}:${l.x},${l.y}` : "";
-        if (chave && chave !== poiAberto && !emBatalha && !modal.aberto()) void abrirPoi(l.poi!);
-        poiAberto = chave;
       },
+      aoPasso: () => limparOferta(),
       aoJogador: (novo) => {
         j = { ...j, ...novo };
         atualizarHud();
@@ -723,6 +736,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       mostrarAviso(j.papel === "mestre" ? "Mestre: abra Menu e clique em \"Importar dados do jogo\" e depois \"Importar sprites\"." : "O Mestre ainda está preparando o mundo.", 8000);
       return;
     }
+    if ((await meuTime(j.id)).length === 0) mostrarAviso("Fale com o Professor Carvalho: chegue ao lado dele e use Interagir (ou a tecla E) para escolher seu primeiro Pokémon.", 9000);
     const { data: ativa } = await supabase.from("batalhas").select("id").eq("estado", "ativa").maybeSingle();
     if (ativa) {
       const { data } = await supabase.rpc("procurar_pokemon");
