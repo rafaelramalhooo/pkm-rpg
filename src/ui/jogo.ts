@@ -515,8 +515,14 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     }
   }
 
-  const FUNDOS: Record<string, string> = { pallet: "campo", lab: "cidade", rota1: "mato", rota2: "mato", viridian: "cidade", floresta: "floresta", pewter: "cidade", ginasio: "ginasio" };
-  const fundoDoMapa = (id: string | null | undefined): string => FUNDOS[id ?? ""] ?? "campo";
+  const FUNDOS: Record<string, string> = { pallet: "campo", lab: "cidade", rota1: "mato", costa1: "agua", costa2: "agua", gruta: "caverna", cromatica: "caverna", vale: "floresta", caminho_va: "floresta", reserva: "campo", plato: "ginasio" };
+  const fundoDoMapa = (id: string | null | undefined): string => {
+    const m = id ?? "";
+    if (FUNDOS[m]) return FUNDOS[m];
+    if (m.startsWith("gin_") || m.startsWith("liga_")) return "ginasio";
+    if (m.startsWith("rota")) return "mato";
+    return ["porto", "argila", "verdelume", "azurana", "quartzo", "ambar", "carmesim", "ametista", "obsidiana"].includes(m) ? "cidade" : "campo";
+  };
 
   // aquece a função de batalha (o motor é pesado): a 1ª batalha da sessão não precisa esperar o carregamento
   const aquecer = (): void => { void supabase.functions.invoke("batalha", { body: { acao: "aquecer" } }).catch(() => undefined); };
@@ -589,6 +595,16 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     mensagem(msg, `${String(data)} Pokémon curados!`, "ok");
   }
 
+  async function comprar(p: Poi, item: string, qtd: number, msg: HTMLElement, saldo: HTMLElement): Promise<void> {
+    const { data, error } = await supabase.rpc("comprar_item", { p_poi: p.id, p_item: item, p_qtd: qtd });
+    if (error) return void mensagem(msg, error.message);
+    const r = data as { dinheiro: number };
+    j = { ...j, dinheiro: r.dinheiro };
+    saldo.textContent = `Seu dinheiro: ₽ ${r.dinheiro}`;
+    atualizarHud();
+    mensagem(msg, `Comprou ${qtd}× ${nomeItem(item)}.`, "ok");
+  }
+
   async function abrirPoi(p: Poi): Promise<void> {
     const msg = msgPainel();
     const nos: Node[] = [el("p", { class: "sub" }, p.descricao)];
@@ -603,8 +619,43 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           return b;
         })));
       } else nos.push(el("p", { class: "sub" }, "Professor Carvalho: \"Cuide bem do seu parceiro!\""));
-    } else if (p.tipo === "centro" || p.tipo === "casa_jogador") {
+    } else if (p.tipo === "centro" || p.tipo === "casa_jogador" || p.acao === "cura") {
       nos.push(botao("Curar meu time", () => void curar(msg), ""));
+    } else if (p.acao === "dica" || p.acao === "quadro") {
+      const lista = p.acao === "dica" ? p.dicas : p.textos;
+      if (lista?.length) nos.push(el("p", { class: "sub" }, `“${lista[Math.floor(Math.random() * lista.length)]}”`));
+    } else if (p.acao === "loja") {
+      await carregarReferencias();
+      const saldo = el("p", { class: "sub" }, `Seu dinheiro: ₽ ${j.dinheiro ?? 0}`);
+      nos.push(saldo);
+      for (const it of p.estoque ?? []) {
+        const linha = el("div", { class: "item-cartao" }, el("div", { class: "item-txt" }, el("strong", {}, nomeItem(it.item)), el("small", {}, `₽ ${it.preco}`)));
+        for (const q of [1, 5]) {
+          linha.appendChild(botao(`Comprar ×${q}`, () => void comprar(p, it.item, q, msg, saldo), "sec"));
+        }
+        nos.push(linha);
+      }
+    } else if (p.acao === "presente") {
+      nos.push(botao("Aceitar o presente", async () => {
+        const { data, error } = await supabase.rpc("usar_poi", { p_poi: p.id });
+        if (error) return void mensagem(msg, error.message);
+        const r = data as { texto?: string };
+        mensagem(msg, r.texto ?? "Você recebeu um presente!", "ok");
+      }, ""));
+    } else if (p.acao === "troca") {
+      await carregarReferencias();
+      const time = (await meuTime(j.id)).filter((x) => x.especie_id === p.quer);
+      if (!time.length) nos.push(el("p", { class: "sub" }, `Você precisa ter um ${especie(p.quer ?? 0).nome} para trocar por um ${especie(p.da ?? 0).nome}.`));
+      for (const x of time) {
+        nos.push(botao(`Trocar ${especie(x.especie_id).nome} (nv ${x.nivel}) por ${especie(p.da ?? 0).nome}`, async () => {
+          const { data, error } = await supabase.rpc("usar_poi", { p_poi: p.id, p_pokemon: x.id });
+          if (error) return void mensagem(msg, error.message);
+          const r = data as { recebeu?: string };
+          mensagem(msg, `Troca feita! Você recebeu ${r.recebeu ?? "um novo Pokémon"}.`, "ok");
+        }, ""));
+      }
+    } else if (p.acao === "liga") {
+      nos.push(el("p", { class: "sub" }, `Insígnias: ${(j as { insignias?: string[] }).insignias?.length ?? 0} de 8.`));
     }
     nos.push(msg);
     modal.abrir(p.nome, ...nos);

@@ -7,6 +7,7 @@ type Progresso = (texto: string) => void;
 interface MapaJson {
   id: string; nome: string; w: number; h: number; solido: string; grama: string;
   portais: unknown[]; pois: unknown[]; bioma?: string; spawn?: { x: number; y: number };
+  nivel_piso?: number | null; nivel_teto?: number | null; nivel_bonus?: number | null; chance_oferta?: number | null;
 }
 
 async function json<T>(caminho: string): Promise<T> {
@@ -26,12 +27,13 @@ async function enviar(tabela: string, linhas: unknown[], p: Progresso): Promise<
 
 export async function importarDados(p: Progresso): Promise<void> {
   const mapas: unknown[] = [];
-  for (const id of ["pallet", "rota1", "viridian", "lab"]) {
+  for (const id of await json<string[]>("assets/mapas/_indice.json")) {
     const m = await json<MapaJson>(`assets/mapas/${id}.json`);
     mapas.push({
       id: m.id, nome: m.nome, largura: m.w, altura: m.h,
       spawn_x: m.spawn?.x ?? Math.floor(m.w / 2), spawn_y: m.spawn?.y ?? Math.floor(m.h / 2),
       tipo: "andavel", solido: m.solido, grama: m.grama, portais: m.portais, pois: m.pois, bioma: m.bioma ?? null,
+      nivel_piso: m.nivel_piso ?? null, nivel_teto: m.nivel_teto ?? null, nivel_bonus: m.nivel_bonus ?? null, chance_oferta: m.chance_oferta ?? null,
     });
   }
   await enviar("mapas", mapas, p);

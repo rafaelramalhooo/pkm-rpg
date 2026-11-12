@@ -250,8 +250,10 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
         case "fuga": await dizer(e.ok ? "Você fugiu em segurança!" : "Não conseguiu fugir!", 900); break;
         case "dinheiro": await dizer(`Você ganhou ₽ ${str(e.valor)} de ${str(e.nome)}!`, 1200, "forte"); break;
         case "fala": await dizer(`${str(e.nome)}: "${str(e.texto)}"`, 1800); break;
-        case "exp": await dizer(`${str(e.nome)} ganhou ${str(e.valor)} pontos de experiência!`, 1000); break;
+        case "exp": await dizer(Number(e.valor) > 0 ? `${str(e.nome)} ganhou ${str(e.valor)} pontos de experiência!` : `${str(e.nome)} já atingiu o limite de nível. Conquiste mais insígnias para ir além!`, 1000); break;
         case "nivel": await dizer(`${str(e.nome)} subiu para o nível ${str(e.nivel)}!`, 1100, "forte"); break;
+        case "insignia": await dizer(`Você conquistou a Insígnia ${str(e.nome).replace(/^./, (c) => c.toUpperCase())} de ${str(e.lider)}!`, 2200, "forte"); break;
+        case "campeao": await dizer(`${str(e.nome)} foi derrotada! Você é o novo Campeão de Rafar!`, 2600, "forte"); break;
         case "aprendeu": await dizer(`${str(e.nome)} aprendeu ${str(e.golpe)}!`, 1100, "forte"); break;
         default: break;
       }

@@ -11,6 +11,16 @@ export interface Poi {
   x: number;
   y: number;
   descricao: string;
+  /** Interação do lugar: cura, loja, dica, quadro, presente, troca, liga. */
+  acao?: string;
+  dicas?: string[];
+  textos?: string[];
+  estoque?: { item: string; preco: number }[];
+  item?: string;
+  qtd?: number;
+  texto?: string;
+  quer?: number;
+  da?: number;
 }
 interface Portal { x: number; y: number; w?: number; h?: number }
 interface MapaDados {

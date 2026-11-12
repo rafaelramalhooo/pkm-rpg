@@ -1,52 +1,4074 @@
 [
-  {
-    "id": "rota1_tiago",
-    "mapa_id": "rota1",
-    "x": 12,
-    "y": 40,
-    "direcao": "baixo",
-    "visao": 3,
-    "nome": "Tiago",
-    "classe": "Garoto",
-    "aparencia": 8,
-    "recompensa": 90,
-    "falas": {
-      "antes": "Ei! Você tem Pokémon, né? Vamos lutar!",
-      "derrota": "Perdi... Meu Rattata treinou tanto! Você é forte."
-    },
-    "equipe": [
-      {
-        "especie": 19,
-        "nivel": 4
-      }
-    ],
-    "arco": 1
+ {
+  "id": "rota1_tiago",
+  "mapa_id": "rota1",
+  "x": 12,
+  "y": 40,
+  "direcao": "baixo",
+  "visao": 3,
+  "nome": "Tiago",
+  "classe": "Garoto",
+  "aparencia": 8,
+  "recompensa": 90,
+  "falas": {
+   "antes": "Ei! Você tem Pokémon, né? Vamos lutar!",
+   "derrota": "Perdi... Meu Rattata treinou tanto! Você é forte."
   },
-  {
-    "id": "rota1_lia",
-    "mapa_id": "rota1",
-    "x": 16,
-    "y": 20,
-    "direcao": "direita",
-    "visao": 3,
-    "nome": "Lia",
-    "classe": "Moça",
-    "aparencia": 9,
-    "recompensa": 110,
-    "falas": {
-      "antes": "Nossos olhares se cruzaram! Isso significa batalha!",
-      "derrota": "Ai, ai... Meus Pokémon precisam descansar."
+  "equipe": [
+   {
+    "especie": 19,
+    "nivel": 4
+   }
+  ],
+  "arco": 1
+ },
+ {
+  "id": "rota1_lia",
+  "mapa_id": "rota1",
+  "x": 16,
+  "y": 20,
+  "direcao": "direita",
+  "visao": 3,
+  "nome": "Lia",
+  "classe": "Moça",
+  "aparencia": 9,
+  "recompensa": 110,
+  "falas": {
+   "antes": "Nossos olhares se cruzaram! Isso significa batalha!",
+   "derrota": "Ai, ai... Meus Pokémon precisam descansar."
+  },
+  "equipe": [
+   {
+    "especie": 16,
+    "nivel": 3
+   },
+   {
+    "especie": 19,
+    "nivel": 3
+   }
+  ],
+  "arco": 1
+ },
+ {
+  "id": "argila_pedreiro",
+  "mapa_id": "argila",
+  "x": 20,
+  "y": 27,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Zeca",
+  "classe": "Pedreiro",
+  "aparencia": 2,
+  "recompensa": 140,
+  "falas": {
+   "antes": "Pedra com pedra, vamos ver quem é mais duro!",
+   "derrota": "Fui britado... Muito bom!"
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 0,
+   "pool": [
+    {
+     "e": 74,
+     "de": 1,
+     "ate": 24
     },
-    "equipe": [
-      {
-        "especie": 16,
-        "nivel": 3
-      },
-      {
-        "especie": 19,
-        "nivel": 3
-      }
-    ],
-    "arco": 1
+    {
+     "e": 75,
+     "de": 25,
+     "ate": 38
+    },
+    {
+     "e": 76,
+     "de": 39,
+     "ate": 100
+    }
+   ],
+   "time": 2
   }
+ },
+ {
+  "id": "verdelume_ines",
+  "mapa_id": "verdelume",
+  "x": 24,
+  "y": 32,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Inês",
+  "classe": "Colecionadora de insetos",
+  "aparencia": 5,
+  "recompensa": 140,
+  "falas": {
+   "antes": "Meus insetos são os mais bonitos de Rafar!",
+   "derrota": "Hmpf... Eles também sabem perder."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 10,
+     "de": 1,
+     "ate": 9
+    },
+    {
+     "e": 11,
+     "de": 10,
+     "ate": 15
+    },
+    {
+     "e": 12,
+     "de": 16,
+     "ate": 100
+    },
+    {
+     "e": 13,
+     "de": 1,
+     "ate": 9
+    },
+    {
+     "e": 14,
+     "de": 10,
+     "ate": 15
+    },
+    {
+     "e": 15,
+     "de": 16,
+     "ate": 100
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "azurana_cris",
+  "mapa_id": "azurana",
+  "x": 30,
+  "y": 24,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Cris",
+  "classe": "Nadador",
+  "aparencia": 6,
+  "recompensa": 150,
+  "falas": {
+   "antes": "Mergulhei a manhã toda. Bora lutar!",
+   "derrota": "Fui ao fundo... Parabéns!"
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 54,
+     "de": 1,
+     "ate": 32
+    },
+    {
+     "e": 55,
+     "de": 33,
+     "ate": 100
+    },
+    {
+     "e": 60,
+     "de": 1,
+     "ate": 24
+    },
+    {
+     "e": 61,
+     "de": 25,
+     "ate": 35
+    },
+    {
+     "e": 62,
+     "de": 36,
+     "ate": 100
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "quartzo_dora",
+  "mapa_id": "quartzo",
+  "x": 18,
+  "y": 20,
+  "direcao": "baixo",
+  "visao": 3,
+  "nome": "Dora",
+  "classe": "Dançarina",
+  "aparencia": 3,
+  "recompensa": 150,
+  "falas": {
+   "antes": "Dança comigo? Digo, luta comigo!",
+   "derrota": "Que passo bonito, Treinador!"
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 39,
+     "de": 1,
+     "ate": 29
+    },
+    {
+     "e": 40,
+     "de": 30,
+     "ate": 100
+    },
+    {
+     "e": 35,
+     "de": 1,
+     "ate": 29
+    },
+    {
+     "e": 36,
+     "de": 30,
+     "ate": 100
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "ambar_edu",
+  "mapa_id": "ambar",
+  "x": 22,
+  "y": 24,
+  "direcao": "baixo",
+  "visao": 3,
+  "nome": "Edu",
+  "classe": "Eletricista",
+  "aparencia": 4,
+  "recompensa": 160,
+  "falas": {
+   "antes": "Ei, você tem coragem de enfrentar um choque?",
+   "derrota": "Curto-circuito! Muito bem."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 100,
+     "de": 1,
+     "ate": 29
+    },
+    {
+     "e": 101,
+     "de": 30,
+     "ate": 100
+    },
+    {
+     "e": 81,
+     "de": 1,
+     "ate": 29
+    },
+    {
+     "e": 82,
+     "de": 30,
+     "ate": 100
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "carmesim_rex",
+  "mapa_id": "carmesim",
+  "x": 18,
+  "y": 19,
+  "direcao": "baixo",
+  "visao": 3,
+  "nome": "Rex",
+  "classe": "Vulcanólogo",
+  "aparencia": 7,
+  "recompensa": 170,
+  "falas": {
+   "antes": "Eu estudo vulcões... e você vai estudar minha derrota!",
+   "derrota": "Tá, tá. Você é quente também."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 58,
+     "de": 1,
+     "ate": 34
+    },
+    {
+     "e": 59,
+     "de": 35,
+     "ate": 100
+    },
+    {
+     "e": 77,
+     "de": 1,
+     "ate": 39
+    },
+    {
+     "e": 78,
+     "de": 40,
+     "ate": 100
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "ametista_lun",
+  "mapa_id": "ametista",
+  "x": 23,
+  "y": 25,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Lun",
+  "classe": "Médium",
+  "aparencia": 9,
+  "recompensa": 170,
+  "falas": {
+   "antes": "Eu já sabia que você ia vir. Vamos lutar?",
+   "derrota": "Eu não previ isso..."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 63,
+     "de": 1,
+     "ate": 15
+    },
+    {
+     "e": 64,
+     "de": 16,
+     "ate": 35
+    },
+    {
+     "e": 65,
+     "de": 36,
+     "ate": 100
+    },
+    {
+     "e": 96,
+     "de": 1,
+     "ate": 25
+    },
+    {
+     "e": 97,
+     "de": 26,
+     "ate": 100
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "obsidiana_sol",
+  "mapa_id": "obsidiana",
+  "x": 24,
+  "y": 20,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Sol",
+  "classe": "Montanhista",
+  "aparencia": 1,
+  "recompensa": 180,
+  "falas": {
+   "antes": "Cheguei no pico mil vezes. Vamos ver se você chega?",
+   "derrota": "Hoje o pico foi seu."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 74,
+     "de": 1,
+     "ate": 24
+    },
+    {
+     "e": 75,
+     "de": 25,
+     "ate": 38
+    },
+    {
+     "e": 76,
+     "de": 39,
+     "ate": 100
+    },
+    {
+     "e": 95,
+     "de": 1,
+     "ate": 100
+    }
+   ],
+   "time": 3
+  }
+ },
+ {
+  "id": "rota2_caio",
+  "mapa_id": "rota2",
+  "x": 30,
+  "y": 7,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Caio",
+  "classe": "Garoto",
+  "aparencia": 8,
+  "recompensa": 100,
+  "falas": {
+   "antes": "Esta trilha é minha!",
+   "derrota": "Ok, ok, passe."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 0,
+   "pool": [
+    {
+     "e": 19,
+     "de": 1,
+     "ate": 19,
+     "linha": 19
+    },
+    {
+     "e": 20,
+     "de": 20,
+     "ate": 100,
+     "linha": 19
+    },
+    {
+     "e": 21,
+     "de": 1,
+     "ate": 24,
+     "linha": 21
+    },
+    {
+     "e": 22,
+     "de": 25,
+     "ate": 100,
+     "linha": 21
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "rota2_bia",
+  "mapa_id": "rota2",
+  "x": 13,
+  "y": 7,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Bia",
+  "classe": "Moça",
+  "aparencia": 9,
+  "recompensa": 100,
+  "falas": {
+   "antes": "Vamos treinar juntas?",
+   "derrota": "Que luta boa!"
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 0,
+   "pool": [
+    {
+     "e": 16,
+     "de": 1,
+     "ate": 17,
+     "linha": 16
+    },
+    {
+     "e": 17,
+     "de": 18,
+     "ate": 35,
+     "linha": 16
+    },
+    {
+     "e": 18,
+     "de": 36,
+     "ate": 100,
+     "linha": 16
+    },
+    {
+     "e": 27,
+     "de": 1,
+     "ate": 21,
+     "linha": 27
+    },
+    {
+     "e": 28,
+     "de": 22,
+     "ate": 100,
+     "linha": 27
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "cva_ze",
+  "mapa_id": "caminho_va",
+  "x": 32,
+  "y": 12,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Zé",
+  "classe": "Caçador de insetos",
+  "aparencia": 5,
+  "recompensa": 100,
+  "falas": {
+   "antes": "Vaga-lumes, só os meus!",
+   "derrota": "Perdi pra um forasteiro..."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 0,
+   "pool": [
+    {
+     "e": 10,
+     "de": 1,
+     "ate": 6,
+     "linha": 10
+    },
+    {
+     "e": 11,
+     "de": 7,
+     "ate": 12,
+     "linha": 10
+    },
+    {
+     "e": 12,
+     "de": 13,
+     "ate": 100,
+     "linha": 10
+    },
+    {
+     "e": 13,
+     "de": 1,
+     "ate": 6,
+     "linha": 13
+    },
+    {
+     "e": 14,
+     "de": 7,
+     "ate": 12,
+     "linha": 13
+    },
+    {
+     "e": 15,
+     "de": 13,
+     "ate": 100,
+     "linha": 13
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "cva_luna",
+  "mapa_id": "caminho_va",
+  "x": 20,
+  "y": 12,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Luna",
+  "classe": "Colecionadora",
+  "aparencia": 9,
+  "recompensa": 110,
+  "falas": {
+   "antes": "Achei você entre as folhas!",
+   "derrota": "Você brilha mais que os vaga-lumes."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 0,
+   "pool": [
+    {
+     "e": 43,
+     "de": 1,
+     "ate": 20,
+     "linha": 43
+    },
+    {
+     "e": 44,
+     "de": 21,
+     "ate": 100,
+     "linha": 43
+    },
+    {
+     "e": 69,
+     "de": 1,
+     "ate": 20,
+     "linha": 69
+    },
+    {
+     "e": 70,
+     "de": 21,
+     "ate": 100,
+     "linha": 69
+    },
+    {
+     "e": 46,
+     "de": 1,
+     "ate": 23,
+     "linha": 46
+    },
+    {
+     "e": 47,
+     "de": 24,
+     "ate": 100,
+     "linha": 46
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "rota3_tomas",
+  "mapa_id": "rota3",
+  "x": 9,
+  "y": 27,
+  "direcao": "baixo",
+  "visao": 3,
+  "nome": "Tomás",
+  "classe": "Mineiro",
+  "aparencia": 2,
+  "recompensa": 120,
+  "falas": {
+   "antes": "Cuidado onde pisa!",
+   "derrota": "Você tem pedra no sapato... e no time."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 74,
+     "de": 1,
+     "ate": 24,
+     "linha": 74
+    },
+    {
+     "e": 75,
+     "de": 25,
+     "ate": 100,
+     "linha": 74
+    },
+    {
+     "e": 95,
+     "de": 1,
+     "ate": 100,
+     "linha": 95
+    },
+    {
+     "e": 27,
+     "de": 1,
+     "ate": 21,
+     "linha": 27
+    },
+    {
+     "e": 28,
+     "de": 22,
+     "ate": 100,
+     "linha": 27
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "rota4_ravi",
+  "mapa_id": "rota4",
+  "x": 22,
+  "y": 24,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Ravi",
+  "classe": "Escoteiro",
+  "aparencia": 6,
+  "recompensa": 140,
+  "falas": {
+   "antes": "Acampamento perto do vulcão!",
+   "derrota": "Hmm, queimei a língua."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 37,
+     "de": 1,
+     "ate": 31,
+     "linha": 37
+    },
+    {
+     "e": 38,
+     "de": 32,
+     "ate": 100,
+     "linha": 37
+    },
+    {
+     "e": 77,
+     "de": 1,
+     "ate": 39,
+     "linha": 77
+    },
+    {
+     "e": 78,
+     "de": 40,
+     "ate": 100,
+     "linha": 77
+    },
+    {
+     "e": 58,
+     "de": 1,
+     "ate": 34,
+     "linha": 58
+    },
+    {
+     "e": 59,
+     "de": 35,
+     "ate": 100,
+     "linha": 58
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "rota5_mel",
+  "mapa_id": "rota5",
+  "x": 14,
+  "y": 22,
+  "direcao": "baixo",
+  "visao": 3,
+  "nome": "Mel",
+  "classe": "Aventureira",
+  "aparencia": 4,
+  "recompensa": 130,
+  "falas": {
+   "antes": "Vi seu mapa, vamos medir forças!",
+   "derrota": "Boa luta, viajante."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 16,
+     "de": 1,
+     "ate": 17,
+     "linha": 16
+    },
+    {
+     "e": 17,
+     "de": 18,
+     "ate": 35,
+     "linha": 16
+    },
+    {
+     "e": 18,
+     "de": 36,
+     "ate": 100,
+     "linha": 16
+    },
+    {
+     "e": 21,
+     "de": 1,
+     "ate": 24,
+     "linha": 21
+    },
+    {
+     "e": 22,
+     "de": 25,
+     "ate": 100,
+     "linha": 21
+    },
+    {
+     "e": 52,
+     "de": 1,
+     "ate": 27,
+     "linha": 52
+    },
+    {
+     "e": 53,
+     "de": 28,
+     "ate": 100,
+     "linha": 52
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "rota6_dina",
+  "mapa_id": "rota6",
+  "x": 9,
+  "y": 28,
+  "direcao": "baixo",
+  "visao": 3,
+  "nome": "Dina",
+  "classe": "Vidente",
+  "aparencia": 9,
+  "recompensa": 150,
+  "falas": {
+   "antes": "Já vi esta luta nos meus sonhos.",
+   "derrota": "Ah... não vi isso vindo."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 63,
+     "de": 1,
+     "ate": 15,
+     "linha": 63
+    },
+    {
+     "e": 64,
+     "de": 16,
+     "ate": 35,
+     "linha": 63
+    },
+    {
+     "e": 65,
+     "de": 36,
+     "ate": 100,
+     "linha": 63
+    },
+    {
+     "e": 96,
+     "de": 1,
+     "ate": 25,
+     "linha": 96
+    },
+    {
+     "e": 97,
+     "de": 26,
+     "ate": 100,
+     "linha": 96
+    },
+    {
+     "e": 92,
+     "de": 1,
+     "ate": 24,
+     "linha": 92
+    },
+    {
+     "e": 93,
+     "de": 25,
+     "ate": 100,
+     "linha": 92
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "rota7_nico",
+  "mapa_id": "rota7a",
+  "x": 13,
+  "y": 27,
+  "direcao": "baixo",
+  "visao": 3,
+  "nome": "Nico",
+  "classe": "Piquenique",
+  "aparencia": 7,
+  "recompensa": 150,
+  "falas": {
+   "antes": "Divide o lanche ou luta!",
+   "derrota": "Pode ficar com o lanche."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 39,
+     "de": 1,
+     "ate": 100,
+     "linha": 39
+    },
+    {
+     "e": 52,
+     "de": 1,
+     "ate": 27,
+     "linha": 52
+    },
+    {
+     "e": 53,
+     "de": 28,
+     "ate": 100,
+     "linha": 52
+    },
+    {
+     "e": 133,
+     "de": 1,
+     "ate": 100,
+     "linha": 133
+    },
+    {
+     "e": 113,
+     "de": 1,
+     "ate": 100,
+     "linha": 113
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "rota8_gui",
+  "mapa_id": "rota8",
+  "x": 26,
+  "y": 29,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Guilherme",
+  "classe": "Engenheiro",
+  "aparencia": 3,
+  "recompensa": 160,
+  "falas": {
+   "antes": "Testando circuitos... e você!",
+   "derrota": "Curto-circuito!"
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 81,
+     "de": 1,
+     "ate": 29,
+     "linha": 81
+    },
+    {
+     "e": 82,
+     "de": 30,
+     "ate": 100,
+     "linha": 81
+    },
+    {
+     "e": 100,
+     "de": 1,
+     "ate": 29,
+     "linha": 100
+    },
+    {
+     "e": 101,
+     "de": 30,
+     "ate": 100,
+     "linha": 100
+    },
+    {
+     "e": 25,
+     "de": 1,
+     "ate": 100,
+     "linha": 25
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "rota8_ana",
+  "mapa_id": "rota8",
+  "x": 31,
+  "y": 23,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Ana",
+  "classe": "Eletricista",
+  "aparencia": 10,
+  "recompensa": 160,
+  "falas": {
+   "antes": "Cuidado com os fios!",
+   "derrota": "Fiquei sem energia."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "pool": [
+    {
+     "e": 25,
+     "de": 1,
+     "ate": 100,
+     "linha": 25
+    },
+    {
+     "e": 125,
+     "de": 1,
+     "ate": 100,
+     "linha": 125
+    },
+    {
+     "e": 135,
+     "de": 1,
+     "ate": 100,
+     "linha": 135
+    },
+    {
+     "e": 81,
+     "de": 1,
+     "ate": 29,
+     "linha": 81
+    },
+    {
+     "e": 82,
+     "de": 30,
+     "ate": 100,
+     "linha": 81
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "rota9_cris",
+  "mapa_id": "rota9",
+  "x": 11,
+  "y": 32,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Cristiano",
+  "classe": "Alpinista",
+  "aparencia": 4,
+  "recompensa": 180,
+  "falas": {
+   "antes": "O topo é de quem chega primeiro!",
+   "derrota": "Perdi o fôlego."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "pool": [
+    {
+     "e": 74,
+     "de": 1,
+     "ate": 24,
+     "linha": 74
+    },
+    {
+     "e": 75,
+     "de": 25,
+     "ate": 100,
+     "linha": 74
+    },
+    {
+     "e": 66,
+     "de": 1,
+     "ate": 27,
+     "linha": 66
+    },
+    {
+     "e": 67,
+     "de": 28,
+     "ate": 100,
+     "linha": 66
+    },
+    {
+     "e": 21,
+     "de": 1,
+     "ate": 24,
+     "linha": 21
+    },
+    {
+     "e": 22,
+     "de": 25,
+     "ate": 100,
+     "linha": 21
+    },
+    {
+     "e": 41,
+     "de": 1,
+     "ate": 21,
+     "linha": 41
+    },
+    {
+     "e": 42,
+     "de": 22,
+     "ate": 100,
+     "linha": 41
+    }
+   ],
+   "time": 3
+  }
+ },
+ {
+  "id": "rota10_ola",
+  "mapa_id": "rota10",
+  "x": 32,
+  "y": 35,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Olavo",
+  "classe": "Monge",
+  "aparencia": 1,
+  "recompensa": 180,
+  "falas": {
+   "antes": "Silêncio... e luta.",
+   "derrota": "A calma venceu."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "pool": [
+    {
+     "e": 63,
+     "de": 1,
+     "ate": 15,
+     "linha": 63
+    },
+    {
+     "e": 64,
+     "de": 16,
+     "ate": 35,
+     "linha": 63
+    },
+    {
+     "e": 65,
+     "de": 36,
+     "ate": 100,
+     "linha": 63
+    },
+    {
+     "e": 92,
+     "de": 1,
+     "ate": 24,
+     "linha": 92
+    },
+    {
+     "e": 93,
+     "de": 25,
+     "ate": 100,
+     "linha": 92
+    },
+    {
+     "e": 96,
+     "de": 1,
+     "ate": 25,
+     "linha": 96
+    },
+    {
+     "e": 97,
+     "de": 26,
+     "ate": 100,
+     "linha": 96
+    }
+   ],
+   "time": 3
+  }
+ },
+ {
+  "id": "costa1_mar",
+  "mapa_id": "costa1",
+  "x": 20,
+  "y": 10,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Marcos",
+  "classe": "Pescador",
+  "aparencia": 11,
+  "recompensa": 120,
+  "falas": {
+   "antes": "Fisguei um desafiante!",
+   "derrota": "O peixe fugiu."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 0,
+   "pool": [
+    {
+     "e": 129,
+     "de": 1,
+     "ate": 100,
+     "linha": 129
+    },
+    {
+     "e": 60,
+     "de": 1,
+     "ate": 24,
+     "linha": 60
+    },
+    {
+     "e": 61,
+     "de": 25,
+     "ate": 100,
+     "linha": 60
+    },
+    {
+     "e": 118,
+     "de": 1,
+     "ate": 100,
+     "linha": 118
+    },
+    {
+     "e": 54,
+     "de": 1,
+     "ate": 100,
+     "linha": 54
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "costa2_lara",
+  "mapa_id": "costa2",
+  "x": 20,
+  "y": 12,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Lara",
+  "classe": "Banhista",
+  "aparencia": 9,
+  "recompensa": 130,
+  "falas": {
+   "antes": "Vem pra água!",
+   "derrota": "Me molhei toda."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 0,
+   "pool": [
+    {
+     "e": 116,
+     "de": 1,
+     "ate": 100,
+     "linha": 116
+    },
+    {
+     "e": 117,
+     "de": 1,
+     "ate": 100,
+     "linha": 116
+    },
+    {
+     "e": 120,
+     "de": 1,
+     "ate": 100,
+     "linha": 120
+    },
+    {
+     "e": 121,
+     "de": 1,
+     "ate": 100,
+     "linha": 120
+    },
+    {
+     "e": 54,
+     "de": 1,
+     "ate": 100,
+     "linha": 54
+    }
+   ],
+   "time": 2
+  }
+ },
+ {
+  "id": "gruta_pedro",
+  "mapa_id": "gruta",
+  "x": 3,
+  "y": 39,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Pedro",
+  "classe": "Espeleólogo",
+  "aparencia": 2,
+  "recompensa": 190,
+  "falas": {
+   "antes": "Aqui embaixo ninguém ouve você gritar!",
+   "derrota": "Meu eco ficou mudo."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "pool": [
+    {
+     "e": 41,
+     "de": 1,
+     "ate": 21,
+     "linha": 41
+    },
+    {
+     "e": 42,
+     "de": 22,
+     "ate": 100,
+     "linha": 41
+    },
+    {
+     "e": 74,
+     "de": 1,
+     "ate": 24,
+     "linha": 74
+    },
+    {
+     "e": 75,
+     "de": 25,
+     "ate": 100,
+     "linha": 74
+    },
+    {
+     "e": 35,
+     "de": 1,
+     "ate": 100,
+     "linha": 35
+    },
+    {
+     "e": 132,
+     "de": 1,
+     "ate": 100,
+     "linha": 132
+    }
+   ],
+   "time": 3
+  }
+ },
+ {
+  "id": "vale_morgana",
+  "mapa_id": "vale",
+  "x": 26,
+  "y": 17,
+  "direcao": "esquerda",
+  "visao": 3,
+  "nome": "Morgana",
+  "classe": "Médium",
+  "aparencia": 9,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Os mortos me contaram que você viria.",
+   "derrota": "Eles também riram de mim."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "pool": [
+    {
+     "e": 92,
+     "de": 1,
+     "ate": 24,
+     "linha": 92
+    },
+    {
+     "e": 93,
+     "de": 25,
+     "ate": 37,
+     "linha": 92
+    },
+    {
+     "e": 94,
+     "de": 38,
+     "ate": 100,
+     "linha": 92
+    },
+    {
+     "e": 104,
+     "de": 1,
+     "ate": 27,
+     "linha": 104
+    },
+    {
+     "e": 105,
+     "de": 28,
+     "ate": 100,
+     "linha": 104
+    }
+   ],
+   "time": 3
+  }
+ },
+ {
+  "id": "gin_argila_lider",
+  "mapa_id": "gin_argila",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Seixas",
+  "classe": "Líder de Pedra e Terra",
+  "aparencia": 2,
+  "recompensa": 600,
+  "falas": {
+   "antes": "Pedra por pedra, construí este ginásio. Vai ter que derrubar uma a uma!",
+   "derrota": "Meu muro ruiu... Leve a Insígnia Tijolo, você a mereceu."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "time": 5,
+   "pool": [
+    {
+     "e": 74,
+     "de": 1,
+     "ate": 24,
+     "linha": 74
+    },
+    {
+     "e": 75,
+     "de": 25,
+     "ate": 38,
+     "linha": 74
+    },
+    {
+     "e": 76,
+     "de": 39,
+     "ate": 100,
+     "linha": 74
+    },
+    {
+     "e": 95,
+     "de": 1,
+     "ate": 100,
+     "linha": 95
+    },
+    {
+     "e": 111,
+     "de": 1,
+     "ate": 41,
+     "linha": 111
+    },
+    {
+     "e": 112,
+     "de": 42,
+     "ate": 100,
+     "linha": 111
+    },
+    {
+     "e": 27,
+     "de": 1,
+     "ate": 21,
+     "linha": 27
+    },
+    {
+     "e": 28,
+     "de": 22,
+     "ate": 100,
+     "linha": 27
+    },
+    {
+     "e": 104,
+     "de": 1,
+     "ate": 27,
+     "linha": 104
+    },
+    {
+     "e": 105,
+     "de": 28,
+     "ate": 100,
+     "linha": 104
+    },
+    {
+     "e": 50,
+     "de": 1,
+     "ate": 25,
+     "linha": 50
+    },
+    {
+     "e": 51,
+     "de": 26,
+     "ate": 100,
+     "linha": 50
+    },
+    {
+     "e": 140,
+     "de": 1,
+     "ate": 39,
+     "linha": 140
+    },
+    {
+     "e": 141,
+     "de": 40,
+     "ate": 100,
+     "linha": 140
+    },
+    {
+     "e": 138,
+     "de": 1,
+     "ate": 39,
+     "linha": 138
+    },
+    {
+     "e": 139,
+     "de": 40,
+     "ate": 100,
+     "linha": 138
+    }
+   ],
+   "ace": {
+    "e": 112,
+    "bonus": 4
+   },
+   "piso": 18,
+   "var": 0
+  },
+  "insignia": "tijolo",
+  "lider": true
+ },
+ {
+  "id": "gin_argila_brita",
+  "mapa_id": "gin_argila",
+  "x": 5,
+  "y": 13,
+  "direcao": "direita",
+  "visao": 4,
+  "nome": "Brita",
+  "classe": "Pedreiro",
+  "aparencia": 2,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 74,
+     "de": 1,
+     "ate": 24,
+     "linha": 74
+    },
+    {
+     "e": 75,
+     "de": 25,
+     "ate": 38,
+     "linha": 74
+    },
+    {
+     "e": 76,
+     "de": 39,
+     "ate": 100,
+     "linha": 74
+    },
+    {
+     "e": 95,
+     "de": 1,
+     "ate": 100,
+     "linha": 95
+    },
+    {
+     "e": 111,
+     "de": 1,
+     "ate": 41,
+     "linha": 111
+    },
+    {
+     "e": 112,
+     "de": 42,
+     "ate": 100,
+     "linha": 111
+    },
+    {
+     "e": 27,
+     "de": 1,
+     "ate": 21,
+     "linha": 27
+    },
+    {
+     "e": 28,
+     "de": 22,
+     "ate": 100,
+     "linha": 27
+    },
+    {
+     "e": 104,
+     "de": 1,
+     "ate": 27,
+     "linha": 104
+    },
+    {
+     "e": 105,
+     "de": 28,
+     "ate": 100,
+     "linha": 104
+    },
+    {
+     "e": 50,
+     "de": 1,
+     "ate": 25,
+     "linha": 50
+    },
+    {
+     "e": 51,
+     "de": 26,
+     "ate": 100,
+     "linha": 50
+    },
+    {
+     "e": 140,
+     "de": 1,
+     "ate": 39,
+     "linha": 140
+    },
+    {
+     "e": 141,
+     "de": 40,
+     "ate": 100,
+     "linha": 140
+    },
+    {
+     "e": 138,
+     "de": 1,
+     "ate": 39,
+     "linha": 138
+    },
+    {
+     "e": 139,
+     "de": 40,
+     "ate": 100,
+     "linha": 138
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_argila_cal",
+  "mapa_id": "gin_argila",
+  "x": 15,
+  "y": 10,
+  "direcao": "esquerda",
+  "visao": 4,
+  "nome": "Cal",
+  "classe": "Operário",
+  "aparencia": 8,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 74,
+     "de": 1,
+     "ate": 24,
+     "linha": 74
+    },
+    {
+     "e": 75,
+     "de": 25,
+     "ate": 38,
+     "linha": 74
+    },
+    {
+     "e": 76,
+     "de": 39,
+     "ate": 100,
+     "linha": 74
+    },
+    {
+     "e": 95,
+     "de": 1,
+     "ate": 100,
+     "linha": 95
+    },
+    {
+     "e": 111,
+     "de": 1,
+     "ate": 41,
+     "linha": 111
+    },
+    {
+     "e": 112,
+     "de": 42,
+     "ate": 100,
+     "linha": 111
+    },
+    {
+     "e": 27,
+     "de": 1,
+     "ate": 21,
+     "linha": 27
+    },
+    {
+     "e": 28,
+     "de": 22,
+     "ate": 100,
+     "linha": 27
+    },
+    {
+     "e": 104,
+     "de": 1,
+     "ate": 27,
+     "linha": 104
+    },
+    {
+     "e": 105,
+     "de": 28,
+     "ate": 100,
+     "linha": 104
+    },
+    {
+     "e": 50,
+     "de": 1,
+     "ate": 25,
+     "linha": 50
+    },
+    {
+     "e": 51,
+     "de": 26,
+     "ate": 100,
+     "linha": 50
+    },
+    {
+     "e": 140,
+     "de": 1,
+     "ate": 39,
+     "linha": 140
+    },
+    {
+     "e": 141,
+     "de": 40,
+     "ate": 100,
+     "linha": 140
+    },
+    {
+     "e": 138,
+     "de": 1,
+     "ate": 39,
+     "linha": 138
+    },
+    {
+     "e": 139,
+     "de": 40,
+     "ate": 100,
+     "linha": 138
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_verdelume_lider",
+  "mapa_id": "gin_verdelume",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Hera",
+  "classe": "Líder de Planta e Inseto",
+  "aparencia": 5,
+  "recompensa": 600,
+  "falas": {
+   "antes": "A floresta me contou que você viria. Vamos ver se ela estava certa!",
+   "derrota": "As folhas caíram... Aceite a Insígnia Folha."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "time": 5,
+   "pool": [
+    {
+     "e": 69,
+     "de": 1,
+     "ate": 20,
+     "linha": 69
+    },
+    {
+     "e": 70,
+     "de": 21,
+     "ate": 35,
+     "linha": 69
+    },
+    {
+     "e": 71,
+     "de": 36,
+     "ate": 100,
+     "linha": 69
+    },
+    {
+     "e": 102,
+     "de": 1,
+     "ate": 29,
+     "linha": 102
+    },
+    {
+     "e": 103,
+     "de": 30,
+     "ate": 100,
+     "linha": 102
+    },
+    {
+     "e": 114,
+     "de": 1,
+     "ate": 100,
+     "linha": 114
+    },
+    {
+     "e": 43,
+     "de": 1,
+     "ate": 20,
+     "linha": 43
+    },
+    {
+     "e": 44,
+     "de": 21,
+     "ate": 31,
+     "linha": 43
+    },
+    {
+     "e": 45,
+     "de": 32,
+     "ate": 100,
+     "linha": 43
+    },
+    {
+     "e": 10,
+     "de": 1,
+     "ate": 6,
+     "linha": 10
+    },
+    {
+     "e": 11,
+     "de": 7,
+     "ate": 9,
+     "linha": 10
+    },
+    {
+     "e": 12,
+     "de": 10,
+     "ate": 100,
+     "linha": 10
+    },
+    {
+     "e": 123,
+     "de": 1,
+     "ate": 100,
+     "linha": 123
+    },
+    {
+     "e": 127,
+     "de": 1,
+     "ate": 100,
+     "linha": 127
+    }
+   ],
+   "ace": {
+    "e": 71,
+    "bonus": 4
+   },
+   "piso": 18,
+   "var": 0
+  },
+  "insignia": "folha",
+  "lider": true
+ },
+ {
+  "id": "gin_verdelume_fiapo",
+  "mapa_id": "gin_verdelume",
+  "x": 5,
+  "y": 13,
+  "direcao": "direita",
+  "visao": 4,
+  "nome": "Fiapo",
+  "classe": "Jardineiro",
+  "aparencia": 5,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 69,
+     "de": 1,
+     "ate": 20,
+     "linha": 69
+    },
+    {
+     "e": 70,
+     "de": 21,
+     "ate": 35,
+     "linha": 69
+    },
+    {
+     "e": 71,
+     "de": 36,
+     "ate": 100,
+     "linha": 69
+    },
+    {
+     "e": 102,
+     "de": 1,
+     "ate": 29,
+     "linha": 102
+    },
+    {
+     "e": 103,
+     "de": 30,
+     "ate": 100,
+     "linha": 102
+    },
+    {
+     "e": 114,
+     "de": 1,
+     "ate": 100,
+     "linha": 114
+    },
+    {
+     "e": 43,
+     "de": 1,
+     "ate": 20,
+     "linha": 43
+    },
+    {
+     "e": 44,
+     "de": 21,
+     "ate": 31,
+     "linha": 43
+    },
+    {
+     "e": 45,
+     "de": 32,
+     "ate": 100,
+     "linha": 43
+    },
+    {
+     "e": 10,
+     "de": 1,
+     "ate": 6,
+     "linha": 10
+    },
+    {
+     "e": 11,
+     "de": 7,
+     "ate": 9,
+     "linha": 10
+    },
+    {
+     "e": 12,
+     "de": 10,
+     "ate": 100,
+     "linha": 10
+    },
+    {
+     "e": 123,
+     "de": 1,
+     "ate": 100,
+     "linha": 123
+    },
+    {
+     "e": 127,
+     "de": 1,
+     "ate": 100,
+     "linha": 127
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_verdelume_musgo",
+  "mapa_id": "gin_verdelume",
+  "x": 15,
+  "y": 10,
+  "direcao": "esquerda",
+  "visao": 4,
+  "nome": "Musgo",
+  "classe": "Botânico",
+  "aparencia": 9,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 69,
+     "de": 1,
+     "ate": 20,
+     "linha": 69
+    },
+    {
+     "e": 70,
+     "de": 21,
+     "ate": 35,
+     "linha": 69
+    },
+    {
+     "e": 71,
+     "de": 36,
+     "ate": 100,
+     "linha": 69
+    },
+    {
+     "e": 102,
+     "de": 1,
+     "ate": 29,
+     "linha": 102
+    },
+    {
+     "e": 103,
+     "de": 30,
+     "ate": 100,
+     "linha": 102
+    },
+    {
+     "e": 114,
+     "de": 1,
+     "ate": 100,
+     "linha": 114
+    },
+    {
+     "e": 43,
+     "de": 1,
+     "ate": 20,
+     "linha": 43
+    },
+    {
+     "e": 44,
+     "de": 21,
+     "ate": 31,
+     "linha": 43
+    },
+    {
+     "e": 45,
+     "de": 32,
+     "ate": 100,
+     "linha": 43
+    },
+    {
+     "e": 10,
+     "de": 1,
+     "ate": 6,
+     "linha": 10
+    },
+    {
+     "e": 11,
+     "de": 7,
+     "ate": 9,
+     "linha": 10
+    },
+    {
+     "e": 12,
+     "de": 10,
+     "ate": 100,
+     "linha": 10
+    },
+    {
+     "e": 123,
+     "de": 1,
+     "ate": 100,
+     "linha": 123
+    },
+    {
+     "e": 127,
+     "de": 1,
+     "ate": 100,
+     "linha": 127
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_azurana_lider",
+  "mapa_id": "gin_azurana",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Marina",
+  "classe": "Líder de Água",
+  "aparencia": 9,
+  "recompensa": 600,
+  "falas": {
+   "antes": "O farol me mostra todo barco que chega. E você chegou com vento forte!",
+   "derrota": "A maré virou... Tome a Insígnia Maré."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "time": 5,
+   "pool": [
+    {
+     "e": 60,
+     "de": 1,
+     "ate": 24,
+     "linha": 60
+    },
+    {
+     "e": 61,
+     "de": 25,
+     "ate": 35,
+     "linha": 60
+    },
+    {
+     "e": 62,
+     "de": 36,
+     "ate": 100,
+     "linha": 60
+    },
+    {
+     "e": 86,
+     "de": 1,
+     "ate": 33,
+     "linha": 86
+    },
+    {
+     "e": 87,
+     "de": 34,
+     "ate": 100,
+     "linha": 86
+    },
+    {
+     "e": 90,
+     "de": 1,
+     "ate": 33,
+     "linha": 90
+    },
+    {
+     "e": 91,
+     "de": 34,
+     "ate": 100,
+     "linha": 90
+    },
+    {
+     "e": 120,
+     "de": 1,
+     "ate": 24,
+     "linha": 120
+    },
+    {
+     "e": 121,
+     "de": 25,
+     "ate": 100,
+     "linha": 120
+    },
+    {
+     "e": 134,
+     "de": 25,
+     "ate": 100,
+     "linha": 134
+    },
+    {
+     "e": 131,
+     "de": 30,
+     "ate": 100,
+     "linha": 131
+    },
+    {
+     "e": 129,
+     "de": 1,
+     "ate": 19,
+     "linha": 129
+    },
+    {
+     "e": 130,
+     "de": 20,
+     "ate": 100,
+     "linha": 129
+    }
+   ],
+   "ace": {
+    "e": 130,
+    "bonus": 4
+   },
+   "piso": 18,
+   "var": 0
+  },
+  "insignia": "mare",
+  "lider": true
+ },
+ {
+  "id": "gin_azurana_corvina",
+  "mapa_id": "gin_azurana",
+  "x": 5,
+  "y": 13,
+  "direcao": "direita",
+  "visao": 4,
+  "nome": "Corvina",
+  "classe": "Marinheiro",
+  "aparencia": 11,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 60,
+     "de": 1,
+     "ate": 24,
+     "linha": 60
+    },
+    {
+     "e": 61,
+     "de": 25,
+     "ate": 35,
+     "linha": 60
+    },
+    {
+     "e": 62,
+     "de": 36,
+     "ate": 100,
+     "linha": 60
+    },
+    {
+     "e": 86,
+     "de": 1,
+     "ate": 33,
+     "linha": 86
+    },
+    {
+     "e": 87,
+     "de": 34,
+     "ate": 100,
+     "linha": 86
+    },
+    {
+     "e": 90,
+     "de": 1,
+     "ate": 33,
+     "linha": 90
+    },
+    {
+     "e": 91,
+     "de": 34,
+     "ate": 100,
+     "linha": 90
+    },
+    {
+     "e": 120,
+     "de": 1,
+     "ate": 24,
+     "linha": 120
+    },
+    {
+     "e": 121,
+     "de": 25,
+     "ate": 100,
+     "linha": 120
+    },
+    {
+     "e": 134,
+     "de": 25,
+     "ate": 100,
+     "linha": 134
+    },
+    {
+     "e": 131,
+     "de": 30,
+     "ate": 100,
+     "linha": 131
+    },
+    {
+     "e": 129,
+     "de": 1,
+     "ate": 19,
+     "linha": 129
+    },
+    {
+     "e": 130,
+     "de": 20,
+     "ate": 100,
+     "linha": 129
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_azurana_pescada",
+  "mapa_id": "gin_azurana",
+  "x": 15,
+  "y": 10,
+  "direcao": "esquerda",
+  "visao": 4,
+  "nome": "Pescada",
+  "classe": "Nadador",
+  "aparencia": 7,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 60,
+     "de": 1,
+     "ate": 24,
+     "linha": 60
+    },
+    {
+     "e": 61,
+     "de": 25,
+     "ate": 35,
+     "linha": 60
+    },
+    {
+     "e": 62,
+     "de": 36,
+     "ate": 100,
+     "linha": 60
+    },
+    {
+     "e": 86,
+     "de": 1,
+     "ate": 33,
+     "linha": 86
+    },
+    {
+     "e": 87,
+     "de": 34,
+     "ate": 100,
+     "linha": 86
+    },
+    {
+     "e": 90,
+     "de": 1,
+     "ate": 33,
+     "linha": 90
+    },
+    {
+     "e": 91,
+     "de": 34,
+     "ate": 100,
+     "linha": 90
+    },
+    {
+     "e": 120,
+     "de": 1,
+     "ate": 24,
+     "linha": 120
+    },
+    {
+     "e": 121,
+     "de": 25,
+     "ate": 100,
+     "linha": 120
+    },
+    {
+     "e": 134,
+     "de": 25,
+     "ate": 100,
+     "linha": 134
+    },
+    {
+     "e": 131,
+     "de": 30,
+     "ate": 100,
+     "linha": 131
+    },
+    {
+     "e": 129,
+     "de": 1,
+     "ate": 19,
+     "linha": 129
+    },
+    {
+     "e": 130,
+     "de": 20,
+     "ate": 100,
+     "linha": 129
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_quartzo_lider",
+  "mapa_id": "gin_quartzo",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Rosa",
+  "classe": "Líder de Tipo Normal",
+  "aparencia": 4,
+  "recompensa": 600,
+  "falas": {
+   "antes": "Aqui a dança é obrigatória! Vamos ver se você acompanha o ritmo.",
+   "derrota": "Que baile! Leve a Insígnia Pétala."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "time": 5,
+   "pool": [
+    {
+     "e": 113,
+     "de": 20,
+     "ate": 100,
+     "linha": 113
+    },
+    {
+     "e": 115,
+     "de": 20,
+     "ate": 100,
+     "linha": 115
+    },
+    {
+     "e": 128,
+     "de": 20,
+     "ate": 100,
+     "linha": 128
+    },
+    {
+     "e": 52,
+     "de": 1,
+     "ate": 27,
+     "linha": 52
+    },
+    {
+     "e": 53,
+     "de": 28,
+     "ate": 100,
+     "linha": 52
+    },
+    {
+     "e": 108,
+     "de": 15,
+     "ate": 100,
+     "linha": 108
+    },
+    {
+     "e": 133,
+     "de": 1,
+     "ate": 100,
+     "linha": 133
+    }
+   ],
+   "ace": {
+    "e": 143,
+    "bonus": 4
+   },
+   "piso": 18,
+   "var": 0
+  },
+  "insignia": "petala",
+  "lider": true
+ },
+ {
+  "id": "gin_quartzo_valsa",
+  "mapa_id": "gin_quartzo",
+  "x": 5,
+  "y": 13,
+  "direcao": "direita",
+  "visao": 4,
+  "nome": "Valsa",
+  "classe": "Dançarina",
+  "aparencia": 9,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 113,
+     "de": 20,
+     "ate": 100,
+     "linha": 113
+    },
+    {
+     "e": 115,
+     "de": 20,
+     "ate": 100,
+     "linha": 115
+    },
+    {
+     "e": 128,
+     "de": 20,
+     "ate": 100,
+     "linha": 128
+    },
+    {
+     "e": 52,
+     "de": 1,
+     "ate": 27,
+     "linha": 52
+    },
+    {
+     "e": 53,
+     "de": 28,
+     "ate": 100,
+     "linha": 52
+    },
+    {
+     "e": 108,
+     "de": 15,
+     "ate": 100,
+     "linha": 108
+    },
+    {
+     "e": 133,
+     "de": 1,
+     "ate": 100,
+     "linha": 133
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_quartzo_bolero",
+  "mapa_id": "gin_quartzo",
+  "x": 15,
+  "y": 10,
+  "direcao": "esquerda",
+  "visao": 4,
+  "nome": "Bolero",
+  "classe": "Bailarino",
+  "aparencia": 10,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 113,
+     "de": 20,
+     "ate": 100,
+     "linha": 113
+    },
+    {
+     "e": 115,
+     "de": 20,
+     "ate": 100,
+     "linha": 115
+    },
+    {
+     "e": 128,
+     "de": 20,
+     "ate": 100,
+     "linha": 128
+    },
+    {
+     "e": 52,
+     "de": 1,
+     "ate": 27,
+     "linha": 52
+    },
+    {
+     "e": 53,
+     "de": 28,
+     "ate": 100,
+     "linha": 52
+    },
+    {
+     "e": 108,
+     "de": 15,
+     "ate": 100,
+     "linha": 108
+    },
+    {
+     "e": 133,
+     "de": 1,
+     "ate": 100,
+     "linha": 133
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_ambar_lider",
+  "mapa_id": "gin_ambar",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Tesla",
+  "classe": "Líder Elétrico",
+  "aparencia": 3,
+  "recompensa": 600,
+  "falas": {
+   "antes": "A usina está a todo vapor, e eu também. Prepare-se para o choque!",
+   "derrota": "Curto-circuito... Aqui está a Insígnia Faísca."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "time": 5,
+   "pool": [
+    {
+     "e": 25,
+     "de": 1,
+     "ate": 21,
+     "linha": 25
+    },
+    {
+     "e": 26,
+     "de": 22,
+     "ate": 100,
+     "linha": 25
+    },
+    {
+     "e": 100,
+     "de": 1,
+     "ate": 29,
+     "linha": 100
+    },
+    {
+     "e": 101,
+     "de": 30,
+     "ate": 100,
+     "linha": 100
+    },
+    {
+     "e": 125,
+     "de": 25,
+     "ate": 100,
+     "linha": 125
+    },
+    {
+     "e": 135,
+     "de": 25,
+     "ate": 100,
+     "linha": 135
+    },
+    {
+     "e": 81,
+     "de": 1,
+     "ate": 29,
+     "linha": 81
+    },
+    {
+     "e": 82,
+     "de": 30,
+     "ate": 100,
+     "linha": 81
+    }
+   ],
+   "ace": {
+    "e": 125,
+    "bonus": 4
+   },
+   "piso": 18,
+   "var": 0
+  },
+  "insignia": "faisca",
+  "lider": true
+ },
+ {
+  "id": "gin_ambar_fusível",
+  "mapa_id": "gin_ambar",
+  "x": 5,
+  "y": 13,
+  "direcao": "direita",
+  "visao": 4,
+  "nome": "Fusível",
+  "classe": "Eletricista",
+  "aparencia": 3,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 25,
+     "de": 1,
+     "ate": 21,
+     "linha": 25
+    },
+    {
+     "e": 26,
+     "de": 22,
+     "ate": 100,
+     "linha": 25
+    },
+    {
+     "e": 100,
+     "de": 1,
+     "ate": 29,
+     "linha": 100
+    },
+    {
+     "e": 101,
+     "de": 30,
+     "ate": 100,
+     "linha": 100
+    },
+    {
+     "e": 125,
+     "de": 25,
+     "ate": 100,
+     "linha": 125
+    },
+    {
+     "e": 135,
+     "de": 25,
+     "ate": 100,
+     "linha": 135
+    },
+    {
+     "e": 81,
+     "de": 1,
+     "ate": 29,
+     "linha": 81
+    },
+    {
+     "e": 82,
+     "de": 30,
+     "ate": 100,
+     "linha": 81
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_ambar_bobina",
+  "mapa_id": "gin_ambar",
+  "x": 15,
+  "y": 10,
+  "direcao": "esquerda",
+  "visao": 4,
+  "nome": "Bobina",
+  "classe": "Engenheiro",
+  "aparencia": 11,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 25,
+     "de": 1,
+     "ate": 21,
+     "linha": 25
+    },
+    {
+     "e": 26,
+     "de": 22,
+     "ate": 100,
+     "linha": 25
+    },
+    {
+     "e": 100,
+     "de": 1,
+     "ate": 29,
+     "linha": 100
+    },
+    {
+     "e": 101,
+     "de": 30,
+     "ate": 100,
+     "linha": 100
+    },
+    {
+     "e": 125,
+     "de": 25,
+     "ate": 100,
+     "linha": 125
+    },
+    {
+     "e": 135,
+     "de": 25,
+     "ate": 100,
+     "linha": 135
+    },
+    {
+     "e": 81,
+     "de": 1,
+     "ate": 29,
+     "linha": 81
+    },
+    {
+     "e": 82,
+     "de": 30,
+     "ate": 100,
+     "linha": 81
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_carmesim_lider",
+  "mapa_id": "gin_carmesim",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Cinara",
+  "classe": "Líder de Fogo",
+  "aparencia": 6,
+  "recompensa": 600,
+  "falas": {
+   "antes": "A cratera ferve, e meu sangue também. Mostre que aguenta o calor!",
+   "derrota": "Apagou... Pegue a Insígnia Brasa."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "time": 5,
+   "pool": [
+    {
+     "e": 58,
+     "de": 1,
+     "ate": 29,
+     "linha": 58
+    },
+    {
+     "e": 59,
+     "de": 30,
+     "ate": 100,
+     "linha": 58
+    },
+    {
+     "e": 77,
+     "de": 1,
+     "ate": 39,
+     "linha": 77
+    },
+    {
+     "e": 78,
+     "de": 40,
+     "ate": 100,
+     "linha": 77
+    },
+    {
+     "e": 126,
+     "de": 25,
+     "ate": 100,
+     "linha": 126
+    },
+    {
+     "e": 136,
+     "de": 25,
+     "ate": 100,
+     "linha": 136
+    },
+    {
+     "e": 4,
+     "de": 1,
+     "ate": 15,
+     "linha": 4
+    },
+    {
+     "e": 5,
+     "de": 16,
+     "ate": 35,
+     "linha": 4
+    },
+    {
+     "e": 6,
+     "de": 36,
+     "ate": 100,
+     "linha": 4
+    },
+    {
+     "e": 37,
+     "de": 1,
+     "ate": 29,
+     "linha": 37
+    },
+    {
+     "e": 38,
+     "de": 30,
+     "ate": 100,
+     "linha": 37
+    }
+   ],
+   "ace": {
+    "e": 59,
+    "bonus": 4
+   },
+   "piso": 18,
+   "var": 0
+  },
+  "insignia": "brasa",
+  "lider": true
+ },
+ {
+  "id": "gin_carmesim_fagulha",
+  "mapa_id": "gin_carmesim",
+  "x": 5,
+  "y": 13,
+  "direcao": "direita",
+  "visao": 4,
+  "nome": "Fagulha",
+  "classe": "Vulcanólogo",
+  "aparencia": 6,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 58,
+     "de": 1,
+     "ate": 29,
+     "linha": 58
+    },
+    {
+     "e": 59,
+     "de": 30,
+     "ate": 100,
+     "linha": 58
+    },
+    {
+     "e": 77,
+     "de": 1,
+     "ate": 39,
+     "linha": 77
+    },
+    {
+     "e": 78,
+     "de": 40,
+     "ate": 100,
+     "linha": 77
+    },
+    {
+     "e": 126,
+     "de": 25,
+     "ate": 100,
+     "linha": 126
+    },
+    {
+     "e": 136,
+     "de": 25,
+     "ate": 100,
+     "linha": 136
+    },
+    {
+     "e": 4,
+     "de": 1,
+     "ate": 15,
+     "linha": 4
+    },
+    {
+     "e": 5,
+     "de": 16,
+     "ate": 35,
+     "linha": 4
+    },
+    {
+     "e": 6,
+     "de": 36,
+     "ate": 100,
+     "linha": 4
+    },
+    {
+     "e": 37,
+     "de": 1,
+     "ate": 29,
+     "linha": 37
+    },
+    {
+     "e": 38,
+     "de": 30,
+     "ate": 100,
+     "linha": 37
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_carmesim_cinzas",
+  "mapa_id": "gin_carmesim",
+  "x": 15,
+  "y": 10,
+  "direcao": "esquerda",
+  "visao": 4,
+  "nome": "Cinzas",
+  "classe": "Ferreiro",
+  "aparencia": 2,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 58,
+     "de": 1,
+     "ate": 29,
+     "linha": 58
+    },
+    {
+     "e": 59,
+     "de": 30,
+     "ate": 100,
+     "linha": 58
+    },
+    {
+     "e": 77,
+     "de": 1,
+     "ate": 39,
+     "linha": 77
+    },
+    {
+     "e": 78,
+     "de": 40,
+     "ate": 100,
+     "linha": 77
+    },
+    {
+     "e": 126,
+     "de": 25,
+     "ate": 100,
+     "linha": 126
+    },
+    {
+     "e": 136,
+     "de": 25,
+     "ate": 100,
+     "linha": 136
+    },
+    {
+     "e": 4,
+     "de": 1,
+     "ate": 15,
+     "linha": 4
+    },
+    {
+     "e": 5,
+     "de": 16,
+     "ate": 35,
+     "linha": 4
+    },
+    {
+     "e": 6,
+     "de": 36,
+     "ate": 100,
+     "linha": 4
+    },
+    {
+     "e": 37,
+     "de": 1,
+     "ate": 29,
+     "linha": 37
+    },
+    {
+     "e": 38,
+     "de": 30,
+     "ate": 100,
+     "linha": 37
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_ametista_lider",
+  "mapa_id": "gin_ametista",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Selene",
+  "classe": "Líder Psíquica",
+  "aparencia": 9,
+  "recompensa": 600,
+  "falas": {
+   "antes": "Já vi esta luta no espelho. Mas o espelho mente às vezes...",
+   "derrota": "O espelho se quebrou. A Insígnia Névoa é sua."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "time": 5,
+   "pool": [
+    {
+     "e": 63,
+     "de": 1,
+     "ate": 15,
+     "linha": 63
+    },
+    {
+     "e": 64,
+     "de": 16,
+     "ate": 35,
+     "linha": 63
+    },
+    {
+     "e": 65,
+     "de": 36,
+     "ate": 100,
+     "linha": 63
+    },
+    {
+     "e": 79,
+     "de": 1,
+     "ate": 36,
+     "linha": 79
+    },
+    {
+     "e": 80,
+     "de": 37,
+     "ate": 100,
+     "linha": 79
+    },
+    {
+     "e": 96,
+     "de": 1,
+     "ate": 25,
+     "linha": 96
+    },
+    {
+     "e": 97,
+     "de": 26,
+     "ate": 100,
+     "linha": 96
+    },
+    {
+     "e": 120,
+     "de": 1,
+     "ate": 24,
+     "linha": 120
+    },
+    {
+     "e": 121,
+     "de": 25,
+     "ate": 100,
+     "linha": 120
+    },
+    {
+     "e": 122,
+     "de": 20,
+     "ate": 100,
+     "linha": 122
+    },
+    {
+     "e": 102,
+     "de": 1,
+     "ate": 29,
+     "linha": 102
+    },
+    {
+     "e": 103,
+     "de": 30,
+     "ate": 100,
+     "linha": 102
+    }
+   ],
+   "ace": {
+    "e": 65,
+    "bonus": 4
+   },
+   "piso": 18,
+   "var": 0
+  },
+  "insignia": "nevoa",
+  "lider": true
+ },
+ {
+  "id": "gin_ametista_reflexo",
+  "mapa_id": "gin_ametista",
+  "x": 5,
+  "y": 13,
+  "direcao": "direita",
+  "visao": 4,
+  "nome": "Reflexo",
+  "classe": "Vidente",
+  "aparencia": 9,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 63,
+     "de": 1,
+     "ate": 15,
+     "linha": 63
+    },
+    {
+     "e": 64,
+     "de": 16,
+     "ate": 35,
+     "linha": 63
+    },
+    {
+     "e": 65,
+     "de": 36,
+     "ate": 100,
+     "linha": 63
+    },
+    {
+     "e": 79,
+     "de": 1,
+     "ate": 36,
+     "linha": 79
+    },
+    {
+     "e": 80,
+     "de": 37,
+     "ate": 100,
+     "linha": 79
+    },
+    {
+     "e": 96,
+     "de": 1,
+     "ate": 25,
+     "linha": 96
+    },
+    {
+     "e": 97,
+     "de": 26,
+     "ate": 100,
+     "linha": 96
+    },
+    {
+     "e": 120,
+     "de": 1,
+     "ate": 24,
+     "linha": 120
+    },
+    {
+     "e": 121,
+     "de": 25,
+     "ate": 100,
+     "linha": 120
+    },
+    {
+     "e": 122,
+     "de": 20,
+     "ate": 100,
+     "linha": 122
+    },
+    {
+     "e": 102,
+     "de": 1,
+     "ate": 29,
+     "linha": 102
+    },
+    {
+     "e": 103,
+     "de": 30,
+     "ate": 100,
+     "linha": 102
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_ametista_cristal",
+  "mapa_id": "gin_ametista",
+  "x": 15,
+  "y": 10,
+  "direcao": "esquerda",
+  "visao": 4,
+  "nome": "Cristal",
+  "classe": "Místico",
+  "aparencia": 1,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 63,
+     "de": 1,
+     "ate": 15,
+     "linha": 63
+    },
+    {
+     "e": 64,
+     "de": 16,
+     "ate": 35,
+     "linha": 63
+    },
+    {
+     "e": 65,
+     "de": 36,
+     "ate": 100,
+     "linha": 63
+    },
+    {
+     "e": 79,
+     "de": 1,
+     "ate": 36,
+     "linha": 79
+    },
+    {
+     "e": 80,
+     "de": 37,
+     "ate": 100,
+     "linha": 79
+    },
+    {
+     "e": 96,
+     "de": 1,
+     "ate": 25,
+     "linha": 96
+    },
+    {
+     "e": 97,
+     "de": 26,
+     "ate": 100,
+     "linha": 96
+    },
+    {
+     "e": 120,
+     "de": 1,
+     "ate": 24,
+     "linha": 120
+    },
+    {
+     "e": 121,
+     "de": 25,
+     "ate": 100,
+     "linha": 120
+    },
+    {
+     "e": 122,
+     "de": 20,
+     "ate": 100,
+     "linha": 122
+    },
+    {
+     "e": 102,
+     "de": 1,
+     "ate": 29,
+     "linha": 102
+    },
+    {
+     "e": 103,
+     "de": 30,
+     "ate": 100,
+     "linha": 102
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_obsidiana_lider",
+  "mapa_id": "gin_obsidiana",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Nyx",
+  "classe": "Líder de Dragão e Voador",
+  "aparencia": 10,
+  "recompensa": 600,
+  "falas": {
+   "antes": "Poucos chegam tão alto. Menos ainda saem de pé.",
+   "derrota": "O eclipse acabou. Leve a Insígnia Eclipse... e siga para a Liga."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 2,
+   "time": 5,
+   "pool": [
+    {
+     "e": 147,
+     "de": 1,
+     "ate": 29,
+     "linha": 147
+    },
+    {
+     "e": 148,
+     "de": 30,
+     "ate": 54,
+     "linha": 147
+    },
+    {
+     "e": 149,
+     "de": 55,
+     "ate": 100,
+     "linha": 147
+    },
+    {
+     "e": 129,
+     "de": 1,
+     "ate": 19,
+     "linha": 129
+    },
+    {
+     "e": 130,
+     "de": 20,
+     "ate": 100,
+     "linha": 129
+    },
+    {
+     "e": 142,
+     "de": 30,
+     "ate": 100,
+     "linha": 142
+    },
+    {
+     "e": 16,
+     "de": 1,
+     "ate": 17,
+     "linha": 16
+    },
+    {
+     "e": 17,
+     "de": 18,
+     "ate": 35,
+     "linha": 16
+    },
+    {
+     "e": 18,
+     "de": 36,
+     "ate": 100,
+     "linha": 16
+    },
+    {
+     "e": 4,
+     "de": 1,
+     "ate": 15,
+     "linha": 4
+    },
+    {
+     "e": 5,
+     "de": 16,
+     "ate": 35,
+     "linha": 4
+    },
+    {
+     "e": 6,
+     "de": 36,
+     "ate": 100,
+     "linha": 4
+    }
+   ],
+   "ace": {
+    "e": 149,
+    "bonus": 4
+   },
+   "piso": 18,
+   "var": 0
+  },
+  "insignia": "eclipse",
+  "lider": true
+ },
+ {
+  "id": "gin_obsidiana_garra",
+  "mapa_id": "gin_obsidiana",
+  "x": 5,
+  "y": 13,
+  "direcao": "direita",
+  "visao": 4,
+  "nome": "Garra",
+  "classe": "Domador de dragões",
+  "aparencia": 4,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 147,
+     "de": 1,
+     "ate": 29,
+     "linha": 147
+    },
+    {
+     "e": 148,
+     "de": 30,
+     "ate": 54,
+     "linha": 147
+    },
+    {
+     "e": 149,
+     "de": 55,
+     "ate": 100,
+     "linha": 147
+    },
+    {
+     "e": 129,
+     "de": 1,
+     "ate": 19,
+     "linha": 129
+    },
+    {
+     "e": 130,
+     "de": 20,
+     "ate": 100,
+     "linha": 129
+    },
+    {
+     "e": 142,
+     "de": 30,
+     "ate": 100,
+     "linha": 142
+    },
+    {
+     "e": 16,
+     "de": 1,
+     "ate": 17,
+     "linha": 16
+    },
+    {
+     "e": 17,
+     "de": 18,
+     "ate": 35,
+     "linha": 16
+    },
+    {
+     "e": 18,
+     "de": 36,
+     "ate": 100,
+     "linha": 16
+    },
+    {
+     "e": 4,
+     "de": 1,
+     "ate": 15,
+     "linha": 4
+    },
+    {
+     "e": 5,
+     "de": 16,
+     "ate": 35,
+     "linha": 4
+    },
+    {
+     "e": 6,
+     "de": 36,
+     "ate": 100,
+     "linha": 4
+    }
+   ]
+  }
+ },
+ {
+  "id": "gin_obsidiana_asa",
+  "mapa_id": "gin_obsidiana",
+  "x": 15,
+  "y": 10,
+  "direcao": "esquerda",
+  "visao": 4,
+  "nome": "Asa",
+  "classe": "Falcoeiro",
+  "aparencia": 8,
+  "recompensa": 220,
+  "falas": {
+   "antes": "Para chegar ao líder, passe por mim!",
+   "derrota": "Pode seguir. O líder espera."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 1,
+   "time": 3,
+   "pool": [
+    {
+     "e": 147,
+     "de": 1,
+     "ate": 29,
+     "linha": 147
+    },
+    {
+     "e": 148,
+     "de": 30,
+     "ate": 54,
+     "linha": 147
+    },
+    {
+     "e": 149,
+     "de": 55,
+     "ate": 100,
+     "linha": 147
+    },
+    {
+     "e": 129,
+     "de": 1,
+     "ate": 19,
+     "linha": 129
+    },
+    {
+     "e": 130,
+     "de": 20,
+     "ate": 100,
+     "linha": 129
+    },
+    {
+     "e": 142,
+     "de": 30,
+     "ate": 100,
+     "linha": 142
+    },
+    {
+     "e": 16,
+     "de": 1,
+     "ate": 17,
+     "linha": 16
+    },
+    {
+     "e": 17,
+     "de": 18,
+     "ate": 35,
+     "linha": 16
+    },
+    {
+     "e": 18,
+     "de": 36,
+     "ate": 100,
+     "linha": 16
+    },
+    {
+     "e": 4,
+     "de": 1,
+     "ate": 15,
+     "linha": 4
+    },
+    {
+     "e": 5,
+     "de": 16,
+     "ate": 35,
+     "linha": 4
+    },
+    {
+     "e": 6,
+     "de": 36,
+     "ate": 100,
+     "linha": 4
+    }
+   ]
+  }
+ },
+ {
+  "id": "liga_salao1_chefe",
+  "mapa_id": "liga_salao1",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Frigga",
+  "classe": "Alto Comando – Gelo",
+  "aparencia": 9,
+  "recompensa": 1000,
+  "falas": {
+   "antes": "Chegou até aqui. Mas daqui você não passa sem lutar!",
+   "derrota": "Impressionante. Siga adiante."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 4,
+   "time": 4,
+   "pool": [
+    {
+     "e": 124,
+     "de": 30,
+     "ate": 100,
+     "linha": 124
+    },
+    {
+     "e": 90,
+     "de": 1,
+     "ate": 33,
+     "linha": 90
+    },
+    {
+     "e": 91,
+     "de": 34,
+     "ate": 100,
+     "linha": 90
+    },
+    {
+     "e": 86,
+     "de": 1,
+     "ate": 33,
+     "linha": 86
+    },
+    {
+     "e": 87,
+     "de": 34,
+     "ate": 100,
+     "linha": 86
+    },
+    {
+     "e": 131,
+     "de": 30,
+     "ate": 100,
+     "linha": 131
+    }
+   ],
+   "piso": 50,
+   "var": 0
+  },
+  "lider": true
+ },
+ {
+  "id": "liga_salao2_chefe",
+  "mapa_id": "liga_salao2",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Brutus",
+  "classe": "Alto Comando – Lutador",
+  "aparencia": 8,
+  "recompensa": 1000,
+  "falas": {
+   "antes": "Chegou até aqui. Mas daqui você não passa sem lutar!",
+   "derrota": "Impressionante. Siga adiante."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 4,
+   "time": 4,
+   "pool": [
+    {
+     "e": 106,
+     "de": 30,
+     "ate": 100,
+     "linha": 106
+    },
+    {
+     "e": 107,
+     "de": 30,
+     "ate": 100,
+     "linha": 107
+    },
+    {
+     "e": 56,
+     "de": 1,
+     "ate": 27,
+     "linha": 56
+    },
+    {
+     "e": 57,
+     "de": 28,
+     "ate": 100,
+     "linha": 56
+    },
+    {
+     "e": 66,
+     "de": 1,
+     "ate": 27,
+     "linha": 66
+    },
+    {
+     "e": 67,
+     "de": 28,
+     "ate": 39,
+     "linha": 66
+    },
+    {
+     "e": 68,
+     "de": 40,
+     "ate": 100,
+     "linha": 66
+    }
+   ],
+   "piso": 50,
+   "var": 0
+  },
+  "lider": true
+ },
+ {
+  "id": "liga_salao3_chefe",
+  "mapa_id": "liga_salao3",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Morfeu",
+  "classe": "Alto Comando – Fantasma e Veneno",
+  "aparencia": 1,
+  "recompensa": 1000,
+  "falas": {
+   "antes": "Chegou até aqui. Mas daqui você não passa sem lutar!",
+   "derrota": "Impressionante. Siga adiante."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 4,
+   "time": 4,
+   "pool": [
+    {
+     "e": 92,
+     "de": 1,
+     "ate": 24,
+     "linha": 92
+    },
+    {
+     "e": 93,
+     "de": 25,
+     "ate": 37,
+     "linha": 92
+    },
+    {
+     "e": 94,
+     "de": 38,
+     "ate": 100,
+     "linha": 92
+    },
+    {
+     "e": 23,
+     "de": 1,
+     "ate": 21,
+     "linha": 23
+    },
+    {
+     "e": 24,
+     "de": 22,
+     "ate": 100,
+     "linha": 23
+    },
+    {
+     "e": 88,
+     "de": 1,
+     "ate": 37,
+     "linha": 88
+    },
+    {
+     "e": 89,
+     "de": 38,
+     "ate": 100,
+     "linha": 88
+    },
+    {
+     "e": 109,
+     "de": 1,
+     "ate": 34,
+     "linha": 109
+    },
+    {
+     "e": 110,
+     "de": 35,
+     "ate": 100,
+     "linha": 109
+    }
+   ],
+   "piso": 50,
+   "var": 0
+  },
+  "lider": true
+ },
+ {
+  "id": "liga_salao4_chefe",
+  "mapa_id": "liga_salao4",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Aurora",
+  "classe": "Alto Comando – Voador e Dragão",
+  "aparencia": 10,
+  "recompensa": 1000,
+  "falas": {
+   "antes": "Chegou até aqui. Mas daqui você não passa sem lutar!",
+   "derrota": "Impressionante. Siga adiante."
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 4,
+   "time": 4,
+   "pool": [
+    {
+     "e": 147,
+     "de": 1,
+     "ate": 29,
+     "linha": 147
+    },
+    {
+     "e": 148,
+     "de": 30,
+     "ate": 54,
+     "linha": 147
+    },
+    {
+     "e": 149,
+     "de": 55,
+     "ate": 100,
+     "linha": 147
+    },
+    {
+     "e": 142,
+     "de": 30,
+     "ate": 100,
+     "linha": 142
+    },
+    {
+     "e": 16,
+     "de": 1,
+     "ate": 17,
+     "linha": 16
+    },
+    {
+     "e": 17,
+     "de": 18,
+     "ate": 35,
+     "linha": 16
+    },
+    {
+     "e": 18,
+     "de": 36,
+     "ate": 100,
+     "linha": 16
+    },
+    {
+     "e": 129,
+     "de": 1,
+     "ate": 19,
+     "linha": 129
+    },
+    {
+     "e": 130,
+     "de": 20,
+     "ate": 100,
+     "linha": 129
+    }
+   ],
+   "piso": 50,
+   "var": 0
+  },
+  "lider": true
+ },
+ {
+  "id": "liga_campeao_chefe",
+  "mapa_id": "liga_campeao",
+  "x": 10,
+  "y": 6,
+  "direcao": "baixo",
+  "visao": 1,
+  "nome": "Íris",
+  "classe": "Campeã de Rafar",
+  "aparencia": 11,
+  "recompensa": 2000,
+  "falas": {
+   "antes": "Sob o arco-íris, só resta um campeão. Mostre que pode ser você!",
+   "derrota": "O arco-íris tem um novo dono. Parabéns, Campeão de Rafar!"
+  },
+  "arco": 1,
+  "escala": {
+   "bonus": 6,
+   "time": 6,
+   "pool": [
+    {
+     "e": 4,
+     "de": 1,
+     "ate": 15,
+     "linha": 4
+    },
+    {
+     "e": 5,
+     "de": 16,
+     "ate": 35,
+     "linha": 4
+    },
+    {
+     "e": 6,
+     "de": 36,
+     "ate": 100,
+     "linha": 4
+    },
+    {
+     "e": 63,
+     "de": 1,
+     "ate": 15,
+     "linha": 63
+    },
+    {
+     "e": 64,
+     "de": 16,
+     "ate": 35,
+     "linha": 63
+    },
+    {
+     "e": 65,
+     "de": 36,
+     "ate": 100,
+     "linha": 63
+    },
+    {
+     "e": 129,
+     "de": 1,
+     "ate": 19,
+     "linha": 129
+    },
+    {
+     "e": 130,
+     "de": 20,
+     "ate": 100,
+     "linha": 129
+    },
+    {
+     "e": 58,
+     "de": 1,
+     "ate": 29,
+     "linha": 58
+    },
+    {
+     "e": 59,
+     "de": 30,
+     "ate": 100,
+     "linha": 58
+    },
+    {
+     "e": 111,
+     "de": 1,
+     "ate": 41,
+     "linha": 111
+    },
+    {
+     "e": 112,
+     "de": 42,
+     "ate": 100,
+     "linha": 111
+    },
+    {
+     "e": 143,
+     "de": 30,
+     "ate": 100,
+     "linha": 143
+    },
+    {
+     "e": 26,
+     "de": 22,
+     "ate": 100,
+     "linha": 25
+    }
+   ],
+   "piso": 55,
+   "var": 0
+  },
+  "lider": true
+ }
 ]

@@ -2,7 +2,7 @@ import { supabase } from "../supabase";
 import { el, montar, mensagem } from "./dom";
 
 function marcaPainel(): HTMLElement {
-  return el("div", { class: "marca marca-grande" }, el("span", { class: "marca-logo", "aria-hidden": "true" }, el("i", {})), el("span", { class: "marca-nome" }, "PKM RPG"));
+  return el("img", { class: "logo-rafar", src: `${import.meta.env.BASE_URL}assets/logo-rafar.jpg`, alt: "Rafar: Um novo começo" });
 }
 
 export function telaLogin(): void {
