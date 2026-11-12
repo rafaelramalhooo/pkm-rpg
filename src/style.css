@@ -367,7 +367,7 @@ h1 { color: #fff; }
 .sd-campo { position: absolute; display: block; width: 0; height: 0; }
 .sd-campo.adv { left: 76%; top: 46%; right: auto; bottom: auto; width: 0; height: 0; } .sd-campo.jog { left: 26%; top: 88%; right: auto; bottom: auto; width: 0; height: 0; }
 .sd-campo .pk-img { position: absolute; left: 0; bottom: 0; transform: translateX(-50%); width: auto; height: auto; display: block; }
-.sd-campo .pk-img img { display: block; width: calc(var(--nw, 96) * 1px * var(--k, 1)); height: auto; max-width: none; object-fit: unset; transform: none; filter: drop-shadow(0 3px 3px #0006); }
+.sd-campo .pk-img img { display: block; width: calc(var(--nw, 96) * 1px * var(--k, 1) * 1.75); height: auto; max-width: none; object-fit: unset; transform: none; filter: drop-shadow(0 3px 3px #0006); }
 .sd-campo .pk-img.sem-sprite { color: #fff; font-weight: 700; text-shadow: 0 1px 3px #000; white-space: nowrap; }
 /* controles abaixo, na paleta do jogo */
 .sd-controles { margin-top: 8px; padding: 10px; gap: 6px; min-height: 0; background: #0b1224f2; border: 1px solid #25407a; border-radius: 10px; }
@@ -519,3 +519,8 @@ body.modo-jogo { padding-left: 0; padding-right: 0; }
 .batalha button.sec:hover:not(:disabled) { background: #1d2a4d; filter: none; }
 .modal { width: min(94vw, 660px); }
 .cartao-vazio { min-height: 0; height: 100%; min-height: 96px; }
+
+/* ajuste fino: barras de HP a 75% do tamanho */
+.sd-caixa .sd-hp { width: 75%; }
+.sd-caixa .sd-hp-trilho { height: .86em; }
+.sd-caixa .sd-hp-num { font-size: .5em; }
