@@ -171,7 +171,7 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
       el("div", { class: "mg-grade" }, campo("Nome", nome), campo("Papel", papel), campo("PA", pa), campo("Dinheiro (₽)", din), campo("Insígnias", ins),
         el("label", { class: "mg-chk" }, camp, "Campeão da Liga"), campo("Mapa", mapa), campo("X", mx), campo("Y", my)),
       salvar,
-      el("label", {}, `Pokémon (${f.pokemons.length})`), ...pk,
+      el("label", {}, `Pokémon (${f.pokemons.length})`), el("div", { class: "mg-pks" }, ...pk),
       el("div", { class: "mg-linha" }, campo("Dar Pokémon", dEsp), dl, campo("Nível", dNv), el("label", { class: "mg-chk" }, dBr, "✨"), dar),
       el("label", {}, "Mochila"), ...its2, el("div", { class: "mg-linha" }, nIt, nQ, add),
     );

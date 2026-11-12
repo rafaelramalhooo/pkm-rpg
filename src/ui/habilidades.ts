@@ -35,6 +35,7 @@ const CLASSES: { nome: string; texto: string; estilo: string }[] = [
   { nome: "Pesquisador", texto: "Focado em explorar o mundo: pesquisas, pesca, descontos e descobertas.", estilo: "Para quem gosta de explorar e descobrir. Hoje já funciona: Olhar Atento (Pesquisar rende mais), Exploração, Rede de Pesca, Economia (lojas mais baratas) e Pokédex Viva." },
 ];
 
+const semEfeito = (h: { descricao: string }): boolean => /em breve/i.test(h.descricao); // liberada para comprar, mas sem efeito ligado no jogo
 const PONTOS_ESCADA = "Cada habilidade tem 3 ranks. Aprender o rank 1 custa 1 ponto, o rank 2 custa 2 e o rank 3 custa 3 (6 pontos no total). O bônus soma a cada rank.";
 
 /** Quadro "como funciona" (classes, XP de treinador, pontos e ranks). */
@@ -46,7 +47,7 @@ function quadroComoFunciona(): HTMLElement {
     el("ul", {}, li("Vencer um treinador pela primeira vez: +40 XP"), li("Registrar uma espécie nova na Pokédex (captura): +30 XP (+5 por rank de Pokédex Viva)"), li("Pesquisar uma espécie (ação de PA): +40 XP (+10 por rank de Olhar Atento)"), li("Explorar: +10 XP · Pescar com sucesso: +10 XP"), li("Concluir etapas de missão (valor varia por missão)")),
     el("p", {}, el("strong", {}, "Pontos de habilidade: "), "você ganha 1 ponto a cada nível de treinador e mais 1 a cada 5 níveis somados dos seus 6 Pokémon mais fortes (ex.: soma 25 = +5 pontos). Subir o time também rende pontos!"),
     el("p", {}, el("strong", {}, "Ranks: "), PONTOS_ESCADA),
-    el("p", {}, el("strong", {}, "“Em breve”: "), "habilidades marcadas assim já aparecem, mas o efeito ainda não está ligado no jogo; gaste pontos nelas só se quiser garantir o rank para quando liberarem."),
+    el("p", {}, el("strong", {}, "“Liberada para teste”: "), "estas habilidades já podem ser aprendidas (fase de testes), mas o efeito delas ainda não está ligado no jogo."),
     el("p", { class: "sub" }, "Nível de treinador: o nível 2 exige 50 XP, o 3 exige 150, o 4 exige 300, e assim por diante (cada nível pede mais que o anterior)."));
 }
 
@@ -65,9 +66,9 @@ export async function exigirClasse(aviso: Aviso, aoEscolher: () => void): Promis
       el("h1", {}, "Escolha a sua classe"),
       el("p", { class: "sub" }, "Antes de aventurar-se por Rafar, escolha como você quer evoluir. A classe define as habilidades que você desenvolve e a escolha é definitiva (só o Mestre pode redefinir)."),
       el("div", { class: "hab-classes" }, ...CLASSES.map((c) => {
-        const ativas = habs.filter((h) => h.classe === c.nome && h.ativo);
+        const ativas = habs.filter((h) => h.classe === c.nome && !semEfeito(h));
         const b = el("button", { type: "button", class: "hab-classe" }, el("strong", {}, c.nome), el("span", {}, c.texto), el("span", { class: "classe-estilo" }, c.estilo),
-          el("small", {}, `Habilidades já ativas (${ativas.length} de 10): ${ativas.map((h) => h.nome).join(", ")}`));
+          el("small", {}, `Habilidades com efeito no jogo (${ativas.length} de 10): ${ativas.map((h) => h.nome).join(", ")}`));
         b.addEventListener("click", () => confirmar(c.nome));
         return b;
       }))));
@@ -143,7 +144,7 @@ export async function abrirHabilidades(modal: Modal, aviso: Aviso, aoMudar: () =
       void abrirHabilidades(modal, aviso, aoMudar);
     });
     const req = faltam.length ? el("small", { class: "hab-req" }, `Requer: ${faltam.map((r) => `${nomes.get(r.id)} rank ${r.rank}`).join(", ")}`) : null;
-    const card = el("div", { class: `hab-card${h.ativo ? "" : " breve"}` }, el("div", { class: "hab-topo" }, el("strong", {}, h.nome), bolas), el("span", { class: h.ativo ? "hab-selo ativa" : "hab-selo" }, h.ativo ? "✔ Ativa no jogo" : "⏳ Em breve (efeito ainda não ligado)"), el("p", {}, h.descricao.replace(/ \(em breve\)\.?$/, ".")));
+    const card = el("div", { class: `hab-card${semEfeito(h) ? " breve" : ""}` }, el("div", { class: "hab-topo" }, el("strong", {}, h.nome), bolas), el("span", { class: semEfeito(h) ? "hab-selo" : "hab-selo ativa" }, semEfeito(h) ? "🧪 Liberada para teste (efeito ainda não implementado)" : "✔ Ativa no jogo"), el("p", {}, h.descricao.replace(/ \(em breve\)\.?$/, ".")));
     const un = UNIDADE[h.id];
     if (un) card.append(el("div", { class: "hab-total" }, el("span", {}, `Agora: ${rank ? "+" + fmt(h.bonus * rank) : "—"}${rank ? un : ""}`), el("span", {}, `Rank 1: +${fmt(h.bonus)} · Rank 2: +${fmt(h.bonus * 2)} · Rank 3: +${fmt(h.bonus * 3)}${un}`)));
     if (req) card.append(req);

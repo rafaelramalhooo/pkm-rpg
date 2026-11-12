@@ -25,7 +25,7 @@ function botao(texto: string, fn: () => void, classe = "sec"): HTMLButtonElement
 }
 
 /** Painel modal reutilizável. */
-function criarModal(): { raiz: HTMLElement; abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void; aberto: () => boolean; aoFechar: (fn: (() => void) | null) => void } {
+function criarModal(): { raiz: HTMLElement; abrir: (titulo: string, ...nos: Node[]) => void; acoes: (...nos: Node[]) => void; fechar: () => void; aberto: () => boolean; aoFechar: (fn: (() => void) | null) => void } {
   let ao: (() => void) | null = null;
   const titulo = el("h1", {});
   const corpo = el("div", { class: "modal-corpo" });
@@ -37,7 +37,9 @@ function criarModal(): { raiz: HTMLElement; abrir: (titulo: string, ...nos: Node
   };
   const x = el("button", { type: "button", class: "modal-x", "aria-label": "Sair do painel" }, "✕");
   x.addEventListener("click", fechar);
-  const raiz = el("div", { class: "menu", hidden: "" }, el("div", { class: "painel modal" }, el("div", { class: "modal-topo" }, titulo, x), corpo, botao("Fechar", fechar)));
+  const acoesSlot = el("div", { class: "modal-acoes" });
+  const caixaModal = el("div", { class: "painel modal" }, el("div", { class: "modal-topo" }, titulo, acoesSlot, x), corpo, botao("Fechar", fechar));
+  const raiz = el("div", { class: "menu", hidden: "" }, caixaModal);
   raiz.addEventListener("click", (e) => {
     if (e.target === raiz) fechar();
   });
@@ -45,9 +47,12 @@ function criarModal(): { raiz: HTMLElement; abrir: (titulo: string, ...nos: Node
     raiz,
     abrir: (t, ...nos) => {
       titulo.textContent = t;
+      acoesSlot.replaceChildren();
       corpo.replaceChildren(...nos);
+      caixaModal.classList.toggle("claro", !corpo.querySelector(".mm-caixa, .rs-tela")); // mapa e resumo mantêm o visual escuro próprio
       raiz.hidden = false;
     },
+    acoes: (...nos) => { acoesSlot.replaceChildren(...nos); },
     fechar,
     aberto: () => !raiz.hidden,
     aoFechar: (fn) => {
@@ -399,12 +404,13 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       return el("div", { class: `dash-pk${p.hp_atual <= 0 ? " caido" : ""}` }, imagemPokemon("frente", p.especie_id, "mini", p.brilhante),
         el("div", { class: "dash-pk-info" }, el("strong", {}, nomePokemon(p)), el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`), el("div", { class: "hp-trilho" }, fill)));
     });
-    const atalhos = el("div", { class: "dash-atalhos" },
-      botao("Habilidades", () => void abrirHabilidades(modal, mostrarAviso, atualizarHud)), botao("Ações (PA)", () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador())), botao("Organizar time / Seguidor", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor())), botao("Personagens", () => void abrirPersonagens()));
+    const atalhos = [
+      botao("Habilidades", () => void abrirHabilidades(modal, mostrarAviso, atualizarHud), "modal-atalho"), botao("Ações (PA)", () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador()), "modal-atalho"), botao("Organizar time", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor()), "modal-atalho"), botao("Personagens", () => void abrirPersonagens(), "modal-atalho")];
     modal.abrir("Painel do treinador", el("div", { class: "dash-wide" },
-      el("div", { class: "dash-esq" }, cab, grade, atalhos),
+      el("div", { class: "dash-esq" }, cab, grade),
       el("div", { class: "dash-dir" }, el("label", {}, "Time ativo"),
         linhas.length ? el("div", { class: "dash-time" }, ...linhas) : el("p", { class: "sub" }, "Você ainda não tem Pokémon. Fale com o Professor Carvalho no laboratório."))));
+    modal.acoes(...atalhos);
   }
 
   // ---------- Personagens (até 2) e reinício ----------
