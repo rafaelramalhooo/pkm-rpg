@@ -314,6 +314,7 @@ Deno.serve(async (req) => {
 
     let estado: Any = b.sim, meta: Any = b.meta, logLen: number = b.log_len;
     const antes: Any[] = [];
+    let destravar = false;
 
     if (!estado) {
       const m = await montar(b, uid);
@@ -323,17 +324,21 @@ Deno.serve(async (req) => {
       b.turno += 1;
       if (!acao || acao === "estado") return resp(formatar(b, meta, m.r, [], []));
     } else if (!acao || acao === "estado") {
-      return resp(formatar(b, meta, ler(estado, logLen), [], []));
+      const l0 = ler(estado, logLen);
+      if (l0.pedido || l0.fim) return resp(formatar(b, meta, l0, [], []));
+      destravar = true; // ninguém precisa escolher: o adversário (NPC/selvagem) tem uma troca forçada pendente
     }
 
     const atual = ler(estado, logLen);
     const pedido = atual.pedido;
-    if (!pedido) throw new Error("Aguarde.");
+    if (!pedido && !destravar) throw new Error("Aguarde.");
     let tipoPasso: Any;
     let antesFn: Any;
     let gastou: string | null = null;
 
-    if (acao === "golpe") {
+    if (destravar) {
+      tipoPasso = { tipo: "passar" };
+    } else if (acao === "golpe") {
       if (pedido.trocar) throw new Error("Escolha o próximo Pokémon.");
       const g = pedido.golpes.find((x: Any) => x.n === n);
       if (!g || g.desativado || g.pp <= 0) throw new Error("Golpe indisponível.");

@@ -132,6 +132,12 @@ export function passo({ estado, logLen, acao, antes }) {
   const aVez1 = !!jReq && !jReq.wait, aVez2 = !!iaReq && !iaReq.wait;
   if (aVez1 && !b.choose("p1", escolhaJ)) throw new Error("Escolha inválida.");
   if (aVez2) b.choose("p2", escolhaIA(b));
+  // o adversário caiu e precisa trocar enquanto o jogador só espera: resolve sozinho
+  for (let i = 0; i < 6 && !b.ended; i++) {
+    const j = b.sides[0].activeRequest, a = b.sides[1].activeRequest;
+    if ((j && !j.wait) || !a || a.wait) break;
+    b.choose("p2", escolhaIA(b));
+  }
   const r = resultado(b, logLen);
   r.retorno = retorno;
   return r;
