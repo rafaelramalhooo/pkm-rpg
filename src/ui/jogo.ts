@@ -8,6 +8,7 @@ import {
 } from "./dados";
 import { importarDados, importarSprites } from "./mestre";
 import { abrirMapaMundi } from "./mapamundi";
+import { abrirEventos, iniciarFaixaEventos } from "./eventos";
 
 function botao(texto: string, fn: () => void, classe = "sec"): HTMLButtonElement {
   const b = el("button", { type: "button", class: classe }, texto);
@@ -257,7 +258,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const c = el(
       "div",
       { class: `cartao-pk${p.hp_atual <= 0 ? " caido" : ""}` },
-      el("div", { class: "cartao-img" }, imagemPokemon("frente", p.especie_id, "grande")),
+      el("div", { class: "cartao-img" }, imagemPokemon("frente", p.especie_id, "grande", p.brilhante)),
       el(
         "div",
         { class: "cartao-info" },
@@ -344,6 +345,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           if (error) throw new Error(error.message);
           pr(`PA repostos (${String(data)} jogadores).`);
         })()),
+        botao("Eventos (XP em dobro, brilhantes...)", () => void abrirEventos(modal, mostrarAviso), ""),
         botao("Resetar jogador...", () => void abrirReset(), ""),
         botao("+10 Poké Bolas para mim", () => void rodar(async () => {
           const { error } = await supabase.rpc("dar_item", { p_jogador: j.id, p_item: "poke-ball", p_qtd: 10 });
@@ -387,7 +389,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       const hp = barraHp(p.hp_atual, p.hp_max);
       const fill = el("div", { class: `hp-fill ${hp.classe}` });
       fill.style.width = `${hp.pct}%`;
-      return el("div", { class: `dash-pk${p.hp_atual <= 0 ? " caido" : ""}` }, imagemPokemon("frente", p.especie_id, "mini"),
+      return el("div", { class: `dash-pk${p.hp_atual <= 0 ? " caido" : ""}` }, imagemPokemon("frente", p.especie_id, "mini", p.brilhante),
         el("div", { class: "dash-pk-info" }, el("strong", {}, nomePokemon(p)), el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`), el("div", { class: "hp-trilho" }, fill)));
     });
     const atalhos = el("div", { class: "dash-atalhos" },
@@ -737,14 +739,15 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       { rotulo: "Minhas coisas", itens: () => [{ rotulo: "Time", fn: () => void abrirTime() }, { rotulo: "Mochila", fn: () => void abrirMochila() }, { rotulo: "Pokédex", fn: () => void abrirPokedex() }] },
       { rotulo: "Cidade", itens: () => [{ rotulo: "Lugar atual", fn: () => abrirInfoLugar() }, { rotulo: "Estou preso (destravar)", fn: () => void controle?.destravar() }] },
       { rotulo: "Informações", itens: () => [{ rotulo: "Como jogar", fn: () => abrirAjuda() }] },
-      { rotulo: "Minha conta", itens: () => [{ rotulo: "Meus personagens / Reiniciar", fn: () => void abrirPersonagens() }, { rotulo: "Meu perfil e senha", fn: abrirMenu }, { rotulo: "Ferramentas do Mestre", fn: abrirMenu, oculto: j.papel !== "mestre" }, { rotulo: "Sair", fn: () => void supabase.auth.signOut() }] },
+      { rotulo: "Minha conta", itens: () => [{ rotulo: "Meus personagens / Reiniciar", fn: () => void abrirPersonagens() }, { rotulo: "Meu perfil e senha", fn: abrirMenu }, { rotulo: "Eventos do Mestre", fn: () => void abrirEventos(modal, mostrarAviso), oculto: j.papel !== "mestre" }, { rotulo: "Ferramentas do Mestre", fn: abrirMenu, oculto: j.papel !== "mestre" }, { rotulo: "Sair", fn: () => void supabase.auth.signOut() }] },
     ],
     marca,
   );
   const rodape = el("div", { class: "barra rodape" }, formChat, botoes);
   const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage · B busca o Pokémon da prévia · Ctrl + / Ctrl − ajustam o zoom");
 
-  const minha = montar([el("div", { class: "jogo" }, nav, el("div", { class: "cartucho" }, tela, rodape), dica, modal.raiz)], true);
+  const faixaEventos = iniciarFaixaEventos();
+  const minha = montar([el("div", { class: "jogo" }, nav, faixaEventos, el("div", { class: "cartucho" }, tela, rodape), dica, modal.raiz)], true);
 
   const { iniciarMundo } = await import("../game/mundo");
   if (minha !== geracaoAtual()) return;

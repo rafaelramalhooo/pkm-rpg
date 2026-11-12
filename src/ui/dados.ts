@@ -14,6 +14,7 @@ export interface PokemonRow {
   hp_atual: number;
   golpes: GolpeSlot[];
   posicao: number | null;
+  brilhante?: boolean;
 }
 
 const especies = new Map<number, Especie>();
@@ -50,7 +51,7 @@ export const golpe = (id: number): GolpeInfo => golpes.get(id) ?? { id, nome: `G
 export const infoItem = (slug: string): { efeito: string; categoria: string } => itensInfo.get(slug) ?? { efeito: "", categoria: "" };
 export const golpePorSlug = (slug: string): GolpeInfo | undefined => golpesSlug.get(slug);
 export const nomeItem = (slug: string): string => (itens.get(slug) ?? slug).replace(/^Poke /, "Poké ");
-export const nomePokemon = (p: PokemonRow): string => p.apelido ?? especie(p.especie_id).nome;
+export const nomePokemon = (p: PokemonRow): string => (p.apelido ?? especie(p.especie_id).nome) + (p.brilhante ? " ✨" : "");
 export const totalEspecies = (): number => especies.size;
 export const todasEspecies = (): Especie[] => [...especies.values()];
 
@@ -86,9 +87,9 @@ export function urlSprite(lado: LadoSprite, id: number): Promise<string | null> 
 }
 
 /** Cria um <img> que se preenche sozinho (ou mostra o nome se o sprite ainda não foi importado). */
-export function imagemPokemon(lado: LadoSprite, id: number, classe = ""): HTMLElement {
+export function imagemPokemon(lado: LadoSprite, id: number, classe = "", brilhante = false): HTMLElement {
   const caixa = document.createElement("div");
-  caixa.className = `pk-img ${classe}`;
+  caixa.className = `pk-img ${classe}${brilhante ? " brilhante" : ""}`;
   void urlSprite(lado, id).then((u) => {
     if (!u) {
       caixa.textContent = especie(id).nome;
@@ -114,7 +115,7 @@ export function imagemPokemon(lado: LadoSprite, id: number, classe = ""): HTMLEl
 export async function meuTime(uid: string): Promise<PokemonRow[]> {
   const { data } = await supabase
     .from("pokemons")
-    .select("id, especie_id, apelido, nivel, exp, hp_max, hp_atual, golpes, posicao")
+    .select("*")
     .eq("dono", uid)
     .not("posicao", "is", null)
     .order("posicao");

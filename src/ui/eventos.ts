@@ -1,0 +1,80 @@
+import { supabase } from "../supabase";
+import { el } from "./dom";
+
+interface Evento { id: string; tipo: string; valor: number; mensagem: string | null; fim: string }
+type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
+
+const TIPOS: Record<string, { nome: string; icone: string; valores: number[]; texto: (v: number) => string }> = {
+  xp: { nome: "XP em dobro (ou mais)", icone: "⭐", valores: [2, 3, 5], texto: (v) => `XP x${v}` },
+  brilhante: { nome: "Chance de brilhante", icone: "✨", valores: [5, 10, 25, 50], texto: (v) => `Chance de Pokémon brilhante x${v}` },
+  dinheiro: { nome: "Prêmios em dinheiro", icone: "₽", valores: [2, 3], texto: (v) => `Prêmios em dinheiro x${v}` },
+  encontro: { nome: "Mais Pokémon selvagens", icone: "🌿", valores: [1.5, 2, 3], texto: (v) => `Mais Pokémon selvagens (x${v})` },
+  pa_gratis: { nome: "Buscas grátis (sem gastar PA)", icone: "🎁", valores: [1], texto: () => "Buscas de Pokémon sem gastar PA" },
+};
+const DURACOES: [string, number][] = [["15 min", 15], ["30 min", 30], ["1 hora", 60], ["2 horas", 120], ["6 horas", 360], ["24 horas", 1440], ["3 dias", 4320]];
+
+const hora = (iso: string) => new Date(iso).toLocaleString("pt-BR", { hour: "2-digit", minute: "2-digit", ...(Date.now() + 18 * 3600e3 < new Date(iso).getTime() ? { day: "2-digit", month: "2-digit" } : {}) });
+const resumo = (e: Evento) => e.mensagem ?? (TIPOS[e.tipo]?.texto(Number(e.valor)) ?? e.tipo);
+
+/** Faixa discreta no topo da tela com os eventos em andamento (atualiza sozinha). */
+export function iniciarFaixaEventos(): HTMLElement {
+  const faixa = el("div", { class: "faixa-evento", hidden: "", role: "status" });
+  let timer = 0;
+  const atualizar = async () => {
+    if (!faixa.isConnected && timer) { window.clearInterval(timer); return; }
+    const { data } = await supabase.rpc("eventos_ativos");
+    const lista = (Array.isArray(data) ? data : []) as Evento[];
+    if (!lista.length) { faixa.hidden = true; faixa.replaceChildren(); return; }
+    faixa.replaceChildren(...lista.map((e) => el("span", { class: "faixa-item" }, `${TIPOS[e.tipo]?.icone ?? "🎉"} ${resumo(e)} · até ${hora(e.fim)}`)));
+    faixa.hidden = false;
+  };
+  void atualizar();
+  timer = window.setInterval(() => void atualizar(), 60_000);
+  return faixa;
+}
+
+/** Painel rápido do Mestre: escolher regra, valor, duração (e mensagem opcional) e iniciar. */
+export async function abrirEventos(modal: Modal, aviso: (t: string) => void): Promise<void> {
+  const msg = el("p", { class: "msg" }, "");
+  const lista = el("div", { class: "ev-lista" });
+  const carregar = async () => {
+    const { data } = await supabase.rpc("eventos_ativos");
+    const evs = (Array.isArray(data) ? data : []) as Evento[];
+    lista.replaceChildren(...(evs.length ? evs.map((e) => {
+      const b = el("button", { type: "button", class: "sec" }, "Encerrar");
+      b.addEventListener("click", async () => {
+        const { error } = await supabase.rpc("encerrar_evento", { p_id: e.id });
+        if (error) { aviso(error.message); return; }
+        await carregar();
+      });
+      return el("div", { class: "ev-item" }, el("span", {}, `${TIPOS[e.tipo]?.icone ?? ""} ${resumo(e)} · até ${hora(e.fim)}`), b);
+    }) : [el("p", { class: "sub" }, "Nenhum evento em andamento.")]));
+  };
+
+  const tipo = el("select", {}, ...Object.entries(TIPOS).map(([k, t]) => el("option", { value: k }, `${t.icone} ${t.nome}`)));
+  const valor = el("select", {});
+  const duracao = el("select", {}, ...DURACOES.map(([r, m]) => el("option", { value: String(m) }, r)));
+  duracao.value = "60";
+  const texto = el("input", { type: "text", maxlength: "90", placeholder: "Mensagem para os jogadores (opcional)" });
+  const preencherValores = () => {
+    const t = TIPOS[tipo.value];
+    valor.replaceChildren(...t.valores.map((v) => el("option", { value: String(v) }, t.valores.length === 1 ? "ativado" : `x${v}`)));
+    valor.disabled = t.valores.length === 1;
+  };
+  tipo.addEventListener("change", preencherValores);
+  preencherValores();
+  const iniciar = el("button", { type: "button" }, "Iniciar evento agora");
+  iniciar.addEventListener("click", async () => {
+    iniciar.disabled = true;
+    const { error } = await supabase.rpc("criar_evento", { p_tipo: tipo.value, p_valor: Number(valor.value), p_minutos: Number(duracao.value), p_mensagem: texto.value.trim() || null });
+    iniciar.disabled = false;
+    if (error) { msg.textContent = error.message; msg.className = "msg erro"; return; }
+    msg.textContent = "Evento iniciado! A faixa aparece para os jogadores em até 1 minuto."; msg.className = "msg ok";
+    texto.value = "";
+    await carregar();
+  });
+  await carregar();
+  modal.abrir("Eventos do Mestre",
+    el("label", {}, "Regra"), tipo, el("label", {}, "Intensidade"), valor, el("label", {}, "Duração"), duracao, el("label", {}, "Mensagem"), texto, iniciar, msg,
+    el("label", {}, "Em andamento"), lista);
+}
