@@ -45,6 +45,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Verificar mapas (erros bloqueiam a publicação)
+        run: node scripts/lint-mapas.mjs
+
       - name: Compilar produção
         env:
           VITE_BASE: /pkm-rpg/

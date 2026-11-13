@@ -46,5 +46,10 @@
     "codigo": "SEM_RETORNO",
     "contem": "→ plato:",
     "motivo": "A Liga é de sentido único de propósito: avança-se vencendo o chefe de cada sala e a saída leva ao Platô."
+  },
+  {
+    "mapa": "gruta",
+    "codigo": "PAREDE_INVISIVEL",
+    "motivo": "Caverna: a rocha tem a mesma cor do chão; o relevo (degraus de pedra) é desenhado por cima. Falso alarme."
   }
 ]

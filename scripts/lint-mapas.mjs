@@ -7,7 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { T, carregarMapas, consulta, dimensoesPng } from "./mapas/lib.mjs";
+import { T, carregarMapas, consulta, dimensoesPng, lerPng } from "./mapas/lib.mjs";
 
 const ARQ_EXCECOES = path.join(path.dirname(fileURLToPath(import.meta.url)), "mapas", "excecoes.json");
 /** Exceções conscientes (ex.: portais de sentido único na Liga). Formato: [{ mapa, codigo, contem?, motivo }]. */
@@ -134,6 +134,75 @@ export function lintar({ ids, mapas, orfaos, faltando, pasta }, filtro = null) {
       if (tiles.length && !tiles.some(([x, y]) => principal.has(chave(x, y))))
         add(id, "ERRO", "PORTAL_INALCANCAVEL", `portal #${i + 1} → ${p.dest} em (${p.x},${p.y}) não é alcançável a pé a partir das entradas.`, tiles);
     });
+
+
+    // ---- legibilidade (o caminho precisa ser óbvio para quem joga, não só correto no código)
+    // Chegada: o jogador deve nascer numa área livre de pelo menos 3x3 tiles.
+    for (const c of chegadas.get(id) ?? []) {
+      let ok = false;
+      for (let oy = -2; oy <= 0 && !ok; oy++) for (let ox = -2; ox <= 0 && !ok; ox++) {
+        let livre = true;
+        for (let j = 0; j < 3 && livre; j++) for (let i = 0; i < 3; i++) if (solido(c.x + ox + i, c.y + oy + j)) { livre = false; break; }
+        if (livre) ok = true;
+      }
+      if (!ok && !m.interior) add(id, "AVISO", "CHEGADA_APERTADA", `Quem chega de ${c.de} em (${c.x},${c.y}) fica num corredor apertado (sem área livre de 3x3).`, [[c.x, c.y]]);
+    }
+    // Desvio: caminho a pé muito mais longo que a linha reta até um portal = jogador acha que está preso.
+    const distDe = (sx, sy) => {
+      const d = new Map([[chave(sx, sy), 0]]);
+      const fila = [[sx, sy]];
+      for (let i = 0; i < fila.length; i++) {
+        const [x, y] = fila[i];
+        for (const [dx, dy] of VIZ) {
+          const nx = x + dx, ny = y + dy, k = chave(nx, ny);
+          if (solido(nx, ny) || d.has(k)) continue;
+          d.set(k, d.get(chave(x, y)) + 1);
+          if (!ehPortal(nx, ny)) fila.push([nx, ny]);
+        }
+      }
+      return d;
+    };
+    for (const c of chegadas.get(id) ?? []) {
+      if (solido(c.x, c.y)) continue;
+      const d = distDe(c.x, c.y);
+      (m.portais ?? []).forEach((p) => {
+        let melhor = null;
+        for (const [x, y] of retangulo(p)) { const v = d.get(chave(x, y)); if (v !== undefined && (melhor === null || v < melhor)) melhor = v; }
+        const reta = Math.abs(p.x - c.x) + Math.abs(p.y - c.y);
+        if (melhor !== null && reta >= 8 && melhor > reta * 1.8 + 6)
+          add(id, "AVISO", "DESVIO_EXCESSIVO", `De ${c.de} (${c.x},${c.y}) até o portal → ${p.dest} são ${melhor} passos para ${reta} de distância em linha reta (caminho muito tortuoso).`, [[c.x, c.y]]);
+      });
+    }
+    // Parede invisível: bloco 3x3 sólido cujo chão parece igual ao chão andável (nenhuma árvore/água/prédio desenhado).
+    if (!m.interior) {
+      const pngB = lerPng(path.join(pasta, `${id}.png`));
+      const pngC = lerPng(path.join(pasta, `${id}-cima.png`));
+      if (pngB && pngB.w === m.w * T) {
+        const sig = (x, y) => { let s = ""; for (let py = 0; py < T; py++) for (let px = 0; px < T; px++) { const o = ((y * T + py) * pngB.w + x * T + px) * 4; s += pngB.rgba[o] + "," + pngB.rgba[o + 1] + "," + pngB.rgba[o + 2] + ";"; } return s; };
+        const cont = new Map();
+        for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) if (!solido(x, y)) { const k = sig(x, y); cont.set(k, (cont.get(k) ?? 0) + 1); }
+        const paleta = new Set();
+        [...cont.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).forEach(([k]) => k.split(";").forEach((c) => c && paleta.add(c)));
+        const simples = (x, y) => {
+          let ok = 0;
+          for (let py = 0; py < T; py++) for (let px = 0; px < T; px++) {
+            const o = ((y * T + py) * pngB.w + x * T + px) * 4;
+            if (pngC && pngC.rgba[o + 3] > 0) continue;
+            if (paleta.has(pngB.rgba[o] + "," + pngB.rgba[o + 1] + "," + pngB.rgba[o + 2])) ok++;
+          }
+          return ok >= T * T * 0.97;
+        };
+        const marca = new Set();
+        for (let y = 0; y + 2 < m.h; y++) for (let x = 0; x + 2 < m.w; x++) {
+          let tudo = true;
+          for (let j = 0; j < 3 && tudo; j++) for (let i = 0; i < 3; i++) if (!solido(x + i, y + j) || !simples(x + i, y + j)) { tudo = false; break; }
+          if (tudo) for (let j = 0; j < 3; j++) for (let i = 0; i < 3; i++) marca.add(chave(x + i, y + j));
+        }
+        // só conta se o jogador consegue chegar encostado no bloco (senão é um bosque fechado, que não engana ninguém)
+        const encosta = [...marca].some((k) => VIZ.some(([dx, dy]) => { const nx = (k % m.w) + dx, ny = Math.floor(k / m.w) + dy; return !solido(nx, ny) && principal.has(chave(nx, ny)); }));
+        if (marca.size >= 9 && encosta) add(id, "AVISO", "PAREDE_INVISIVEL", `${marca.size} tiles sólidos com cara de chão livre (o jogador esbarra sem ver o que bloqueia). Desenhe árvores/pedras/água ali ou libere a passagem.`, [...marca].map((k) => [k % m.w, Math.floor(k / m.w)]));
+      }
+    }
 
     // ---- áreas andáveis isoladas (sem nenhuma entrada): jardim fechado, cercado sem porta...
     const resto = new Set();

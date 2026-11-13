@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import zlib from "node:zlib";
 
 export const T = 16; // tamanho do tile em pixels
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -58,4 +59,41 @@ export function consulta(m) {
     return t;
   };
   return { solido, grama, retangulo };
+}
+
+/** Decodifica um PNG RGBA/RGB 8 bits sem entrelaçamento. Retorna { w, h, rgba: Uint8Array } ou null. */
+export function lerPng(arquivo) {
+  const b = fs.readFileSync(arquivo);
+  if (b.toString("ascii", 1, 4) !== "PNG") return null;
+  let pos = 8, w = 0, h = 0, tipoCor = 0, prof = 0, inter = 0;
+  const dados = [];
+  while (pos < b.length) {
+    const len = b.readUInt32BE(pos);
+    const tipo = b.toString("ascii", pos + 4, pos + 8);
+    const corpo = b.subarray(pos + 8, pos + 8 + len);
+    if (tipo === "IHDR") { w = corpo.readUInt32BE(0); h = corpo.readUInt32BE(4); prof = corpo[8]; tipoCor = corpo[9]; inter = corpo[12]; }
+    else if (tipo === "IDAT") dados.push(corpo);
+    else if (tipo === "IEND") break;
+    pos += 12 + len;
+  }
+  if (prof !== 8 || inter !== 0 || (tipoCor !== 6 && tipoCor !== 2)) return null;
+  const bpp = tipoCor === 6 ? 4 : 3;
+  const raw = zlib.inflateSync(Buffer.concat(dados));
+  const lin = w * bpp;
+  const out = new Uint8Array(w * h * 4);
+  let prev = new Uint8Array(lin);
+  for (let y = 0; y < h; y++) {
+    const f = raw[y * (lin + 1)];
+    const cur = new Uint8Array(raw.subarray(y * (lin + 1) + 1, (y + 1) * (lin + 1)));
+    for (let i = 0; i < lin; i++) {
+      const a = i >= bpp ? cur[i - bpp] : 0, up = prev[i], c = i >= bpp ? prev[i - bpp] : 0;
+      let v = cur[i];
+      if (f === 1) v += a; else if (f === 2) v += up; else if (f === 3) v += (a + up) >> 1;
+      else if (f === 4) { const pp = a + up - c, pa = Math.abs(pp - a), pb = Math.abs(pp - up), pc = Math.abs(pp - c); v += pa <= pb && pa <= pc ? a : pb <= pc ? up : c; }
+      cur[i] = v & 255;
+    }
+    for (let x = 0; x < w; x++) { const o = (y * w + x) * 4; out[o] = cur[x * bpp]; out[o + 1] = cur[x * bpp + 1]; out[o + 2] = cur[x * bpp + 2]; out[o + 3] = bpp === 4 ? cur[x * bpp + 3] : 255; }
+    prev = cur;
+  }
+  return { w, h, rgba: out };
 }
