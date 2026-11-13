@@ -56,5 +56,16 @@
     "mapa": "gruta",
     "codigo": "DESVIO_EXCESSIVO",
     "motivo": "A Gruta é um labirinto de corredores de propósito."
+  },
+  {
+    "mapa": "porto",
+    "codigo": "DESVIO_EXCESSIVO",
+    "motivo": "Cidade cortada por um rio: o desvio até as pontes é visível e natural."
+  },
+  {
+    "mapa": "argila",
+    "codigo": "AREA_ISOLADA",
+    "contem": "24 tiles",
+    "motivo": "Quintal cercado (cerca com celeiro), decorativo."
   }
 ]

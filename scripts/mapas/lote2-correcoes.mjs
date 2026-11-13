@@ -7,7 +7,7 @@ import { carregarMapas, PASTA_MAPAS } from "./lib.mjs";
 import { lintar } from "../lint-mapas.mjs";
 
 const dados = carregarMapas();
-const { problemas } = lintar(dados, ["verdelume", "porto"]);
+const { problemas } = lintar(dados, ["verdelume", "porto", "argila"]);
 for (const p of problemas.filter((q) => q.codigo === "PAREDE_INVISIVEL")) {
   const arq = path.join(PASTA_MAPAS, `${p.mapa}.json`);
   const txt = fs.readFileSync(arq, "utf8");
