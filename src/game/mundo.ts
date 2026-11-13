@@ -33,6 +33,8 @@ interface MapaDados {
   grama: string;
   portais: Portal[];
   pois: Poi[];
+  /** Caverna: tudo escuro, só um foco de luz (2 tiles de diâmetro) em volta do jogador. */
+  escuro?: boolean;
 }
 
 export interface TreinadorMapa {
@@ -121,6 +123,7 @@ class CenaMundo extends Phaser.Scene {
   private mapa!: MapaDados;
   private cacheMapas = new Map<string, MapaDados>();
   private camadas: Phaser.GameObjects.Image[] = [];
+  private breu: { luz: Phaser.GameObjects.Image; cobertura: Phaser.GameObjects.Graphics } | null = null;
   private eu!: Ficha;
   private outros = new Map<string, Ficha>();
   private canal?: RealtimeChannel;
@@ -200,6 +203,27 @@ class CenaMundo extends Phaser.Scene {
     const baixo = this.add.image(0, 0, `${id}-baixo`).setOrigin(0, 0).setDepth(0);
     const cima = this.add.image(0, 0, `${id}-cima`).setOrigin(0, 0).setDepth(1000);
     this.camadas = [baixo, cima];
+    this.breu?.luz.destroy();
+    this.breu?.cobertura.destroy();
+    this.breu = null;
+    if (dados.escuro) {
+      if (!this.textures.exists("luz-caverna")) {
+        const tex = this.textures.createCanvas("luz-caverna", 96, 96);
+        if (tex) {
+          const g = tex.getContext();
+          const grad = g.createRadialGradient(48, 48, 14, 48, 48, 34); // 0 a 14 px: totalmente claro; some até 34 px
+          grad.addColorStop(0, "rgba(0,0,0,0)");
+          grad.addColorStop(1, "rgba(0,0,0,0.97)");
+          g.fillStyle = grad;
+          g.fillRect(0, 0, 96, 96);
+          tex.refresh();
+        }
+      }
+      this.breu = {
+        luz: this.add.image(0, 0, "luz-caverna").setDepth(2000),
+        cobertura: this.add.graphics().setDepth(2000),
+      };
+    }
     for (const m of this.matos) m.s.destroy();
     this.matos = [];
     for (let ty = 0; ty < dados.h; ty++) {
@@ -508,8 +532,25 @@ class CenaMundo extends Phaser.Scene {
     return null;
   }
 
+  /** Efeito de caverna: quatro retângulos pretos em volta de um foco de luz que segue o jogador. */
+  private atualizarBreu(): void {
+    if (!this.breu || !this.eu) return;
+    const cx = Math.round(this.eu.sprite.x);
+    const cy = Math.round(this.eu.sprite.y - 8);
+    const v = this.cameras.main.worldView;
+    const esq = v.x - 64, dir = v.right + 64, topo = v.y - 64, base = v.bottom + 64;
+    this.breu.luz.setPosition(cx, cy);
+    const g = this.breu.cobertura;
+    g.clear().fillStyle(0x000000, 0.97);
+    g.fillRect(esq, topo, cx - 48 - esq, base - topo);
+    g.fillRect(cx + 48, topo, dir - (cx + 48), base - topo);
+    g.fillRect(cx - 48, topo, 96, cy - 48 - topo);
+    g.fillRect(cx - 48, cy + 48, 96, base - (cy + 48));
+  }
+
   override update(tempo: number): void {
     if (!this.mapa || this.encerrada) return;
+    this.atualizarBreu();
     // gramas ficam paradas; balançam só quando alguém (eu, outros jogadores ou o seguidor) passa por elas
     const quem: { x: number; y: number }[] = [];
     if (this.eu) quem.push(this.eu.sprite);

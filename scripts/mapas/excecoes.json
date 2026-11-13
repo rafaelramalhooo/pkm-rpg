@@ -51,5 +51,10 @@
     "mapa": "gruta",
     "codigo": "PAREDE_INVISIVEL",
     "motivo": "Caverna: a rocha tem a mesma cor do chão; o relevo (degraus de pedra) é desenhado por cima. Falso alarme."
+  },
+  {
+    "mapa": "gruta",
+    "codigo": "DESVIO_EXCESSIVO",
+    "motivo": "A Gruta é um labirinto de corredores de propósito."
   }
 ]
