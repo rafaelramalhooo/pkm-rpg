@@ -1,0 +1,50 @@
+[
+  {
+    "mapa": "liga_salao1",
+    "codigo": "SEM_RETORNO",
+    "contem": "→ liga_salao2:",
+    "motivo": "A Liga é de sentido único de propósito: avança-se vencendo o chefe de cada sala e a saída leva ao Platô."
+  },
+  {
+    "mapa": "liga_salao2",
+    "codigo": "SEM_RETORNO",
+    "contem": "→ plato:",
+    "motivo": "A Liga é de sentido único de propósito: avança-se vencendo o chefe de cada sala e a saída leva ao Platô."
+  },
+  {
+    "mapa": "liga_salao2",
+    "codigo": "SEM_RETORNO",
+    "contem": "→ liga_salao3:",
+    "motivo": "A Liga é de sentido único de propósito: avança-se vencendo o chefe de cada sala e a saída leva ao Platô."
+  },
+  {
+    "mapa": "liga_salao3",
+    "codigo": "SEM_RETORNO",
+    "contem": "→ plato:",
+    "motivo": "A Liga é de sentido único de propósito: avança-se vencendo o chefe de cada sala e a saída leva ao Platô."
+  },
+  {
+    "mapa": "liga_salao3",
+    "codigo": "SEM_RETORNO",
+    "contem": "→ liga_salao4:",
+    "motivo": "A Liga é de sentido único de propósito: avança-se vencendo o chefe de cada sala e a saída leva ao Platô."
+  },
+  {
+    "mapa": "liga_salao4",
+    "codigo": "SEM_RETORNO",
+    "contem": "→ plato:",
+    "motivo": "A Liga é de sentido único de propósito: avança-se vencendo o chefe de cada sala e a saída leva ao Platô."
+  },
+  {
+    "mapa": "liga_salao4",
+    "codigo": "SEM_RETORNO",
+    "contem": "→ liga_campeao:",
+    "motivo": "A Liga é de sentido único de propósito: avança-se vencendo o chefe de cada sala e a saída leva ao Platô."
+  },
+  {
+    "mapa": "liga_campeao",
+    "codigo": "SEM_RETORNO",
+    "contem": "→ plato:",
+    "motivo": "A Liga é de sentido único de propósito: avança-se vencendo o chefe de cada sala e a saída leva ao Platô."
+  }
+]
