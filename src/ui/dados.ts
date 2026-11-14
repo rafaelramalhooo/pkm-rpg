@@ -17,6 +17,7 @@ export interface PokemonRow {
   brilhante?: boolean;
   caixa?: number | null;
   slot_caixa?: number | null;
+  evo_pend?: { pool: number; gain: Record<string, number> } | null;
   atk?: number; def?: number; spa?: number; spd?: number; spe?: number; natureza?: string; amizade?: number;
 }
 
@@ -141,4 +142,12 @@ export function iconeBola(slug: string): HTMLElement {
   i.className = `bola-ico b-${slug}`;
   i.setAttribute("aria-hidden", "true");
   return i;
+}
+
+/** Cor de texto legível (AA) sobre a cor de fundo de um tipo. */
+export function textoSobre(hex: string): string {
+  const h = hex.replace("#", "");
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+  const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return L > 0.3 ? "#1b2438" : "#fff";
 }

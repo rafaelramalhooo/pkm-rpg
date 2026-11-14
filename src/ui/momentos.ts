@@ -1,4 +1,5 @@
 // Momentos de destaque do jogo: animação de evolução e escolha (bloqueante) de golpe novo.
+import { distribuirPendentes } from "./evolucao";
 import { supabase } from "../supabase";
 import { el } from "./dom";
 import { dicaGolpe, dicaPorId } from "./dica";
@@ -53,6 +54,7 @@ export async function mostrarEvolucao(deId: number, paraId: number, nome: string
   c.classList.add("sai");
   await esperar(220);
   c.remove();
+  void distribuirPendentes();
 }
 
 export interface GolpePendente { id: string; pokemon: string; nome: string; especie_id: number; golpe_id: number; golpe: string; golpes: GolpeSlot[] }

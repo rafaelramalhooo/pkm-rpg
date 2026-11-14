@@ -3,12 +3,14 @@ import { aoTrocarTela, el, geracaoAtual, mensagem, montar } from "./dom";
 import type { Controle, Lugar, Poi, TreinadorMapa } from "../game/mundo";
 import { abrirBatalha, type ResultadoBatalha } from "./batalha";
 import {
-  barraHp, carregarReferencias, COR_TIPO, especie, golpe, imagemPokemon, meuTime, NOME_TIPO, nomeItem,
+  barraHp, carregarReferencias, COR_TIPO, especie, golpe, imagemPokemon, meuTime, NOME_TIPO, nomeItem, textoSobre,
   nomePokemon, todasEspecies, type PokemonRow,
 } from "./dados";
 import { carregarMissao, conversarNpc, type MissaoEstado } from "./missao";
 import { abrirSocial, carregarPendencias } from "./social";
 import { resolverPendencias } from "./momentos";
+import { fichaEspecie, painelBusca } from "./pokedex";
+import { distribuirPendentes } from "./evolucao";
 import { abrirMapaMundi } from "./mapamundi";
 import { abrirCaixas } from "./caixa";
 import { abrirHabilidades, abrirAcoes, acaoPA, textoEventos, exigirClasse } from "./habilidades";
@@ -212,7 +214,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       const { data } = await supabase.rpc("gerar_oferta");
       if (!data || emBatalha || !lugar || lugar.x !== l.x || lugar.y !== l.y || lugar.mapa_id !== l.mapa_id) return;
       mostrarOferta(data as Oferta);
-    }, 350);
+    }, 180);
   }
 
   const dpad = el("div", { class: "dpad", "aria-label": "Controles" });
@@ -221,12 +223,9 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const soltar = () => controle?.segurar(null);
     b.addEventListener("pointerdown", (e) => {
       e.preventDefault();
-      try { b.setPointerCapture(e.pointerId); } catch { /* sem captura: os outros eventos soltam */ }
       controle?.segurar(d);
     });
-    for (const ev of ["pointerup", "pointerleave", "pointercancel", "lostpointercapture"]) b.addEventListener(ev, soltar);
-    window.addEventListener("blur", soltar);
-    document.addEventListener("visibilitychange", () => { if (document.hidden) soltar(); });
+    for (const ev of ["pointerup", "pointerleave", "pointercancel"]) b.addEventListener(ev, soltar);
     b.addEventListener("contextmenu", (e) => e.preventDefault());
     return b;
   };
@@ -267,7 +266,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     });
     const tipos = e.tipos.map((t) => {
       const c = el("span", { class: "chip-tipo" }, NOME_TIPO[t] ?? t);
-      c.style.background = COR_TIPO[t] ?? "#888";
+      c.style.background = COR_TIPO[t] ?? "#888"; c.style.color = textoSobre(COR_TIPO[t] ?? "#888");
       return c;
     });
     const fill = el("div", { class: `hp-fill ${hp.classe}` });
@@ -293,6 +292,11 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     c.style.setProperty("--cor", COR_TIPO[e.tipos[0]] ?? "#4f8cff");
     const refrescar = () => { void recarregarJogador(); void abrirTime(); };
     const btn = (rot: string, fn: () => void) => { const b = el("button", { type: "button", class: "sec cartao-acao" }, rot); b.addEventListener("click", (ev) => { ev.stopPropagation(); fn(); }); return b; };
+    if (p.evo_pend) {
+      const pt = el("button", { type: "button", class: "cartao-pontos" }, `⭐ Distribuir ${p.evo_pend.pool} pontos da evolução`);
+      pt.addEventListener("click", (ev) => { ev.stopPropagation(); void distribuirPendentes().then(() => abrirTime()); });
+      c.querySelector(".cartao-info")?.append(pt);
+    }
     c.querySelector(".cartao-info")?.append(el("div", { class: "cartao-acoes" },
       btn("Resumo", () => abrirResumo(modal, p, () => void abrirTime())),
       btn("Treinar · 1 PA", () => void acaoPA("acao_treinar", { p_pokemon: p.id }, j.id, mostrarAviso, refrescar, (d) => `${nomePokemon(p)} treinou! ${textoEventos((d.eventos ?? []) as Parameters<typeof textoEventos>[0])}`)),
@@ -311,7 +315,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const cap = [...vistos.values()].filter(Boolean).length;
     const celulas = todasEspecies().map((e) => {
       const v = vistos.get(e.id);
-      const c = el("div", { class: `dex ${v === undefined ? "novo" : v ? "cap" : "visto"}` });
+      const c = el("button", { type: "button", class: `dex ${v === undefined ? "novo" : v ? "cap" : "visto"}`, title: "Ver detalhes" });
+      c.addEventListener("click", () => void abrirFichaDex(e.id));
       c.append(el("span", { class: "dex-n" }, String(e.id).padStart(3, "0")));
       if (v !== undefined) c.append(imagemPokemon("frente", e.id, `dex-img${v ? "" : " silhueta"}`));
       else c.append(el("div", { class: "dex-img vazio" }, "?"));
@@ -326,8 +331,25 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       "Pokédex", abas("pokedex"),
       el("p", { class: "sub" }, `Vistos: ${vistos.size}   Capturados: ${cap}   de ${total} (Geração 1)`),
       prog,
+      el("div", { class: "dex-busca-caixa" }, el("strong", {}, "🔎 Onde encontrar um Pokémon?"), await painelBusca()),
       el("div", { class: "dex-grade" }, ...celulas),
     );
+  }
+
+  /** Ficha de uma espécie (tipos, fraquezas, onde aparece e %). Com "Banco de Dados", mostra os atributos dos seus Pokémon dessa espécie. */
+  async function abrirFichaDex(id: number): Promise<void> {
+    const nota = el("div", {});
+    const { data: tr } = await supabase.rpc("estado_treino");
+    const rankBanco = Number(((tr as { habilidades?: Record<string, number> } | null)?.habilidades ?? {}).banco_dados ?? 0);
+    if (rankBanco > 0) {
+      const { data: meus } = await supabase.from("pokemons").select("nivel, natureza, atk, def, spa, spd, spe, hp_max, apelido").eq("dono", j.id).eq("especie_id", id);
+      const lista = (meus ?? []) as { nivel: number; natureza: string; atk: number; def: number; spa: number; spd: number; spe: number; hp_max: number; apelido: string | null }[];
+      if (lista.length) nota.append(el("div", { class: "dx-grupo" }, el("strong", {}, "📊 Seus Pokémon desta espécie (Banco de Dados)"),
+        ...lista.map((p) => el("p", { class: "sub" }, `${p.apelido ?? "Sem apelido"} · Nv ${p.nivel} · ${p.natureza} · PV ${p.hp_max} · Atq ${p.atk} · Def ${p.def} · AtqE ${p.spa} · DefE ${p.spd} · Vel ${p.spe}`))));
+    }
+    const voltar = el("button", { type: "button", class: "sec" }, "← Voltar à Pokédex");
+    voltar.addEventListener("click", () => void abrirPokedex());
+    modal.abrir("Pokédex", abas("pokedex"), voltar, await fichaEspecie(id, { nota }));
   }
 
   function abrirMenu(): void {
@@ -619,6 +641,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     await recarregarJogador();
     void atualizarMissao();
     await resolverPendencias();
+    void distribuirPendentes();
     if (estado === "derrota") mostrarAviso("Seus Pokémon precisam descansar: cure-os no Centro Pokémon ou em casa.", 6000);
   }
 
@@ -962,6 +985,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     atualizarHud();
     void atualizarMissao();
     void resolverPendencias();
+    void distribuirPendentes();
     void verificarSocial();
     if (!temRef) {
       mostrarAviso(j.papel === "mestre" ? "Mestre: abra Menu e clique em \"Importar dados do jogo\" e depois \"Importar sprites\"." : "O mundo ainda está sendo preparado. Tente de novo em instantes.", 8000);

@@ -4,6 +4,7 @@ import { supabase } from "../supabase";
 import { el } from "./dom";
 import { dicaGolpe } from "./dica";
 import { mostrarEvolucao, resolverPendencias } from "./momentos";
+import { painelBusca } from "./pokedex";
 import { COR_TIPO, golpePorSlug, iconeBola, imagemPokemon, minhaMochila, NOME_TIPO, nomeItem, urlSprite } from "./dados";
 
 interface MembroSim { orig: number; id?: string; hp: number; maxhp: number; status: string | null; nome: string; nivel: number; especie: string; num: number; ativo: boolean; pp: number[] }
@@ -102,6 +103,54 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     document.body.append(raiz);
     const alerta = el("div", { class: "sd-alerta", role: "alert", hidden: "" });
     raiz.append(alerta);
+    // ferramentas da batalha: histórico e Pokédex
+    const painelAux = el("div", { class: "sd-hist", hidden: "", role: "dialog" });
+    const btnHist = el("button", { type: "button", class: "sd-ferr-btn", title: "Histórico da batalha", "aria-label": "Histórico da batalha" }, "📜");
+    const btnDex = el("button", { type: "button", class: "sd-ferr-btn", title: "Pokédex: fraquezas e resistências", "aria-label": "Pokédex" }, "📖");
+    palco.append(el("div", { class: "sd-ferr" }, btnHist, btnDex));
+    raiz.append(painelAux);
+    const fecharAux = (): void => { painelAux.hidden = true; painelAux.replaceChildren(); };
+    const cabecalhoAux = (titulo: string): HTMLElement => {
+      const x = el("button", { type: "button", class: "sd-hist-x", "aria-label": "Fechar" }, "✕");
+      x.addEventListener("click", fecharAux);
+      return el("div", { class: "sd-hist-topo" }, el("strong", {}, titulo), x);
+    };
+    function abrirHistorico(): void {
+      const cartaoAtivo = (l: "jog" | "adv"): HTMLElement => {
+        const a = ativos[l];
+        if (!a.nome) return el("div", { class: "sd-hist-cartao" }, el("strong", {}, l === "jog" ? "Você" : "Adversário"), el("p", { class: "sub" }, "—"));
+        const pc = pctHp(a.hp, a.max);
+        const mods = Object.entries(a.bufs).filter(([, v]) => v !== 0).map(([k, v]) => `${STAT_CURTO[k] ?? k} ${v > 0 ? "+" : ""}${v}`);
+        const cond = [a.status ? (STATUS_SIGLA[a.status] ?? a.status) : "", ...volateis[l]].filter(Boolean);
+        return el("div", { class: "sd-hist-cartao" },
+          el("strong", {}, `${l === "jog" ? "Seu" : "Inimigo"}: ${a.nome} Lv${a.nivel}`),
+          el("p", {}, `PV: ${l === "jog" ? `${a.hp}/${a.max}` : `${Math.round(pc.pct)}%`}`),
+          el("p", {}, `Modificadores: ${mods.length ? mods.join(", ") : "nenhum"}`),
+          el("p", {}, `Condições: ${cond.length ? cond.join(", ") : "nenhuma"}`),
+          el("p", {}, `No lado: ${ladoCond[l].size ? [...ladoCond[l]].join(", ") : "nada"}`));
+      };
+      const lista = (m: Map<string, number>): HTMLElement => el("ul", {}, ...(m.size ? [...m.entries()].map(([n, v]) => el("li", {}, `${n} × ${v}`)) : [el("li", { class: "sub" }, "ainda nenhum")]));
+      const campoTxt = [clima.atual ? `Clima: ${clima.atual}` : "", terreno.atual ? `Terreno: ${terreno.atual}` : "", ...terreno.extras].filter(Boolean);
+      const linha = (r: Registro): HTMLElement => el("div", { class: `sd-hist-lin ${r.classe}` }, r.texto);
+      const linhaTempo = el("div", { class: "sd-hist-tempo" }, ...(historico.length ? historico.map(linha) : [el("p", { class: "sub" }, "Nada aconteceu ainda.")]));
+      painelAux.replaceChildren(cabecalhoAux("📜 Histórico da batalha"),
+        el("div", { class: "sd-hist-corpo" },
+          el("h4", {}, "Em campo agora"), el("div", { class: "sd-hist-duo" }, cartaoAtivo("jog"), cartaoAtivo("adv")),
+          el("h4", {}, "Campo"), el("p", {}, campoTxt.length ? campoTxt.join(" · ") : "Sem clima ou terreno ativo."),
+          el("h4", {}, "Golpes já usados"), el("div", { class: "sd-hist-duo" }, el("div", {}, el("strong", {}, "Seus"), lista(usados.jog)), el("div", {}, el("strong", {}, "Inimigo"), lista(usados.adv))),
+          el("h4", {}, "O que aconteceu"), linhaTempo));
+      painelAux.hidden = false;
+      linhaTempo.scrollTop = linhaTempo.scrollHeight;
+    }
+    async function abrirPokedexBatalha(num?: number): Promise<void> {
+      const alvo = num ?? ativos.adv.num;
+      const mk = (rot: string, n: number): HTMLButtonElement => { const b = botao(rot, () => void abrirPokedexBatalha(n), "sec"); b.disabled = !n; return b; };
+      const abas = el("div", { class: "sd-hist-abas" }, mk("Inimigo", ativos.adv.num), mk("Meu Pokémon", ativos.jog.num));
+      painelAux.replaceChildren(cabecalhoAux("📖 Pokédex"), el("div", { class: "sd-hist-corpo" }, abas, await painelBusca(alvo || undefined, { locais: false })));
+      painelAux.hidden = false;
+    }
+    btnHist.addEventListener("click", () => { if (!painelAux.hidden) fecharAux(); else abrirHistorico(); });
+    btnDex.addEventListener("click", () => { if (!painelAux.hidden) fecharAux(); else void abrirPokedexBatalha(); });
     let tAlerta = 0;
     const alertar = (texto: string) => { alerta.textContent = texto; alerta.hidden = false; window.clearTimeout(tAlerta); tAlerta = window.setTimeout(() => { alerta.hidden = true; }, 5000); };
     // sprites em tamanho natural (como no Showdown), reduzidos só quando o palco encolhe
@@ -143,6 +192,29 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     const ativos = { jog: novoAtivo(), adv: novoAtivo() };
     const lado = (l: string) => (l === "p1" ? "jog" : "adv") as "jog" | "adv";
 
+    // ---------- histórico da batalha (golpes, o que aconteceu, efeitos ativos) ----------
+    interface Registro { turno: number; texto: string; classe: string }
+    const historico: Registro[] = [];
+    let turnoAtual = 1;
+    const usados = { jog: new Map<string, number>(), adv: new Map<string, number>() };
+    const clima = { atual: "" };
+    const terreno = { atual: "", extras: new Set<string>() };
+    const ladoCond = { jog: new Set<string>(), adv: new Set<string>() };
+    const volateis = { jog: new Set<string>(), adv: new Set<string>() };
+    const T: Record<string, string> = {
+      raindance: "Chuva", sunnyday: "Sol forte", sandstorm: "Tempestade de areia", hail: "Granizo", snow: "Neve", snowscape: "Neve", desolateland: "Terra desolada", primordialsea: "Mar primordial", deltastream: "Corrente delta",
+      electricterrain: "Terreno Elétrico", grassyterrain: "Terreno de Grama", mistyterrain: "Terreno Enevoado", psychicterrain: "Terreno Psíquico", trickroom: "Espaço Mágico (Trick Room)", gravity: "Gravidade", magicroom: "Sala Mágica", wonderroom: "Sala Maravilhosa",
+      stealthrock: "Pedras Pontiagudas", spikes: "Espinhos", toxicspikes: "Espinhos Venenosos", stickyweb: "Teia Pegajosa", reflect: "Reflexo", lightscreen: "Tela de Luz", auroraveil: "Véu de Aurora", safeguard: "Safeguard", mist: "Névoa", tailwind: "Vento Favorável",
+      confusion: "Confuso", leechseed: "Semente Parasita", substitute: "Substituto", taunt: "Provocado", encore: "Encore", disable: "Desabilitado", attract: "Apaixonado", infatuation: "Apaixonado", curse: "Maldição", nightmare: "Pesadelo", perishsong: "Canção da Morte", yawn: "Sonolento", focusenergy: "Foco de Energia", protect: "Protegido", flinch: "Recuou", partiallytrapped: "Preso", bind: "Preso", wrap: "Preso", firespin: "Preso (Redemoinho de Fogo)", whirlpool: "Preso (Redemoinho)", sandtomb: "Preso (Tumba de Areia)", ingrain: "Enraizado", aquaring: "Anel de Água", charge: "Carregado", minimize: "Minimizado", bide: "Revidando", rage: "Fúria", mustrecharge: "Recarregando", twoturnmove: "Preparando golpe", lockedmove: "Golpe em sequência",
+    };
+    const idv = (v: string) => (v ?? "").replace(/^move: |^ability: |^item: /, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const tr = (v: string) => T[idv(v)] ?? (v ?? "").replace(/^move: /, "");
+    function registrar(texto: string, classe = ""): void {
+      if (!texto) return;
+      historico.push({ turno: turnoAtual, texto, classe });
+      if (historico.length > 600) historico.shift();
+    }
+
     // ---------- desenho ----------
     function pintar(l: "jog" | "adv"): void {
       const a = ativos[l];
@@ -174,6 +246,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
 
     function dizer(texto: string, ms = 850, classe = ""): Promise<void> {
       // caixa de texto sobre o palco: mostra as últimas linhas, a mais antiga vai esmaecendo
+      registrar(texto, classe);
       if (!msg.firstElementChild || msg.firstChild?.nodeType === 3) msg.textContent = "";
       msg.append(el("div", { class: `sd-linha ${classe}` }, texto));
       while (msg.children.length > 3) msg.firstElementChild?.remove();
@@ -322,6 +395,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
           const nivel = Number((lv ?? "L1").slice(1));
           const m = achar(r, l, esp, nivel);
           const h = lerHp(p[3]);
+          volateis[l].clear();
           ativos[l] = { nome, nivel, hp: h.hp, max: h.max ?? m?.maxhp ?? Math.max(1, h.hp), status: h.st, num: m?.num ?? 0, bufs: {} };
           if (l === "adv" && ativos.adv.max > 0 && tipoBatalha === "selvagem") ativos.adv.max = 100, ativos.adv.hp = Math.round((h.hp / (h.max ?? 1)) * 100) || 100;
           trocarSprite(l, ativos[l].num);
@@ -334,6 +408,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
           const { l, nome } = ident(p[1]);
           const g = golpePorSlug(p[2].toLowerCase().replace(/[^a-z0-9]/g, ""));
           mexer(sprite(l), [{ transform: "none" }, { transform: `translate(${l === "jog" ? "40px,-20px" : "-40px,20px"}) scale(1.06)` }, { transform: "none" }], 360);
+          usados[l].set(p[2], (usados[l].get(p[2]) ?? 0) + 1);
           await dizer(`${quem(l, nome)} usou ${p[2]}!`, 800, g ? `tipo-${g.tipo}` : "");
           break;
         }
@@ -399,7 +474,20 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
           await dizer(`${quem(l, nome)} ${motivo}!`, 850);
           break;
         }
-        case "turn": log.append(el("div", { class: "sd-turno" }, `Turno ${p[1]}`)); break;
+        case "turn": turnoAtual = Number(p[1]) || turnoAtual; log.append(el("div", { class: "sd-turno" }, `Turno ${p[1]}`)); registrar(`— Turno ${p[1]} —`, "turno"); break;
+        case "-weather": {
+          const w = p[1];
+          if (w === "none") { if (clima.atual) registrar("O clima voltou ao normal.", ""); clima.atual = ""; }
+          else if (!p.some((x) => x?.startsWith("[upkeep]"))) { clima.atual = tr(w); await dizer(`Clima: ${clima.atual}!`, 800); }
+          break;
+        }
+        case "-fieldstart": { const n = tr(p[1]); if (/terreno|terrain/i.test(n)) terreno.atual = n; else terreno.extras.add(n); await dizer(`${n} entrou em campo!`, 800); break; }
+        case "-fieldend": { const n = tr(p[1]); if (terreno.atual === n) terreno.atual = ""; terreno.extras.delete(n); registrar(`${n} terminou.`); break; }
+        case "-sidestart": { const l = lado(p[1].slice(0, 2)); const n = tr(p[2]); ladoCond[l].add(n); await dizer(`${n} no lado ${l === "jog" ? "do seu time" : "inimigo"}!`, 800); break; }
+        case "-sideend": { const l = lado(p[1].slice(0, 2)); const n = tr(p[2]); ladoCond[l].delete(n); registrar(`${n} acabou no lado ${l === "jog" ? "do seu time" : "inimigo"}.`); break; }
+        case "-start": { const { l, nome } = ident(p[1]); const n = tr(p[2]); volateis[l].add(n); await dizer(`${quem(l, nome)}: ${n}.`, 700); break; }
+        case "-end": { const { l, nome } = ident(p[1]); const n = tr(p[2]); volateis[l].delete(n); registrar(`${quem(l, nome)}: ${n} acabou.`); break; }
+        case "-heal-info": break;
         default: break;
       }
     }

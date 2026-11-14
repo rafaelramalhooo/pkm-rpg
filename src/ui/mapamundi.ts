@@ -41,6 +41,8 @@ const LIGACOES: [string, string][] = [
   ["ametista", "vale"], ["ametista", "rota10"], ["rota10", "obsidiana"], ["obsidiana", "gruta"], ["gruta", "cromatica"], ["cromatica", "plato"],
   ["obsidiana", "rota9"], ["rota9", "ambar"], ["ambar", "rota8"], ["rota8", "quartzo"], ["quartzo", "rota7a"], ["rota7a", "azurana"], ["quartzo", "reserva"],
 ];
+/** Cidades com Ginásio e a insígnia que o líder dá. */
+const GINASIOS: Record<string, string> = { argila: "Tijolo", verdelume: "Folha", azurana: "Maré", quartzo: "Pétala", ambar: "Faísca", carmesim: "Brasa", ametista: "Névoa", obsidiana: "Eclipse" };
 const NS = "http://www.w3.org/2000/svg";
 const svg = (tag: string, attrs: Record<string, string | number>, ...filhos: (SVGElement | string)[]) => {
   const n = document.createElementNS(NS, tag);
@@ -92,6 +94,14 @@ export async function abrirMapaMundi(
       for (let k = 0; k < 10; k++) { const ang = -Math.PI / 2 + (k * Math.PI) / 5; const rr = k % 2 ? R2 : R1; pts.push(`${(n.x + rr * Math.cos(ang)).toFixed(1)},${(n.y + rr * Math.sin(ang)).toFixed(1)}`); }
       g.append(svg("polygon", { points: pts.join(" "), class: `mm-estrela ${n.id === "pallet" ? "inicio" : "liga"}` }));
     }
+    if (GINASIOS[n.id]) {
+      // selo dourado de Ginásio ao lado da cidade (escudo com estrela)
+      const gx = n.x + r + 5.5, gy = n.y - r - 2;
+      g.append(svg("circle", { cx: n.x, cy: n.y, r: r + 3.2, class: "mm-gin-aro" }),
+        svg("path", { d: `M${gx - 4.2} ${gy - 4.6}h8.4v5.2c0 3-2.4 4.6-4.2 5.6c-1.8-1-4.2-2.6-4.2-5.6z`, class: "mm-gin-escudo" }),
+        svg("text", { x: gx, y: gy + 1.6, "text-anchor": "middle", class: "mm-gin-estrela" }, "★"));
+      g.append(svg("title", {}, `Ginásio de ${n.nome} — insígnia ${GINASIOS[n.id]}`));
+    }
     g.append(svg("text", { x: n.x, y: n.t === "cidade" || n.id === "reserva" ? n.y + r + 8 : n.y - r - 2.5, "text-anchor": "middle", class: n.t === "rota" ? "mm-nome pequeno" : "mm-nome" }, n.t === "rota" ? n.nome.replace("Rota ", "R") : n.nome));
     const escolher = () => {
       escolhido = n.id;
@@ -113,7 +123,7 @@ export async function abrirMapaMundi(
     await viajar(alvo);
   });
   const legenda = el("div", { class: "mm-legenda" },
-    el("span", { class: "mm-leg atual" }, "Você"), el("span", { class: "mm-leg livre" }, "Destino"), el("span", { class: "mm-leg cid" }, "Cidade"), el("span", { class: "mm-leg est inicio" }, "★ Início"), el("span", { class: "mm-leg est liga" }, "★ Liga"));
+    el("span", { class: "mm-leg atual" }, "Você"), el("span", { class: "mm-leg livre" }, "Destino"), el("span", { class: "mm-leg cid" }, "Cidade"), el("span", { class: "mm-leg gin" }, "🛡 Ginásio"), el("span", { class: "mm-leg est inicio" }, "★ Início"), el("span", { class: "mm-leg est liga" }, "★ Liga"));
   nodos.get(info.atual)?.classList.add("atual");
   if (missao) {
     const alvo = porId.get(missao.mapa_id);
