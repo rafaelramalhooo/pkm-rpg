@@ -1176,3 +1176,17 @@ button:disabled { opacity: .72; }
 .sd-lado .sd-ferr-btn { margin-top: 6px; position: relative; z-index: 2; }
 .sd-hist-topo { padding: 6px 10px; }
 @media (max-width: 520px) { .sd-hist { width: 100%; } .sd-hist.dir { z-index: 31; } }
+
+/* painéis laterais fixos da batalha: histórico à esquerda, Pokédex à direita (sem botões nem popups) */
+.sd-moldura { display: grid; grid-template-columns: minmax(250px, 1fr) minmax(0, 640px) minmax(250px, 1fr); gap: 12px; width: min(100%, 1360px); align-items: stretch; }
+.sd-centro { min-width: 0; align-self: start; }
+.sd-lat { position: relative; display: flex; flex-direction: column; min-height: 360px; contain: size; overflow: hidden; background: #f6f8fc; color: #1b2438; border: 1px solid #25407a; border-radius: 10px; box-shadow: 0 10px 40px #000a; font-size: .85rem; }
+.sd-lat .sd-hist-topo { border-radius: 9px 9px 0 0; }
+.sd-lat .sd-hist-corpo { min-height: 0; }
+.sd-lat .sd-hist-tempo { max-height: none; }
+.sd-hist-abas button.ativa { outline: 2px solid #ff8a1f; }
+@media (max-width: 1180px) {
+  .sd-moldura { grid-template-columns: minmax(0, 640px); justify-content: center; }
+  .sd-centro { order: 1; } .sd-lat.esq { order: 2; } .sd-lat.dir { order: 3; }
+  .sd-lat { contain: none; min-height: 0; max-height: 42vh; }
+}

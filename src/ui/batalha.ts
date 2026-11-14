@@ -99,26 +99,16 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     const cena = el("div", { class: "sd-cena" }, ladoJog, palco, ladoAdv);
     const controles = el("div", { class: "sd-controles" });
     const log = el("div", { class: "sd-log" });
-    const raiz = el("div", { class: "batalha sd" }, el("div", { class: "sd-moldura" }, cena, controles));
+    // painéis fixos nas laterais da tela de combate: histórico (esquerda) e Pokédex (direita)
+    const painelHist = el("aside", { class: "sd-lat esq", "aria-label": "Histórico da batalha" });
+    const painelDex = el("aside", { class: "sd-lat dir", "aria-label": "Pokédex" });
+    const raiz = el("div", { class: "batalha sd" }, el("div", { class: "sd-moldura" }, painelHist, el("div", { class: "sd-centro" }, cena, controles), painelDex));
     document.body.append(raiz);
     const alerta = el("div", { class: "sd-alerta", role: "alert", hidden: "" });
     raiz.append(alerta);
-    // ferramentas da batalha: histórico e Pokédex
-    // dois popups sobre o palco: histórico à esquerda e Pokédex à direita, cada um com metade da largura
-    const painelHist = el("div", { class: "sd-hist esq", hidden: "", role: "dialog" });
-    const painelDex = el("div", { class: "sd-hist dir", hidden: "", role: "dialog" });
-    const btnHist = el("button", { type: "button", class: "sd-ferr-btn", title: "Histórico da batalha", "aria-label": "Histórico da batalha" }, "📜");
-    const btnDex = el("button", { type: "button", class: "sd-ferr-btn", title: "Pokédex: fraquezas e resistências", "aria-label": "Pokédex" }, "📖");
-    ladoJog.append(btnHist);
-    ladoAdv.append(btnDex);
-    cena.append(painelHist, painelDex);
-    const fecharAux = (p: HTMLElement): void => { p.hidden = true; p.replaceChildren(); };
-    const cabecalhoAux = (titulo: string, p: HTMLElement): HTMLElement => {
-      const x = el("button", { type: "button", class: "sd-hist-x", "aria-label": "Fechar" }, "✕");
-      x.addEventListener("click", () => fecharAux(p));
-      return el("div", { class: "sd-hist-topo" }, el("strong", {}, titulo), x);
-    };
-    function abrirHistorico(): void {
+    // histórico e Pokédex ficam sempre à vista; atualizam sozinhos conforme a batalha anda
+    const cabecalhoAux = (titulo: string): HTMLElement => el("div", { class: "sd-hist-topo" }, el("strong", {}, titulo));
+    function pintarHistorico(): void {
       const cartaoAtivo = (l: "jog" | "adv"): HTMLElement => {
         const a = ativos[l];
         if (!a.nome) return el("div", { class: "sd-hist-cartao" }, el("strong", {}, l === "jog" ? "Você" : "Adversário"), el("p", { class: "sub" }, "—"));
@@ -136,24 +126,47 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       const campoTxt = [clima.atual ? `Clima: ${clima.atual}` : "", terreno.atual ? `Terreno: ${terreno.atual}` : "", ...terreno.extras].filter(Boolean);
       const linha = (r: Registro): HTMLElement => el("div", { class: `sd-hist-lin ${r.classe}` }, r.texto);
       const linhaTempo = el("div", { class: "sd-hist-tempo" }, ...(historico.length ? historico.map(linha) : [el("p", { class: "sub" }, "Nada aconteceu ainda.")]));
-      painelHist.replaceChildren(cabecalhoAux("📜 Histórico", painelHist),
+      const antes = painelHist.querySelector<HTMLElement>(".sd-hist-tempo");
+      const noFim = !antes || antes.scrollTop + antes.clientHeight >= antes.scrollHeight - 12;
+      const rolagem = painelHist.querySelector<HTMLElement>(".sd-hist-corpo")?.scrollTop ?? 0;
+      painelHist.replaceChildren(el("div", { class: "sd-hist-topo" }, el("strong", {}, "📜 Histórico da batalha")),
         el("div", { class: "sd-hist-corpo" },
           el("h4", {}, "Em campo agora"), el("div", { class: "sd-hist-duo" }, cartaoAtivo("jog"), cartaoAtivo("adv")),
           el("h4", {}, "Campo"), el("p", {}, campoTxt.length ? campoTxt.join(" · ") : "Sem clima ou terreno ativo."),
           el("h4", {}, "Golpes já usados"), el("div", { class: "sd-hist-duo" }, el("div", {}, el("strong", {}, "Seus"), lista(usados.jog)), el("div", {}, el("strong", {}, "Inimigo"), lista(usados.adv))),
           el("h4", {}, "O que aconteceu"), linhaTempo));
-      painelHist.hidden = false;
-      linhaTempo.scrollTop = linhaTempo.scrollHeight;
+      const corpo = painelHist.querySelector<HTMLElement>(".sd-hist-corpo");
+      if (corpo) corpo.scrollTop = rolagem;
+      if (noFim) linhaTempo.scrollTop = linhaTempo.scrollHeight;
     }
-    async function abrirPokedexBatalha(num?: number): Promise<void> {
-      const alvo = num ?? ativos.adv.num;
-      const mk = (rot: string, n: number): HTMLButtonElement => { const b = botao(rot, () => void abrirPokedexBatalha(n), "sec"); b.disabled = !n; return b; };
-      const abas = el("div", { class: "sd-hist-abas" }, mk("Inimigo", ativos.adv.num), mk("Meu Pokémon", ativos.jog.num));
-      painelDex.replaceChildren(cabecalhoAux("📖 Pokédex", painelDex), el("div", { class: "sd-hist-corpo" }, abas, await painelBusca(alvo || undefined, { locais: false })));
-      painelDex.hidden = false;
+    let dexAlvo = 0;   // 0 = acompanha o inimigo em campo
+    let dexChave = "";
+    async function pintarPokedex(forcar = false): Promise<void> {
+      const alvo = dexAlvo || ativos.adv.num || ativos.jog.num;
+      const chave = `${alvo}|${ativos.adv.num}|${ativos.jog.num}`;
+      if (!forcar && chave === dexChave) return;
+      dexChave = chave;
+      const mk = (rot: string, n: number, auto: boolean): HTMLButtonElement => {
+        const b = botao(rot, () => { dexAlvo = auto ? 0 : n; void pintarPokedex(true); }, "sec");
+        b.disabled = !n; if ((auto && !dexAlvo) || (!auto && dexAlvo === n)) b.classList.add("ativa");
+        return b;
+      };
+      const abas = el("div", { class: "sd-hist-abas" }, mk("Inimigo", ativos.adv.num, true), mk("Meu Pokémon", ativos.jog.num, false));
+      const ficha = await painelBusca(alvo || undefined, { locais: false });
+      if (chave !== dexChave) return;
+      painelDex.replaceChildren(cabecalhoAux("📖 Pokédex"), el("div", { class: "sd-hist-corpo" }, abas, ficha));
     }
-    btnHist.addEventListener("click", () => { if (!painelHist.hidden) fecharAux(painelHist); else abrirHistorico(); });
-    btnDex.addEventListener("click", () => { if (!painelDex.hidden) fecharAux(painelDex); else void abrirPokedexBatalha(); });
+    let chaveHist = "";
+    const chaveAtual = (): string => JSON.stringify([historico.length, ativos.jog.hp, ativos.adv.hp, ativos.jog.status, ativos.adv.status, ativos.jog.bufs, ativos.adv.bufs, [...usados.jog.values()], [...usados.adv.values()], clima.atual, terreno.atual, [...volateis.jog], [...volateis.adv], [...ladoCond.jog], [...ladoCond.adv], terreno.extras]);
+    const timerLat = window.setInterval(() => {
+      if (!raiz.isConnected) { window.clearInterval(timerLat); return; }
+      try {
+        const k = chaveAtual();
+        if (k !== chaveHist) { chaveHist = k; pintarHistorico(); }
+        void pintarPokedex();
+      } catch { /* painéis ainda sem dados */ }
+    }, 350);
+    setTimeout(() => { try { pintarHistorico(); void pintarPokedex(true); } catch { /* sem dados ainda */ } }, 0);
     let tAlerta = 0;
     const alertar = (texto: string) => { alerta.textContent = texto; alerta.hidden = false; window.clearTimeout(tAlerta); tAlerta = window.setTimeout(() => { alerta.hidden = true; }, 5000); };
     // sprites em tamanho natural (como no Showdown), reduzidos só quando o palco encolhe
