@@ -8,6 +8,29 @@ const POR_NUM = {};
 for (const s of dex9.species.all()) if (!s.forme && s.num > 0 && s.num <= 1025) POR_NUM[s.num] = s.name;
 export const nomeEspecie = (num) => POR_NUM[num];
 
+<<<<<<< Updated upstream
+=======
+// ===== bônus do RPG (pontos distribuídos, classes e habilidades) =====
+const CINCO = ["atk", "def", "spa", "spd", "spe"];
+// foco: Pokémon do jogador carregam uma "Wide Lens" cuja precisão extra vem de b.rpg.foco (% somado à precisão)
+try {
+  const lente = dex9.items.get("widelens");
+  lente.onSourceModifyAccuracy = function (accuracy, _alvo, origem) {
+    const n = origem?.side?.n;
+    const f = Array.isArray(this.rpg?.focos) ? Number(this.rpg.focos[n] ?? 0) : (n === 0 ? Number(this.rpg?.foco ?? 0) : 0);
+    if (f > 0 && typeof accuracy === "number") return Math.min(100, Math.round(accuracy * (1 + f / 100)));
+    return accuracy;
+  };
+} catch { /* sem foco */ }
+const abrir = (estado) => {
+  const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
+  b.rpg = estado.rpg ?? null;
+  return b;
+};
+const salvar = (b) => { const s = b.toJSON(); if (b.rpg) s.rpg = b.rpg; return s; };
+
+
+>>>>>>> Stashed changes
 function conjunto(m, i) {
   const ivs = {};
   for (const k of IVS) ivs[k] = m.ivs?.[k] ?? 31;
@@ -150,8 +173,9 @@ export function ler(estado, desde = 0, ld = 0) {
 
 // ===== duelo entre dois jogadores (os dois lados são humanos; times com HP e PP cheios) =====
 /** time1/time2: membros {especie, nome, apelido, nivel, natureza, ivs, hp?, golpes:[{slug, pp?}]} (sem hp/pp = cheio) */
-export function criarDuelo({ time1, time2, seed }) {
+export function criarDuelo({ time1, time2, seed, focos }) {
   const b = new Battle({ formatid: "gen9customgame@@@!teampreview", seed });
+  if (focos && (focos[0] > 0 || focos[1] > 0)) { b.rpg = { focos }; time1 = time1.map((m) => ({ ...m, lente: focos[0] > 0 })); time2 = time2.map((m) => ({ ...m, lente: focos[1] > 0 })); }
   b.setPlayer("p1", { name: "Jogador", team: time1.map(conjunto) });
   ajustar(b.sides[0], time1.map((m) => ({ ...m, hp: m.hp ?? 9999 })), false);
   b.setPlayer("p2", { name: "Adversário", team: time2.map(conjunto) });

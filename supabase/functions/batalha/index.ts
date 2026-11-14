@@ -87,12 +87,20 @@ async function timeDuelo(uid: string, amistoso: boolean) {
   const { data: es } = await admin.from("especies").select("id,nome,exp_base").in("id", [...new Set(pks.map((p: Any) => p.especie_id))]);
   const nome = new Map((es ?? []).map((e: Any) => [e.id, e.nome]));
   const expB = new Map((es ?? []).map((e: Any) => [e.id, e.exp_base]));
+  const bon = await bonusDe(uid);   // classes: Instinto, Campeão e Foco também valem nos duelos
+  const mu = (k: string) => 1 + ((k === "atk" || k === "spa" ? bon.instinto : 0) + bon.campeao) / 100;
   return {
+    foco: bon.foco,
     ids: pks.map((p: Any) => p.id),
     exp: pks.map((p: Any) => ({ exp_base: Math.floor(expB.get(p.especie_id) ?? 50), nivel: p.nivel })),
     time: pks.map((p: Any) => ({
       especie: nomeEspecie(p.especie_id), nome: nome.get(p.especie_id), apelido: p.apelido, nivel: p.nivel, natureza: p.natureza,
       ivs: { hp: p.iv_hp, atk: p.iv_atk, def: p.iv_def, spa: p.iv_spa, spd: p.iv_spd, spe: p.iv_spe },
+<<<<<<< Updated upstream
+=======
+      aj: p.ajuste ?? {},
+      mult: { atk: mu("atk"), def: mu("def"), spa: mu("spa"), spd: mu("spd"), spe: mu("spe") },
+>>>>>>> Stashed changes
       ...(amistoso ? {} : { hp: p.hp_atual }),
       golpes: p.golpes.map((g: Any) => (amistoso ? { slug: slug.get(g.id) } : { slug: slug.get(g.id), pp: g.pp })),   // amistoso: HP e PP cheios
     })),
@@ -210,7 +218,7 @@ async function duelo(minha: Any, uid: string, acao: string, n: number): Promise<
         eu.nome = nomeEu;
         const [d0, d1] = lado === 0 ? [eu, ladoOutro] : [ladoOutro, eu];
         const t0 = await timeDuelo(d0.jogador, !!mestre.amistoso), t1 = await timeDuelo(d1.jogador, !!mestre.amistoso);
-        const c = criarDuelo({ time1: t0.time, time2: t1.time, seed: [sorteio(65536), sorteio(65536), sorteio(65536), sorteio(65536)] });
+        const c = criarDuelo({ time1: t0.time, time2: t1.time, focos: [t0.foco, t1.foco], seed: [sorteio(65536), sorteio(65536), sorteio(65536), sorteio(65536)] });
         meta.time = [t0.ids, t1.ids];
         meta.exp = [t0.exp, t1.exp];
         meta.nomes = [d0.nome, d1.nome];
