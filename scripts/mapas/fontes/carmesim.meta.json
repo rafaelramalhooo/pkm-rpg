@@ -1,0 +1,311 @@
+{
+ "tmx": "cotton_town",
+ "limpar": [
+  [
+   17,
+   0,
+   12,
+   10
+  ]
+ ],
+ "livres": [
+  [
+   17,
+   0,
+   12,
+   10
+  ],
+  [
+   27,
+   13,
+   3,
+   3
+  ]
+ ],
+ "portais": [
+  {
+   "x": 23,
+   "y": 8,
+   "w": 1,
+   "h": 1,
+   "dest": "gin_carmesim",
+   "dx": 10,
+   "dy": 18,
+   "dir": "cima"
+  },
+  {
+   "x": 0,
+   "y": 28,
+   "w": 1,
+   "h": 2,
+   "dest": "rota4",
+   "dx": 38,
+   "dy": 19,
+   "dir": "esquerda"
+  },
+  {
+   "x": 13,
+   "y": 39,
+   "w": 3,
+   "h": 1,
+   "dest": "rota5",
+   "dx": 12,
+   "dy": 1,
+   "dir": "baixo"
+  }
+ ],
+ "pois": [
+  {
+   "id": "centro",
+   "tipo": "centro",
+   "nome": "Centro Pokémon",
+   "x": 19,
+   "y": 27,
+   "descricao": "As enfermeiras usam o calor do vulcão para aquecer o chá. Seus Pokémon se curam rapidinho.",
+   "acao": "cura"
+  },
+  {
+   "id": "mart",
+   "tipo": "loja",
+   "nome": "Loja Brasa",
+   "x": 9,
+   "y": 35,
+   "descricao": "Poções antiqueimadura e bolas à prova de calor.",
+   "acao": "loja",
+   "estoque": [
+    {
+     "item": "poke-ball",
+     "preco": 200
+    },
+    {
+     "item": "potion",
+     "preco": 300
+    },
+    {
+     "item": "burn-heal",
+     "preco": 250
+    }
+   ]
+  },
+  {
+   "id": "cabana1",
+   "tipo": "casa",
+   "nome": "Cabana do Mineiro",
+   "x": 23,
+   "y": 17,
+   "descricao": "Pedras vulcânicas por toda parte. O mineiro conta histórias.",
+   "acao": "dica",
+   "dicas": [
+    "Fogo derrete Gelo e Planta, mas Água apaga rapidinho. Escolha bem!",
+    "A cratera é o ginásio. Cuidado com o calor!"
+   ]
+  },
+  {
+   "id": "cabana2",
+   "tipo": "casa",
+   "nome": "Cabana do Vigia",
+   "x": 10,
+   "y": 17,
+   "descricao": "Dali dá para ver o vulcão inteiro.",
+   "acao": "quadro",
+   "textos": [
+    "Aviso: o vulcão ronca. Mantenha distância das poças de lava!",
+    "O Mestre pode soltar um evento no vulcão a qualquer momento."
+   ]
+  },
+  {
+   "id": "cabana3",
+   "tipo": "casa",
+   "nome": "Cabana da Ferreira",
+   "x": 7,
+   "y": 9,
+   "descricao": "Martelo, bigorna e muito suor.",
+   "acao": "presente",
+   "item": "potion",
+   "qtd": 2,
+   "texto": "A ferreira te dá 2 Poções fresquinhas do forno."
+  }
+ ],
+ "tinta": [
+  {
+   "rect": [
+    0,
+    0,
+    40,
+    40
+   ],
+   "delta": 0,
+   "matiz": 345,
+   "dessat": 0.18,
+   "brilho": 0.85,
+   "smin": 0.2,
+   "vmin": 0.55,
+   "faixa": [
+    80,
+    170
+   ]
+  },
+  {
+   "rect": [
+    20,
+    3,
+    8,
+    6
+   ],
+   "matiz": 10,
+   "dessat": 1.6,
+   "brilho": 2.6,
+   "faixa": [
+    90,
+    160
+   ],
+   "smin": 0.3
+  },
+  {
+   "rect": [
+    20,
+    3,
+    8,
+    6
+   ],
+   "matiz": 28,
+   "dessat": 1.2,
+   "brilho": 1.4,
+   "faixa": [
+    190,
+    250
+   ],
+   "smin": 0.3
+  }
+ ],
+ "colar": [
+  {
+   "png": "carmesim-antigo",
+   "de": [
+    27,
+    10,
+    8,
+    6
+   ],
+   "para": [
+    20,
+    3
+   ],
+   "sem_chao": true,
+   "cores_chao": 3
+  },
+  {
+   "tmx": "cotton_town",
+   "de": [
+    38,
+    4,
+    2,
+    2
+   ],
+   "para": [
+    38,
+    6
+   ]
+  },
+  {
+   "png": "carmesim-antigo",
+   "de": [
+    23,
+    13,
+    3,
+    3
+   ],
+   "para": [
+    27,
+    13
+   ],
+   "sem_chao": true
+  },
+  {
+   "png": "carmesim-antigo",
+   "de": [
+    31,
+    17,
+    3,
+    5
+   ],
+   "para": [
+    29,
+    30
+   ],
+   "sem_chao": true
+  }
+ ],
+ "grama_marcar": [
+  [
+   27,
+   13,
+   3,
+   3
+  ],
+  [
+   29,
+   30,
+   3,
+   5
+  ]
+ ],
+ "solidos_depois": [
+  [
+   22,
+   4,
+   3,
+   1
+  ],
+  [
+   21,
+   5,
+   5,
+   2
+  ],
+  [
+   22,
+   7,
+   3,
+   1
+  ]
+ ],
+ "grama_em": [
+  [
+   16,
+   0,
+   1,
+   9
+  ]
+ ],
+ "estender": [
+  {
+   "modelo": [
+    4,
+    28,
+    1,
+    3
+   ],
+   "para": [
+    1,
+    28
+   ],
+   "rep": 1,
+   "dir": "h"
+  },
+  {
+   "modelo": [
+    13,
+    35,
+    2,
+    1
+   ],
+   "para": [
+    13,
+    38
+   ],
+   "rep": 2,
+   "dir": "v"
+  }
+ ]
+}
