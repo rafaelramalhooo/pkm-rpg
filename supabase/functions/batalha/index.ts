@@ -17,6 +17,14 @@ const sorteio = (n: number) => Math.floor(Math.random() * n);
 // deno-lint-ignore no-explicit-any
 type Any = any;
 
+async function bonusDe(uid: string): Promise<{ instinto: number; foco: number; campeao: number; captura: number }> {
+  try {
+    const { data } = await admin.rpc("sim_bonus", { p_jogador: uid });
+    const d = (data ?? {}) as Any;
+    return { instinto: Number(d.instinto ?? 0), foco: Number(d.foco ?? 0), campeao: Number(d.campeao ?? 0), captura: Number(d.captura ?? 0) };
+  } catch { return { instinto: 0, foco: 0, campeao: 0, captura: 0 }; }
+}
+
 async function montar(b: Any, uid: string) {
   const { data: pks } = await admin.from("pokemons").select("*").eq("dono", uid).not("posicao", "is", null).gt("hp_atual", 0).order("posicao");
   if (!pks?.length) throw new Error("Você não tem Pokémon aptos a lutar.");
@@ -35,9 +43,13 @@ async function montar(b: Any, uid: string) {
   const { data: es } = await admin.from("especies").select("id,nome").in("id", [...new Set([...lista.map((p: Any) => p.especie_id), ...adv.map((a: Any) => a.especie_id)])]);
   const nome = new Map((es ?? []).map((e: Any) => [e.id, e.nome]));
   const ivs = (p: Any) => ({ hp: p.iv_hp, atk: p.iv_atk, def: p.iv_def, spa: p.iv_spa, spd: p.iv_spd, spe: p.iv_spe });
+  // bônus do RPG: pontos distribuídos na evolução (ajuste) e habilidades de classe (Instinto, Campeão, Foco)
+  const bon = await bonusDe(uid);
+  const mu = (k: string) => 1 + ((k === "atk" || k === "spa" ? bon.instinto : 0) + bon.campeao) / 100;
   const time = lista.map((p: Any) => ({
     especie: nomeEspecie(p.especie_id), nome: nome.get(p.especie_id), apelido: p.apelido, nivel: p.nivel, natureza: p.natureza,
     ivs: ivs(p), hp: p.hp_atual, golpes: p.golpes.map((g: Any) => ({ slug: slug.get(g.id), pp: g.pp })),
+    aj: p.ajuste ?? {}, mult: { atk: mu("atk"), def: mu("def"), spa: mu("spa"), spd: mu("spd"), spe: mu("spe") },
   }));
   const inimigos = adv.map((a: Any) => ({
     especie: nomeEspecie(a.especie_id), nome: a.nome, nivel: a.nivel, natureza: a.natureza ?? "hardy",
@@ -45,7 +57,7 @@ async function montar(b: Any, uid: string) {
     hp: 9999, golpes: a.golpes.map((g: Any) => ({ slug: slug.get(g.id), pp: g.pp })),
   }));
   const seed = [sorteio(65536), sorteio(65536), sorteio(65536), sorteio(65536)];
-  const r = criar({ time, inimigos, seed });
+  const r = criar({ time, inimigos, seed, rpg: bon.foco > 0 ? { foco: bon.foco } : null });
   const meta = {
     time: lista.map((p: Any) => p.id), participantes: [lista[0].id], fuga: 0, ativo: lista[0].id, treinador: nomeTreinador,
     inimigos: adv.map((a: Any) => ({ exp_base: a.exp_base, nivel: a.nivel, especie_id: a.especie_id, golpes: a.golpes, caiu: false })),
@@ -93,6 +105,7 @@ async function timeDuelo(uid: string, amistoso: boolean) {
     time: pks.map((p: Any) => ({
       especie: nomeEspecie(p.especie_id), nome: nome.get(p.especie_id), apelido: p.apelido, nivel: p.nivel, natureza: p.natureza,
       ivs: { hp: p.iv_hp, atk: p.iv_atk, def: p.iv_def, spa: p.iv_spa, spd: p.iv_spd, spe: p.iv_spe },
+      aj: p.ajuste ?? {},
       ...(amistoso ? {} : { hp: p.hp_atual }),
       golpes: p.golpes.map((g: Any) => (amistoso ? { slug: slug.get(g.id) } : { slug: slug.get(g.id), pp: g.pp })),   // amistoso: HP e PP cheios
     })),
@@ -351,8 +364,9 @@ Deno.serve(async (req) => {
     } else if (acao === "bola") {
       if (pedido.trocar) throw new Error("Escolha o próximo Pokémon.");
       if (b.tipo !== "selvagem") throw new Error("Não dá para capturar Pokémon de treinadores.");
-      const mult = BOLAS[item];
-      if (!mult) throw new Error("Bola desconhecida.");
+      const mult0 = BOLAS[item];
+      if (!mult0) throw new Error("Bola desconhecida.");
+      const mult = mult0 === 255 ? mult0 : mult0 * (1 + (await bonusDe(uid)).captura / 100);
       const d = dadosBasicos(estado);
       await gastarItem(uid, item);
       const sel = meta.inimigos[0];

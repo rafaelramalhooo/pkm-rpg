@@ -116,14 +116,37 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
     const nome = el("input", { type: "text", value: j.nome, maxlength: "24" });
     const pa = num(j.pa), din = num(j.dinheiro);
     const papel = el("select", {}, el("option", { value: "jogador" }, "Jogador"), el("option", { value: "mestre" }, "Mestre")); papel.value = j.papel;
-    const ins = el("input", { type: "text", value: j.insignias.join(", "), placeholder: "ex.: Pedra, Cascata" });
+    // insígnias: escolhe no dropdown e a insígnia fica ativa na caixinha (✕ remove); cada mudança é salva na hora
+    const INSIGNIAS: [string, string, string][] = [["tijolo", "Tijolo", "Argila"], ["folha", "Folha", "Verdelume"], ["mare", "Maré", "Azurana"], ["petala", "Pétala", "Quartzo Rosa"],
+      ["faisca", "Faísca", "Âmbar"], ["brasa", "Brasa", "Carmesim"], ["nevoa", "Névoa", "Ametista"], ["eclipse", "Eclipse", "Obsidiana"]];
+    const rotuloIns = (v: string): string => INSIGNIAS.find((x) => x[0] === v)?.[1] ?? v;
+    const tem = new Set<string>(j.insignias);
+    const caixaIns = el("div", { class: "ins-caixa" });
+    const seletor = el("select", { class: "ins-seletor" }) as HTMLSelectElement;
+    const salvarIns = async (): Promise<void> => {
+      const { error: e2 } = await supabase.rpc("mestre_editar_jogador", { p_id: id, p_campos: { insignias: [...tem] } });
+      if (e2) dizer(e2.message, false);
+    };
+    const pintarIns = (): void => {
+      seletor.replaceChildren(el("option", { value: "" }, "➕ Adicionar insígnia..."),
+        ...INSIGNIAS.map(([v, nm, cid]) => { const o = el("option", { value: v }, `${tem.has(v) ? "✔ " : ""}${nm} (${cid})`); if (tem.has(v)) o.setAttribute("disabled", ""); return o; }));
+      seletor.value = "";
+      caixaIns.replaceChildren(...(tem.size ? [...tem].map((v) => {
+        const x = el("button", { type: "button", class: "ins-x", title: "Remover", "aria-label": `Remover ${rotuloIns(v)}` }, "✕");
+        x.addEventListener("click", () => { tem.delete(v); pintarIns(); void salvarIns(); });
+        return el("span", { class: "ins-pilula" }, `🏅 ${rotuloIns(v)}`, x);
+      }) : [el("span", { class: "sub" }, "Nenhuma insígnia ainda.")]));
+    };
+    seletor.addEventListener("change", () => { if (seletor.value) { tem.add(seletor.value); pintarIns(); void salvarIns(); } });
+    pintarIns();
+    const ins = el("div", { class: "ins-bloco" }, seletor, caixaIns);
     const camp = el("input", { type: "checkbox" }); camp.checked = j.campeao;
     const mapa = el("select", {}, ...mapas.map((m) => el("option", { value: m.id }, `${m.nome} (${m.id})`))); mapa.value = j.mapa_id;
     const mx = num(j.x), my = num(j.y);
     const salvar = el("button", { type: "button" }, "Salvar ficha");
     salvar.addEventListener("click", async () => {
       const campos: Record<string, unknown> = { nome: nome.value, pa: Number(pa.value), dinheiro: Number(din.value), papel: papel.value, campeao: camp.checked,
-        insignias: ins.value.split(",").map((x) => x.trim()).filter(Boolean) };
+        insignias: [...tem] };
       if (mapa.value !== j.mapa_id || Number(mx.value) !== j.x || Number(my.value) !== j.y) Object.assign(campos, { mapa_id: mapa.value, x: Number(mx.value), y: Number(my.value) });
       if (await chamar("mestre_editar_jogador", { p_id: id, p_campos: campos })) await abrirFicha(id);
     });

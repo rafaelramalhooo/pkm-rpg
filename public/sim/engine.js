@@ -8,12 +8,31 @@ const POR_NUM = {};
 for (const s of dex9.species.all()) if (!s.forme && s.num > 0 && s.num <= 1025) POR_NUM[s.num] = s.name;
 export const nomeEspecie = (num) => POR_NUM[num];
 
+// ===== bônus do RPG (pontos distribuídos, classes e habilidades) =====
+const CINCO = ["atk", "def", "spa", "spd", "spe"];
+// foco: Pokémon do jogador carregam uma "Wide Lens" cuja precisão extra vem de b.rpg.foco (% somado à precisão)
+try {
+  const lente = dex9.items.get("widelens");
+  lente.onSourceModifyAccuracy = function (accuracy, _alvo, origem) {
+    const f = Number(this.rpg?.foco ?? 0);
+    if (f > 0 && typeof accuracy === "number" && origem?.side?.n === 0) return Math.min(100, Math.round(accuracy * (1 + f / 100)));
+    return accuracy;
+  };
+} catch { /* sem foco */ }
+const abrir = (estado) => {
+  const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
+  b.rpg = estado.rpg ?? null;
+  return b;
+};
+const salvar = (b) => { const s = b.toJSON(); if (b.rpg) s.rpg = b.rpg; return s; };
+
+
 function conjunto(m, i) {
   const ivs = {};
   for (const k of IVS) ivs[k] = m.ivs?.[k] ?? 31;
   return {
     name: m.apelido || m.nome, species: m.especie, level: m.nivel, nature: cap(m.natureza),
-    ability: "No Ability", item: "", moves: m.golpes.map((g) => g.slug).slice(0, 4), gender: "",
+    ability: "No Ability", item: m.lente ? "widelens" : "", moves: m.golpes.map((g) => g.slug).slice(0, 4), gender: "",
     happiness: 100 + i, // guarda a posição original do Pokémon (a ordem do time muda ao trocar)
     evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }, ivs,
   };
@@ -23,6 +42,13 @@ function ajustar(lado, time, jogador) {
   lado.pokemon.forEach((p) => {
     const m = time[p.set.happiness - 100];
     if (!m) return;
+    if (m.aj || m.mult) {
+      for (const k of CINCO) {
+        const novo = Math.max(1, Math.floor((p.storedStats[k] + (m.aj?.[k] ?? 0)) * (m.mult?.[k] ?? 1)));
+        p.storedStats[k] = novo;
+        if (p.baseStoredStats) p.baseStoredStats[k] = novo;
+      }
+    }
     p.hp = Math.max(1, Math.min(m.hp, p.maxhp));
     (m.golpes ?? []).slice(0, 4).forEach((g, k) => { if (p.moveSlots[k] && g.pp != null) p.moveSlots[k].pp = Math.min(g.pp, p.moveSlots[k].maxpp); });
     if (!jogador) return;
@@ -33,9 +59,10 @@ function ajustar(lado, time, jogador) {
 }
 
 /** time: membros do jogador (só os vivos); inimigos: membros adversários. Membro: {especie, nome, apelido, nivel, natureza, ivs, golpes:[{slug,pp}], hp} */
-export function criar({ time, inimigos, seed }) {
+export function criar({ time, inimigos, seed, rpg }) {
   const b = new Battle({ formatid: "gen9customgame@@@!teampreview", seed });
-  b.setPlayer("p1", { name: "Jogador", team: time.map(conjunto) });
+  b.rpg = rpg ?? null;
+  b.setPlayer("p1", { name: "Jogador", team: time.map((m, i) => conjunto({ ...m, lente: (rpg?.foco ?? 0) > 0 }, i)) });
   ajustar(b.sides[0], time, true);
   b.setPlayer("p2", { name: "Adversário", team: inimigos.map(conjunto) });
   ajustar(b.sides[1], inimigos, false);
@@ -79,7 +106,7 @@ function resultado(b, desde, ld = 0) {
     nome: p.name, nivel: p.level, especie: p.species.name, num: p.species.num, ativo: p.isActive,
   }));
   return {
-    estado: b.toJSON(), linhas: visivel(b.log.slice(desde), ld), logLen: b.log.length, pedido: fim ? null : pedido(b, ld), fim,
+    estado: salvar(b), linhas: visivel(b.log.slice(desde), ld), logLen: b.log.length, pedido: fim ? null : pedido(b, ld), fim,
     jogador: dados(b.sides[ld]), adversario: dados(b.sides[1 - ld]),
   };
 }
@@ -115,14 +142,14 @@ export function usarItem(b, slug, n) {
 
 /** velocidade e PV dos dois lados, para fuga e captura */
 export function dadosBasicos(estado) {
-  const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
+  const b = abrir(estado);
   const j = b.sides[0].pokemon[0], a = b.sides[1].pokemon[0];
   return { velJ: j.storedStats.spe, velA: a.storedStats.spe, hp: a.hp, maxhp: a.maxhp, status: a.status || null, nomeA: a.name };
 }
 
 /** acao: {tipo:'golpe', n} | {tipo:'trocar', n} | {tipo:'passar'}; antes(b) pode alterar a simulação (itens). Troca (n) começa em 1. */
 export function passo({ estado, logLen, acao, antes }) {
-  const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
+  const b = abrir(estado);
   const retorno = antes ? antes(b) : undefined;
   let escolhaJ;
   if (acao.tipo === "golpe") escolhaJ = `move ${acao.n}`;
@@ -145,7 +172,7 @@ export function passo({ estado, logLen, acao, antes }) {
 
 /** devolve o estado atual (pedido, times) sem avançar a simulação */
 export function ler(estado, desde = 0, ld = 0) {
-  return resultado(Battle.fromJSON(JSON.parse(JSON.stringify(estado))), desde, ld);
+  return resultado(abrir(estado), desde, ld);
 }
 
 // ===== duelo entre dois jogadores (os dois lados são humanos; times com HP e PP cheios) =====
@@ -156,18 +183,18 @@ export function criarDuelo({ time1, time2, seed }) {
   ajustar(b.sides[0], time1.map((m) => ({ ...m, hp: m.hp ?? 9999 })), false);
   b.setPlayer("p2", { name: "Adversário", team: time2.map(conjunto) });
   ajustar(b.sides[1], time2.map((m) => ({ ...m, hp: m.hp ?? 9999 })), false);
-  return { estado: b.toJSON(), logLen: b.log.length, v: [resultado(b, 0, 0), resultado(b, 0, 1)] };
+  return { estado: salvar(b), logLen: b.log.length, v: [resultado(b, 0, 0), resultado(b, 0, 1)] };
 }
 
 /** quais lados ainda precisam escolher neste momento (0 e/ou 1) */
 export function ladosPendentes(estado) {
-  const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
+  const b = abrir(estado);
   return [0, 1].filter((i) => { const r = b.sides[i].activeRequest; return !!r && !r.wait; });
 }
 
 /** testa uma escolha ("move 2", "switch 3") sem alterar nada guardado */
 export function escolhaValida(estado, ld, escolha) {
-  const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
+  const b = abrir(estado);
   const r = b.sides[ld].activeRequest;
   if (!r || r.wait) return false;
   return !!b.choose(`p${ld + 1}`, escolha);
@@ -175,15 +202,15 @@ export function escolhaValida(estado, ld, escolha) {
 
 /** aplica as escolhas ({0:"move 1", 1:"switch 2"}); lados sem pedido são ignorados. "default" = escolha automática. */
 export function passoDuelo({ estado, logLen, escolhas }) {
-  const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
+  const b = abrir(estado);
   for (const i of [0, 1]) {
     const e = escolhas[i];
     const r = b.sides[i].activeRequest;
     if (!e || !r || r.wait) continue;
     if (!b.choose(`p${i + 1}`, e)) throw new Error("Escolha inválida.");
   }
-  return { estado: b.toJSON(), logLen: b.log.length, v: [resultado(b, logLen, 0), resultado(b, logLen, 1)] };
+  return { estado: salvar(b), logLen: b.log.length, v: [resultado(b, logLen, 0), resultado(b, logLen, 1)] };
 }
 
 /** visão de um lado sem avançar a simulação */
-export const verDuelo = (estado, desde, ld) => resultado(Battle.fromJSON(JSON.parse(JSON.stringify(estado))), desde, ld);
+export const verDuelo = (estado, desde, ld) => resultado(abrir(estado), desde, ld);
