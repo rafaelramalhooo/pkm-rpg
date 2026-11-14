@@ -1105,7 +1105,7 @@ button.dex:hover:not(:disabled) { filter: brightness(1.2); }
 /* histórico e Pokédex dentro da batalha */
 .sd-ferr { position: absolute; top: 6px; left: 6px; display: flex; gap: 6px; z-index: 6; }
 .sd-ferr-btn { margin: 0; padding: 4px 9px; font-size: 1rem; border-radius: 10px; background: #0e1b3dcc; border: 1px solid #ffffff55; color: #fff; }
-.sd-hist { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; background: #f6f8fc; color: #1b2438; }
+.sd-hist { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 30; box-shadow: 0 0 18px #000a; font-size: .85rem; display: flex; flex-direction: column; background: #f6f8fc; color: #1b2438; }
 .sd-hist[hidden] { display: none; }
 .sd-hist-topo { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: linear-gradient(180deg, #17316a, #0e1b3d); color: #fff; border-bottom: 3px solid #ff8a1f; }
 .sd-hist-x { margin: 0; padding: 2px 10px; background: transparent; border: 1px solid #fff; color: #fff; }
@@ -1168,3 +1168,11 @@ button:disabled { opacity: .72; }
 .cartao-pk .chip-tipo { background: #000a !important; color: #fff !important; }
 .cartao-pk .chip-golpe { background: #000a; }
 .modal.claro .modal-corpo button:not(.sec):not(.aba):not(.modal-atalho):not(.perigo):disabled { background: #5b6478; }
+
+/* popups da batalha: histórico à esquerda, Pokédex à direita, metade do palco cada; botões nas faixas laterais */
+.sd-hist.esq { left: 0; border-radius: 6px 0 0 6px; } .sd-hist.dir { right: 0; border-radius: 0 6px 6px 0; }
+.sd-hist-corpo .dx-ficha { padding: 8px; } .sd-hist-corpo .pk-img.dx-sprite { width: 64px; height: 64px; }
+.sd-hist-duo { grid-template-columns: 1fr; }
+.sd-lado .sd-ferr-btn { margin-top: 6px; position: relative; z-index: 2; }
+.sd-hist-topo { padding: 6px 10px; }
+@media (max-width: 520px) { .sd-hist { width: 100%; } .sd-hist.dir { z-index: 31; } }
