@@ -407,8 +407,10 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       switch (cmd) {
         case "switch": case "drag": {
           const { l, nome } = ident(p[1]);
-          const [esp, lv] = p[2].split(", ");
-          const nivel = Number((lv ?? "L1").slice(1));
+          // detalhes do Showdown: "Espécie, L50, M" — o nível some quando é 100 e o sexo pode vir sozinho
+          const [esp, ...resto] = p[2].split(", ");
+          const lv = resto.find((x) => /^L\d+$/.test(x));
+          const nivel = lv ? Number(lv.slice(1)) : 100;
           const m = achar(r, l, esp, nivel);
           const h = lerHp(p[3]);
           volateis[l].clear();
