@@ -214,3 +214,94 @@ Mapa.flor = _flor
 Mapa.reservar = _reservar
 Mapa.enche_arvores = _enche_arvores
 Mapa._sem_vizinho = _sem_vizinho
+
+
+# ---------- agua (core_outdoor_water): base lisa + moldura 3x3 de margem ----------
+AGUA = "core_outdoor_water.png"
+AGUA_FILL = [(0, 0), (1, 0), (2, 0), (3, 0)]
+AGUA_MOLDURA = {"TL": (6, 1), "T": (7, 1), "TR": (8, 1), "L": (6, 2), "R": (8, 2), "BL": (6, 3), "B": (7, 3), "BR": (8, 3)}
+
+
+def _agua(self, retangulos):
+    """Retangulos (x,y,w,h) >= 3x3. Lados que tocam a borda do mapa 'continuam' alem dela (sem margem)."""
+    M = [[False] * self.w for _ in range(self.h)]
+    for (x0, y0, ww, hh) in retangulos:
+        for y in range(y0, y0 + hh):
+            for x in range(x0, x0 + ww):
+                if 0 <= x < self.w and 0 <= y < self.h:
+                    M[y][x] = True
+
+    def m(x, y):
+        x = min(max(x, 0), self.w - 1); y = min(max(y, 0), self.h - 1)
+        return M[y][x]
+    for y in range(self.h):
+        for x in range(self.w):
+            if not M[y][x]:
+                continue
+            self.poe(x, y, AGUA, *self.rng.choice(AGUA_FILL[:2]))
+            n, s, w_, e = m(x, y - 1), m(x, y + 1), m(x - 1, y), m(x + 1, y)
+            v = ("T" if not n else "B" if not s else "") + ("L" if not w_ else "R" if not e else "")
+            if v:
+                self.poe(x, y, AGUA, *AGUA_MOLDURA[v])
+            self.solido(x, y)
+            self.ocupado[y * self.w + x] = True
+    self.M_agua = M
+
+
+# ---------- fonte (core_city_and_country, 3x3) ----------
+CC = "core_city_and_country.png"
+
+
+def _fonte(self, x, y, variante=0):
+    c0 = 22 + 3 * variante
+    for dy in range(3):
+        for dx in range(3):
+            self.poe(x + dx, y + dy, CC, c0 + dx, 9 + dy)
+            self.solido(x + dx, y + dy)
+            self.ocupado[(y + dy) * self.w + x + dx] = True
+
+
+Mapa.agua = _agua
+Mapa.fonte = _fonte
+
+
+# ---------- cercas horizontais, pinheiros pequenos e pedras ----------
+def _cerca(self, x, y, n, estilo="madeira"):
+    meio = {"madeira": [(17, 31), (18, 31)], "branca": [(19, 31), (20, 31)]}[estilo]
+    fim = {"madeira": (18, 35), "branca": None}[estilo] or meio[0]
+    for i in range(n):
+        if not (0 <= x + i < self.w and 0 <= y < self.h) or self.ocupado[y * self.w + x + i]:
+            return False
+    for i in range(n):
+        c, r = fim if i == n - 1 else meio[i % 2]
+        self.poe(x + i, y, CO, c, r)
+        self.solido(x + i, y)
+        self.ocupado[y * self.w + x + i] = True
+    return True
+
+
+def _pinheiro(self, x, y):
+    """Pinheiro pequeno 1x2 (24,28)-(24,29)."""
+    if not (0 <= x < self.w and 1 <= y and y + 1 < self.h) or not self.livre(x, y, 1, 2):
+        return False
+    for dy in range(2):
+        self.poe(x, y + dy, CO, 24, 28 + dy)
+        self.solido(x, y + dy)
+        self.ocupado[(y + dy) * self.w + x] = True
+    self.poe(x, y, CO, 24, 28, "cima")
+    return True
+
+
+def _pedra(self, x, y):
+    if not self.livre(x, y, 1, 1):
+        return False
+    c, r = self.rng.choice([(29, 30), (30, 30)])
+    self.poe(x, y, CO, c, r)
+    self.solido(x, y)
+    self.ocupado[y * self.w + x] = True
+    return True
+
+
+Mapa.cerca = _cerca
+Mapa.pinheiro = _pinheiro
+Mapa.pedra = _pedra
