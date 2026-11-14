@@ -100,7 +100,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     const controles = el("div", { class: "sd-controles" });
     const log = el("div", { class: "sd-log" });
     // painéis fixos nas laterais da tela de combate: histórico (esquerda) e Pokédex (direita)
-    const painelHist = el("aside", { class: "sd-lat esq", "aria-label": "Histórico da batalha" });
+    const painelHist = el("aside", { class: "sd-lat esq", "aria-label": "Histórico" });
     const painelDex = el("aside", { class: "sd-lat dir", "aria-label": "Pokédex" });
     const raiz = el("div", { class: "batalha sd" }, el("div", { class: "sd-moldura" }, painelHist, el("div", { class: "sd-centro" }, cena, controles), painelDex));
     document.body.append(raiz);
@@ -129,7 +129,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       const antes = painelHist.querySelector<HTMLElement>(".sd-hist-tempo");
       const noFim = !antes || antes.scrollTop + antes.clientHeight >= antes.scrollHeight - 12;
       const rolagem = painelHist.querySelector<HTMLElement>(".sd-hist-corpo")?.scrollTop ?? 0;
-      painelHist.replaceChildren(el("div", { class: "sd-hist-topo" }, el("strong", {}, "📜 Histórico da batalha")),
+      painelHist.replaceChildren(el("div", { class: "sd-hist-topo" }, el("strong", {}, "Histórico")),
         el("div", { class: "sd-hist-corpo" },
           el("h4", {}, "Em campo agora"), el("div", { class: "sd-hist-duo" }, cartaoAtivo("jog"), cartaoAtivo("adv")),
           el("h4", {}, "Campo"), el("p", {}, campoTxt.length ? campoTxt.join(" · ") : "Sem clima ou terreno ativo."),
@@ -154,7 +154,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       const abas = el("div", { class: "sd-hist-abas" }, mk("Inimigo", ativos.adv.num, true), mk("Meu Pokémon", ativos.jog.num, false));
       const ficha = await painelBusca(alvo || undefined, { locais: false });
       if (chave !== dexChave) return;
-      painelDex.replaceChildren(cabecalhoAux("📖 Pokédex"), el("div", { class: "sd-hist-corpo" }, abas, ficha));
+      painelDex.replaceChildren(cabecalhoAux("Pokédex"), el("div", { class: "sd-hist-corpo" }, abas, ficha));
     }
     let chaveHist = "";
     const chaveAtual = (): string => JSON.stringify([historico.length, ativos.jog.hp, ativos.adv.hp, ativos.jog.status, ativos.adv.status, ativos.jog.bufs, ativos.adv.bufs, [...usados.jog.values()], [...usados.adv.values()], clima.atual, terreno.atual, [...volateis.jog], [...volateis.adv], [...ladoCond.jog], [...ladoCond.adv], terreno.extras]);
@@ -193,7 +193,6 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
         const s = Math.max(0.5, Math.min(1.75 * k, (pes - bh - 6) / nh, (larg * W) / nw));
         img.style.width = `${Math.round(nw * s)}px`;
         campo.style.top = `${Math.round(pes)}px`;
-        caixaEl.style.top = `${Math.max(2, Math.round(pes - nh * s - bh))}px`;
       }
     };
     new ResizeObserver(alinhar).observe(palco);

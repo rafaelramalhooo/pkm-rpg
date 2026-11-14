@@ -1201,3 +1201,22 @@ button:disabled { opacity: .72; }
 .modal.claro .modal-corpo button.mg-item:not(#_) .sub { color: #5a6580; }
 /* chips dentro dos cartões coloridos do Time: sempre texto claro sobre fundo escuro */
 .cartao-pk .chip-tipo, .cartao-pk .chip-golpe, .cartao-pk .chip-golpe i { color: #fff !important; text-shadow: 0 1px 2px #000c; }
+
+/* ===== lote 22: batalha — caixas no topo, coluna do adversário embaixo, golpes em cartões, painel branco ===== */
+.sd-caixa:not(#_).jog { left: 2%; right: auto; top: 2%; bottom: auto; }
+.sd-caixa:not(#_).adv { right: 2%; left: auto; top: 2%; bottom: auto; }
+.sd-lado:not(#_).adv { right: 0; justify-content: flex-end; padding-top: 2%; padding-bottom: 4%; }
+.batalha .sd-controles:not(#_) { background: #fff; border: 1px solid #aeb9cf; color: #1b2438; }
+.batalha .sd-controles:not(#_) .sd-sub { color: #17316a; }
+.batalha .sd-golpes:not(#_) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.batalha .sd-golpe:not(#_) { padding: 0; overflow: hidden; clip-path: none; border: 1px solid color-mix(in srgb, var(--cor) 70%, #000 30%) !important; border-radius: 8px !important; background: #fff; color: #1b2438; text-shadow: none; box-shadow: 0 1px 3px #1b243833; align-items: stretch; gap: 0; }
+.batalha .sd-golpe:not(#_):hover:not(:disabled) { transform: translateY(-2px); background: #fff; filter: none; }
+.batalha .sd-golpe:not(#_) .g-nome { display: block; padding: 6px 10px; color: #fff; background: var(--cor); font-size: .95rem; text-shadow: 0 1px 2px #0007; }
+.batalha .sd-golpe:not(#_) .g-meta { display: block; padding: 6px 10px 0; color: #44506b; opacity: 1; font-size: .7rem; }
+.batalha .sd-golpe:not(#_) .g-pp { display: block; padding: 2px 10px 7px; color: #1b2438; font-size: .75rem; margin: 0; }
+.batalha .sd-golpe:not(#_):disabled { filter: grayscale(.8); opacity: .6; }
+.batalha .sd-membro:not(#_) { background: linear-gradient(#17316a, #0e1b3d); border: 1px solid #2a4380; color: #fff; }
+.batalha .sd-membro.em-campo:not(#_) { border-color: #ff8a1f; box-shadow: 0 0 0 1px #ff8a1f66; }
+.batalha .sd-membro .m-barra:not(#_) { background: #0a1330; }
+.mm-no.trancado:not(#_) { opacity: .55; filter: grayscale(1); }
+.mm-no.trancado:not(#_) .mm-ponto { fill: #8a94ab; }

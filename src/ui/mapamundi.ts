@@ -60,7 +60,9 @@ export async function abrirMapaMundi(
 ): Promise<void> {
   const { data, error } = await supabase.rpc("mapa_mundi");
   if (error || !data) { aviso(error?.message ?? "Não foi possível abrir o Mapa Mundi."); return; }
-  const info = data as { atual: string; mestre: boolean; insignias: number };
+  const info = data as { atual: string; mestre: boolean; insignias: number; visitados?: string[] };
+  const visitados = new Set(info.visitados ?? []);
+  const conhecido = (id: string) => info.mestre || visitados.has(id) || id === info.atual;
     const SX = 0.4, SY = 0.4;
   const porId = new Map(NOS.map((n) => [n.id, { ...n, x: n.x * SX, y: n.y * SY }]));
   let escolhido: string | null = null;
@@ -85,7 +87,7 @@ export async function abrirMapaMundi(
     }
   };
   for (const n of porId.values()) {
-    const ok = true;
+    const ok = conhecido(n.id);
     const r = n.t === "cidade" ? 5.5 : n.t === "local" ? 4.6 : 3.4;
     const g = svg("g", { class: `mm-no ${n.t}${ok ? " livre" : " trancado"}${n.id === info.atual ? " atual" : ""}`, tabindex: "0", role: "button", "aria-label": n.nome });
     g.append(svg("circle", { cx: n.x, cy: n.y, r: r + 2.4, class: "mm-hit" }), svg("circle", { cx: n.x, cy: n.y, r, class: "mm-ponto" }));
@@ -108,6 +110,7 @@ export async function abrirMapaMundi(
       pintar();
       if (n.id === info.atual) { rotulo.textContent = `Você está em ${n.nome}.`; ir.disabled = true; }
       else if (n.id === "plato" && !info.mestre && info.insignias < 8) { rotulo.textContent = `${n.nome}: só abre com 8 insígnias (você tem ${info.insignias}).`; ir.disabled = true; }
+      else if (!ok) { rotulo.textContent = "Você ainda não esteve aqui. Chegue a pé primeiro."; ir.disabled = true; ir.textContent = "Viajar"; }
       else { rotulo.textContent = `Destino: ${n.nome}`; ir.disabled = false; ir.removeAttribute("disabled"); ir.textContent = `Viajar para ${n.nome}`; }
     };
     g.addEventListener("click", escolher);
@@ -138,6 +141,8 @@ export async function abrirMapaMundi(
   // ---- zoom e arrastar (botões, roda do mouse, arrastar e pinça no celular) ----
   const W0 = 410, H0 = 615, ZMAX = 4;
   let z = 1, cx = W0 / 2, cy = H0 / 2;
+  const ZINI = 2.5, inicio = porId.get(info.atual) ?? porId.get("pallet");
+  const focoInicial = () => { z = ZINI; cx = inicio?.x ?? W0 / 2; cy = inicio?.y ?? H0 / 2; };
   const aplicar = () => {
     const w = W0 / z, h = H0 / z;
     cx = Math.min(W0 - w / 2, Math.max(w / 2, cx)); cy = Math.min(H0 - h / 2, Math.max(h / 2, cy));
@@ -164,7 +169,7 @@ export async function abrirMapaMundi(
   };
   const pct = el("span", { class: "mm-zoom-pct" }, "100%");
   const bt = (t: string, titulo: string, f: () => void) => { const b = el("button", { type: "button", class: "mm-zbtn", title: titulo, "aria-label": titulo }, t) as HTMLButtonElement; b.addEventListener("click", f); return b; };
-  const controles = el("div", { class: "mm-zoom" }, bt("+", "Aproximar", () => zoomar(z * 1.5)), pct, bt("−", "Afastar", () => zoomar(z / 1.5)), bt("⟲", "Voltar ao tamanho inicial", () => { z = 1; cx = W0 / 2; cy = H0 / 2; aplicar(); }));
+  const controles = el("div", { class: "mm-zoom" }, bt("+", "Aproximar", () => zoomar(z * 1.5)), pct, bt("−", "Afastar", () => zoomar(z / 1.5)), bt("⟲", "Voltar ao tamanho inicial", () => { focoInicial(); aplicar(); }));
   mapa.addEventListener("wheel", (e) => { e.preventDefault(); zoomar(z * (e.deltaY < 0 ? 1.2 : 1 / 1.2), e.clientX, e.clientY); }, { passive: false });
   const dedos = new Map<number, { x: number; y: number }>();
   let moveu = false, distAntes = 0;
@@ -192,6 +197,7 @@ export async function abrirMapaMundi(
   // depois de arrastar/pinçar, o clique não escolhe destino sem querer
   mapa.addEventListener("click", (e) => { if (moveu) { e.stopPropagation(); e.preventDefault(); moveu = false; } }, true);
   const caixa = el("div", { class: "mm-caixa" }, mapa as unknown as Node, controles);
+  focoInicial();
   aplicar();
   modal.abrir("Mapa Mundi", ...(missao ? [el("div", { class: "mm-missao-info" }, el("strong", {}, `Missão: ${missao.nome}`), el("span", {}, `${missao.objetivo} (${missao.mapa_nome})`))] : []), el("div", { class: "mm-topo" }, rotulo, ir), caixa, legenda);
 }

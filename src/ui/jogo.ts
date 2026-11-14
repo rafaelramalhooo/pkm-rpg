@@ -729,7 +729,10 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const venceu = new Set((vs ?? []).map((v: { treinador: string }) => v.treinador));
     const { data: ms } = await supabase.from("npcs_missao").select("id, x, y, direcao, nome, classe, aparencia").eq("mapa_id", mapaId);
     const npcs = ((ms ?? []) as Omit<TreinadorMapa, "vencido" | "visao" | "falas" | "missao">[]).map((n) => ({ ...n, visao: 0, falas: {}, vencido: false, missao: true }));
-    return [...((ts ?? []) as Omit<TreinadorMapa, "vencido">[]).map((t) => ({ ...t, vencido: venceu.has(t.id) })), ...npcs];
+    const prof: TreinadorMapa[] = mapaId === "lab"
+      ? [{ id: "prof-carvalho", x: 6, y: 6, direcao: "baixo", nome: "Carvalho", classe: "Prof.", aparencia: 10, visao: 0, falas: {}, vencido: false, missao: true } as unknown as TreinadorMapa]
+      : [];
+    return [...((ts ?? []) as Omit<TreinadorMapa, "vencido">[]).map((t) => ({ ...t, vencido: venceu.has(t.id) })), ...npcs, ...prof];
   }
 
   async function procurar(): Promise<void> {
@@ -955,7 +958,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       aviso: mostrarAviso,
       treinadores: listarTreinadores,
       aoTreinador,
-      aoNpcMissao: async (t) => { await conversarNpc(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); },
+      aoNpcMissao: async (t) => { if (t.id === "prof-carvalho") { await abrirPoi({ id: "prof", tipo: "lab", x: 6, y: 7 } as unknown as Poi); return; } await conversarNpc(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); },
     });
   } catch (e) {
     mostrarAviso(e instanceof Error ? e.message : "Não foi possível abrir o jogo.");
