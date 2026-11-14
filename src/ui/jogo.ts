@@ -293,7 +293,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const refrescar = () => { void recarregarJogador(); void abrirTime(); };
     const btn = (rot: string, fn: () => void) => { const b = el("button", { type: "button", class: "sec cartao-acao" }, rot); b.addEventListener("click", (ev) => { ev.stopPropagation(); fn(); }); return b; };
     if (p.evo_pend) {
-      const pt = el("button", { type: "button", class: "cartao-pontos" }, `⭐ Distribuir ${p.evo_pend.pool} pontos da evolução`);
+      const pt = el("button", { type: "button", class: "cartao-pontos" }, `⭐ Distribuir ${p.evo_pend.pool} pontos de atributo`);
       pt.addEventListener("click", (ev) => { ev.stopPropagation(); void distribuirPendentes().then(() => abrirTime()); });
       c.querySelector(".cartao-info")?.append(pt);
     }

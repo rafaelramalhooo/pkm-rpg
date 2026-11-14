@@ -79,8 +79,8 @@ function telaDistribuir(p: Pend): Promise<"ok" | "depois"> {
     depois.addEventListener("click", () => fechar("depois"));
     const nome = p.apelido ?? especie(p.especie_id).nome;
     const cartao = el("div", { class: "evo-dist" },
-      el("div", { class: "evo-faixa" }, "PONTOS DE EVOLUÇÃO"),
-      el("div", { class: "evo-dist-topo" }, imagemPokemon("frente", p.especie_id, "evo-dist-sprite"), el("div", {}, el("h3", {}, `${nome} evoluiu!`), el("p", { class: "sub" }, `Distribua livremente os ${pool} pontos que a evolução trouxe. Só estes pontos podem ser movidos; o restante da ficha fica como está. O maior atributo não pode passar do dobro do menor.`))),
+      el("div", { class: "evo-faixa" }, "PONTOS DE ATRIBUTO"),
+      el("div", { class: "evo-dist-topo" }, imagemPokemon("frente", p.especie_id, "evo-dist-sprite"), el("div", {}, el("h3", {}, `${nome} ficou mais forte!`), el("p", { class: "sub" }, `Distribua livremente os ${pool} pontos que os níveis e evoluções trouxeram. Só estes pontos podem ser movidos; o restante da ficha fica como está. O maior atributo não pode passar do dobro do menor.`))),
       el("div", { class: "evo-linha cab" }, el("span", {}, "Atributo"), el("span", {}, "Antes"), el("span", {}), el("span", {}, "Pontos"), el("span", {}), el("span", {}, "Final")),
       ...lista,
       el("p", { class: "sub" }, "Pontos restantes: ", resta),
