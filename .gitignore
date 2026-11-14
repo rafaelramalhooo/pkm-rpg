@@ -37,3 +37,6 @@ dist-teste/
 .previa-hex/
 vite.config.ts.timestamp-*
 .pkm-*.tgz
+
+# Testes de mapas (locais, fora do repositório)
+scripts/mapas2/
