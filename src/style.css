@@ -1220,3 +1220,4 @@ button:disabled { opacity: .72; }
 .batalha .sd-membro .m-barra:not(#_) { background: #0a1330; }
 .mm-no.trancado:not(#_) { opacity: .55; filter: grayscale(1); }
 .mm-no.trancado:not(#_) .mm-ponto { fill: #8a94ab; }
+.sd-selo:not(#_) { left: 50%; right: auto; top: 17%; transform: translateX(-50%); white-space: nowrap; z-index: 3; }
