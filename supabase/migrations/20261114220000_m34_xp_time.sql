@@ -1,4 +1,4 @@
--- m34: o XP de batalha/duelo é dividido igualmente entre TODOS os Pokémon do time (até 6, inclusive desmaiados),
+-- m34: o XP de batalha/duelo é dividido igualmente entre TODOS os Pokémon do time que ainda estão de pé (até 6; desmaiados não recebem nem entram na divisão),
 -- com bônus de ×3 no total (ajustável em _xp_mult_time). "Treinar", "Cuidar" e missões seguem individuais.
 create or replace function public._xp_mult_time() returns numeric language sql immutable as $$ select 3::numeric $$;
 
@@ -47,8 +47,8 @@ begin
     if p_fim = 'vitoria' and jsonb_array_length(p_exp) > 0 then
       select array_agg(distinct (e)::uuid) into part from jsonb_array_elements_text(p_meta->'participantes') e;
       n := coalesce(array_length(part, 1), 1);
-      n := greatest(1, (select count(*) from public.pokemons where dono = b.jogador and posicao is not null));
-      for pk in select * from public.pokemons where dono = b.jogador and posicao is not null loop
+      n := greatest(1, (select count(*) from public.pokemons where dono = b.jogador and posicao is not null and hp_atual > 0));
+      for pk in select * from public.pokemons where dono = b.jogador and posicao is not null and hp_atual > 0 loop
         for x in select * from jsonb_array_elements(p_exp) loop
           sel := jsonb_build_object('exp_base', greatest(1, round((x->>'exp_base')::numeric * public._xp_mult_time() / n)), 'nivel', (x->>'nivel')::int);
           select * into pk2 from public.pokemons where id = pk.id;
@@ -84,8 +84,8 @@ begin
   if p_ganhou and jsonb_array_length(coalesce(p_exp, '[]'::jsonb)) > 0 then
     select array_agg(distinct (e)::uuid) into part from jsonb_array_elements_text(coalesce(p_part, '[]'::jsonb)) e;
     n := coalesce(array_length(part, 1), 1);
-    n := greatest(1, (select count(*) from public.pokemons where dono = b.jogador and posicao is not null));
-    for pk in select * from public.pokemons where dono = b.jogador and posicao is not null loop
+    n := greatest(1, (select count(*) from public.pokemons where dono = b.jogador and posicao is not null and hp_atual > 0));
+    for pk in select * from public.pokemons where dono = b.jogador and posicao is not null and hp_atual > 0 loop
       for x in select * from jsonb_array_elements(p_exp) loop
         sel := jsonb_build_object('exp_base', greatest(1, round((x->>'exp_base')::numeric * public._xp_mult_time() / n)), 'nivel', (x->>'nivel')::int);
         select * into pk2 from public.pokemons where id = pk.id;
