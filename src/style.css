@@ -1190,3 +1190,14 @@ button:disabled { opacity: .72; }
   .sd-centro { order: 1; } .sd-lat.esq { order: 2; } .sd-lat.dir { order: 3; }
   .sd-lat { contain: none; min-height: 0; max-height: 42vh; }
 }
+
+/* lote 20b: botões-cartão (listas, fichas, itens) voltam ao fundo claro com letra escura, como eram */
+.modal.claro .modal-corpo button:is(.mg-item, .hab-classe, .dash-tile, .dash-pk, .mg-pk, .item-cartao, .ev-item, .org-linha, .cx-membro, .mc-pk, .soc-card, .troca-pk, .acao-bloco, .ss-item, .dx-item):not(#_):not(#__) {
+  background: linear-gradient(180deg, #ffffff, #e9edf4); color: #1b2438; border: 1px solid #c3cbdb; box-shadow: 0 1px 3px #1b243818; text-shadow: none;
+}
+.modal.claro .modal-corpo button:is(.mg-item, .hab-classe, .dash-tile, .dash-pk, .mg-pk, .item-cartao, .ev-item, .org-linha, .cx-membro, .mc-pk, .soc-card, .troca-pk, .acao-bloco, .ss-item):not(#_):not(#__):hover { border-color: var(--laranja); filter: none; }
+.modal.claro .modal-corpo button.mg-item:not(#_) strong { color: #0e1b3d; }
+.modal.claro .modal-corpo button.mg-item:not(#_) span { color: #44506b; }
+.modal.claro .modal-corpo button.mg-item:not(#_) .sub { color: #5a6580; }
+/* chips dentro dos cartões coloridos do Time: sempre texto claro sobre fundo escuro */
+.cartao-pk .chip-tipo, .cartao-pk .chip-golpe, .cartao-pk .chip-golpe i { color: #fff !important; text-shadow: 0 1px 2px #000c; }
