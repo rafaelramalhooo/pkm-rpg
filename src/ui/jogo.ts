@@ -212,7 +212,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       const { data } = await supabase.rpc("gerar_oferta");
       if (!data || emBatalha || !lugar || lugar.x !== l.x || lugar.y !== l.y || lugar.mapa_id !== l.mapa_id) return;
       mostrarOferta(data as Oferta);
-    }, 180);
+    }, 350);
   }
 
   const dpad = el("div", { class: "dpad", "aria-label": "Controles" });
@@ -221,9 +221,12 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const soltar = () => controle?.segurar(null);
     b.addEventListener("pointerdown", (e) => {
       e.preventDefault();
+      try { b.setPointerCapture(e.pointerId); } catch { /* sem captura: os outros eventos soltam */ }
       controle?.segurar(d);
     });
-    for (const ev of ["pointerup", "pointerleave", "pointercancel"]) b.addEventListener(ev, soltar);
+    for (const ev of ["pointerup", "pointerleave", "pointercancel", "lostpointercapture"]) b.addEventListener(ev, soltar);
+    window.addEventListener("blur", soltar);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) soltar(); });
     b.addEventListener("contextmenu", (e) => e.preventDefault());
     return b;
   };

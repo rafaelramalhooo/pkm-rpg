@@ -133,6 +133,11 @@ class CenaMundo extends Phaser.Scene {
   private bloqueado = false;
   private mudandoMapa = false;
   private fila: Promise<void> = Promise.resolve();
+  /** Controle da fila de passos: época (descarta passos antigos após erro real), sequência (só a resposta mais nova vale) e ritmo mínimo entre envios. */
+  private epoca = 0;
+  private seqPasso = 0;
+  private ultimoEnvio = 0;
+  private estat = { enviados: 0, devagar: 0, ressinc: 0, corrigidos: 0 };
   private encerrada = false;
   private timerTrack?: number;
   private timerReconectar?: number;
@@ -641,7 +646,13 @@ class CenaMundo extends Phaser.Scene {
     });
   }
 
+  /** Contadores de depuração: no console, digite movStats() para ver passos enviados, recusas por ritmo, ressincronizações e correções. */
+  private publicarEstat(): void {
+    (window as unknown as { movStats?: () => unknown }).movStats = () => ({ ...this.estat });
+  }
+
   private passo(d: Direcao): void {
+    this.publicarEstat();
     const [dx, dy] = DELTA[d];
     const nx = this.jogador.x + dx;
     const ny = this.jogador.y + dy;
@@ -671,23 +682,56 @@ class CenaMundo extends Phaser.Scene {
     this.enviarPasso(d);
   }
 
+  private dormir(ms: number): Promise<void> {
+    return new Promise((r) => window.setTimeout(r, ms));
+  }
+
   private enviarPasso(d: Direcao): void {
+    const epoca = this.epoca;
+    const seq = ++this.seqPasso;
     this.fila = this.fila.then(async () => {
-      if (this.encerrada) return;
-      const { data, error } = await supabase.rpc("andar", { p_dir: d });
-      if (this.encerrada) return;
+      if (this.encerrada || epoca !== this.epoca) return;
+      // ritmo mínimo entre envios: o servidor recusa passos com menos de 100 ms de intervalo
+      const espera = 130 - (performance.now() - this.ultimoEnvio);
+      if (espera > 0) await this.dormir(espera);
+      let resp: { data: unknown; error: { message: string } | null } = { data: null, error: null };
+      for (let tentativa = 0; tentativa < 4; tentativa++) {
+        if (this.encerrada || epoca !== this.epoca) return;
+        this.ultimoEnvio = performance.now();
+        this.estat.enviados++;
+        resp = (await supabase.rpc("andar", { p_dir: d })) as typeof resp;
+        if (resp.error && /devagar/i.test(resp.error.message)) {
+          this.estat.devagar++;
+          await this.dormir(140); // recusa por ritmo não é erro: só tenta de novo, sem teleporte
+          continue;
+        }
+        break;
+      }
+      if (this.encerrada || epoca !== this.epoca) return;
+      const { data, error } = resp;
       if (error || !data) {
         if (error && !/devagar/i.test(error.message)) this.ganchos.aviso(error.message);
+        this.epoca++; // descarta os passos que ainda estavam na fila
         await this.ressincronizar();
         return;
       }
       const s = data as Jogador;
       if (s.mapa_id !== this.mapa.id) return;
       this.ganchos.aoJogador(s);
-      if (!this.andando && (s.x !== this.jogador.x || s.y !== this.jogador.y)) {
+      // só a resposta do passo mais recente corrige a posição; respostas atrasadas nunca puxam o personagem para trás
+      if (seq !== this.seqPasso || this.andando) return;
+      if (s.x !== this.jogador.x || s.y !== this.jogador.y) {
+        this.estat.corrigidos++;
+        const dist = Math.abs(s.x - this.jogador.x) + Math.abs(s.y - this.jogador.y);
         this.jogador = { ...this.jogador, ...s };
-        this.colocar(this.eu, s.x, s.y);
-        this.avisarLugar();
+        if (dist === 1) {
+          this.andando = true;
+          this.moverFicha(this.eu, s.x, s.y, this.eu.dir, 100);
+          this.time.delayedCall(100, () => { this.andando = false; this.avisarLugar(); });
+        } else {
+          this.colocar(this.eu, s.x, s.y);
+          this.avisarLugar();
+        }
       }
     });
   }
@@ -741,6 +785,9 @@ class CenaMundo extends Phaser.Scene {
 
   /** Volta ao estado que o servidor conhece (após erro ou recusa). */
   private async ressincronizar(): Promise<void> {
+    this.estat.ressinc++;
+    // não interrompe um passo em andamento (evita passos sobrepostos)
+    for (let i = 0; i < 6 && this.andando; i++) await this.dormir(50);
     const j = await this.recarregar();
     if (!j || this.encerrada) return;
     if (j.mapa_id !== this.mapa.id) {
