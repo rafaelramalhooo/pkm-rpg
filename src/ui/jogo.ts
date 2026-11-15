@@ -19,6 +19,7 @@ import { abrirMochila as abrirMochilaSS } from "./mochila";
 import { abrirResumo } from "./resumo";
 import { abrirOrganizar } from "./organizar";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
+import { abrirCasa, abrirCheckin, abrirConquistas, abrirCosmeticos, abrirMiniquests, abrirRanking, verificarNovidades } from "./engajamento";
 
 function botao(texto: string, fn: () => void, classe = "sec"): HTMLButtonElement {
   const b = el("button", { type: "button", class: classe }, texto);
@@ -642,6 +643,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     void atualizarMissao();
     await resolverPendencias();
     void distribuirPendentes();
+    void verificarNovidades(mostrarAviso);
     if (estado === "derrota") mostrarAviso("Seus Pokémon precisam descansar: cure-os no Centro Pokémon ou em casa.", 6000);
   }
 
@@ -719,20 +721,27 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     }
   };
   const tempoSocial = window.setInterval(() => void verificarSocial(), 4000);
-  const tempoMissao = window.setInterval(() => { if (!document.hidden) void atualizarMissao(); }, 30000);
+  const tempoMissao = window.setInterval(() => { if (!document.hidden) { void atualizarMissao(); void verificarNovidades(mostrarAviso); } }, 30000);
+  window.setTimeout(() => void verificarNovidades(mostrarAviso), 3000);
 
   async function listarTreinadores(mapaId: string): Promise<TreinadorMapa[]> {
-    const [{ data: ts }, { data: vs }] = await Promise.all([
+    const [{ data: ts }, { data: vs }, { data: rev }, { data: mqs }] = await Promise.all([
       supabase.from("treinadores").select("id, x, y, direcao, visao, nome, classe, aparencia, falas").eq("mapa_id", mapaId),
       supabase.from("treinadores_vencidos").select("treinador").eq("jogador", j.id),
+      supabase.rpc("revanche_disponivel"),
+      supabase.rpc("miniquests_mapa", { p_mapa: mapaId }),
     ]);
+    const emRevanche = new Set((Array.isArray(rev) ? rev : []) as string[]);
     const venceu = new Set((vs ?? []).map((v: { treinador: string }) => v.treinador));
     const { data: ms } = await supabase.from("npcs_missao").select("id, x, y, direcao, nome, classe, aparencia").eq("mapa_id", mapaId);
     const npcs = ((ms ?? []) as Omit<TreinadorMapa, "vencido" | "visao" | "falas" | "missao">[]).map((n) => ({ ...n, visao: 0, falas: {}, vencido: false, missao: true }));
     const prof: TreinadorMapa[] = mapaId === "lab"
       ? [{ id: "prof-carvalho", x: 6, y: 6, direcao: "baixo", nome: "Carvalho", classe: "Prof.", aparencia: 10, visao: 0, falas: {}, vencido: false, missao: true } as unknown as TreinadorMapa]
       : [];
-    return [...((ts ?? []) as Omit<TreinadorMapa, "vencido">[]).map((t) => ({ ...t, vencido: venceu.has(t.id) })), ...npcs, ...prof];
+    const normais = ((ts ?? []) as Omit<TreinadorMapa, "vencido">[]).filter((t) => !t.id.startsWith("mq_"))
+      .map((t) => (emRevanche.has(t.id) ? { ...t, visao: 0, vencido: false } : { ...t, vencido: venceu.has(t.id) }));
+    const desafiantes = ((Array.isArray(mqs) ? mqs : []) as Omit<TreinadorMapa, "vencido">[]).map((t) => ({ ...t, vencido: false }));
+    return [...normais, ...desafiantes, ...npcs, ...prof];
   }
 
   async function procurar(): Promise<void> {
@@ -786,6 +795,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       nos.push(botao("Acessar as Caixas", () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud), "sec"));
     } else if (p.tipo === "centro" || p.tipo === "casa_jogador" || p.acao === "cura") {
       nos.push(botao("Curar meu time", () => void curar(msg), ""));
+      if (p.tipo === "centro") nos.push(botao("📅 Check-in diário", () => void abrirCheckin(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }), "sec"));
+      if (p.tipo === "casa_jogador") nos.push(botao("🏠 Minha casa e ovos", () => void abrirCasa(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }), "sec"));
       if (p.tipo === "centro") nos.push(botao("Acessar as Caixas", () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud), "sec"));
     } else if (p.acao === "dica" || p.acao === "quadro") {
       const lista = p.acao === "dica" ? p.dicas : p.textos;
@@ -887,6 +898,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
         rotulo: "Jogar",
         itens: () => [
           { rotulo: "Mapa Mundi (tecla M)", fn: abrirMundi, oculto: emBatalha },
+          { rotulo: "Check-in diário", fn: () => void abrirCheckin(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }) },
           { rotulo: "Buscar Pokémon (1 PA)", fn: () => void procurar(), oculto: !oferta },
           { rotulo: "Interagir", fn: () => { interagir(); }, oculto: !(lugar?.poi || lugar?.npc) },
           { rotulo: "Desistir da missão", fn: abrirDesistirMissao, oculto: missaoAtual?.estado !== "ativa" },
@@ -903,6 +915,11 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           { rotulo: "Ações (PA)", fn: () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador()) },
           { rotulo: "Jogadores (desafios e trocas)", fn: () => void abrirSocial(modal, j.id, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }, lutarDesafio) },
           { rotulo: "Caixas", fn: () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud) },
+          { rotulo: "Conquistas", fn: () => void abrirConquistas(modal, mostrarAviso) },
+          { rotulo: "Ranking de Treinadores", fn: () => void abrirRanking(modal, mostrarAviso) },
+          { rotulo: "Desafios da semana", fn: () => void abrirMiniquests(modal, mostrarAviso) },
+          { rotulo: "Minha casa e ovos", fn: () => void abrirCasa(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }) },
+          { rotulo: "Títulos e molduras", fn: () => void abrirCosmeticos(modal, mostrarAviso) },
           { rotulo: "Organizar time / Seguidor", fn: () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor()) },
         ],
       },
@@ -911,6 +928,11 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
         ? [{ rotulo: "Mestre", itens: () => [
             { rotulo: "Gestão de jogadores", fn: () => void import("./gestao").then((m) => m.abrirGestao(modal, mostrarAviso)) },
             { rotulo: "Eventos", fn: () => void abrirEventos(modal, mostrarAviso) },
+            { rotulo: "Engajamento (módulos, ovos)", fn: () => void import("./mestre_engaj").then((m) => m.abrirMestreEngajamento(modal, mostrarAviso)) },
+            { rotulo: "Check-in (calendário)", fn: () => void import("./mestre_engaj").then((m) => m.abrirMestreCheckin(modal, mostrarAviso)) },
+            { rotulo: "Conquistas (editar)", fn: () => void import("./mestre_engaj").then((m) => m.abrirMestreConquistas(modal, mostrarAviso)) },
+            { rotulo: "Ranking (configurar)", fn: () => void import("./mestre_engaj").then((m) => m.abrirMestreRanking(modal, mostrarAviso)) },
+            { rotulo: "Desafios da semana (editar)", fn: () => void import("./mestre_engaj").then((m) => m.abrirMestreMiniquests(modal, mostrarAviso)) },
             { rotulo: "Missões dos jogadores", fn: () => void abrirMissoesMestre() },
             { rotulo: "Ferramentas (importar, repor PA)", fn: abrirMenu },
           ] }]

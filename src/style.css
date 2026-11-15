@@ -1221,3 +1221,26 @@ button:disabled { opacity: .72; }
 .mm-no.trancado:not(#_) { opacity: .55; filter: grayscale(1); }
 .mm-no.trancado:not(#_) .mm-ponto { fill: #8a94ab; }
 .sd-selo:not(#_) { left: 50%; right: auto; top: 17%; transform: translateX(-50%); white-space: nowrap; z-index: 3; }
+
+/* engajamento: check-in, conquistas, ranking, casa */
+.eg-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; margin: 8px 0; }
+.eg-dia { padding: 8px; border-radius: 12px; background: var(--vidro); border: 1px solid #ffffff33; display: grid; gap: 2px; font-size: .78rem; }
+.eg-dia.feito { opacity: .6; } .eg-dia.hoje { border-color: var(--laranja); box-shadow: 0 0 0 2px var(--laranja) inset; }
+.eg-barra { height: 8px; border-radius: 6px; background: #00000026; overflow: hidden; margin: 4px 0; }
+.eg-barra-fill { height: 100%; background: var(--laranja); }
+.eg-conq { padding: 8px 10px; border-radius: 12px; background: var(--vidro); border: 1px solid #ffffff33; display: grid; gap: 3px; margin: 6px 0; font-size: .82rem; }
+.eg-conq.feita { border-color: #3aa76d; }
+.eg-conq-topo { display: flex; justify-content: space-between; gap: 8px; }
+.eg-conq button { margin: 4px 0 0; padding: 5px 10px; font-size: .75rem; }
+.eg-cat { margin: 12px 0 4px; font-size: .9rem; }
+.eg-rank { display: grid; gap: 4px; margin: 8px 0; }
+.eg-rank-linha { display: grid; grid-template-columns: 36px 1fr auto auto; gap: 8px; align-items: center; padding: 6px 10px; border-radius: 10px; background: var(--vidro); border: 1px solid #ffffff22; font-size: .82rem; }
+.eg-rank-linha.eu { border-color: var(--laranja); } .eg-rank-linha.npc { opacity: .75; }
+.eg-rank-nome { border-bottom: 2px solid transparent; }
+.eg-in { width: 100%; box-sizing: border-box; margin: 2px 0; }
+.eg-premio { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 4px; margin: 4px 0 8px; }
+.eg-sem { margin: 6px 0; padding: 6px 8px; border-radius: 12px; background: var(--vidro); border: 1px solid #ffffff33; }
+.eg-sem summary { cursor: pointer; font-weight: 600; }
+.eg-dia-ed { margin: 6px 0; }
+.eg-mod { display: block; padding: 4px 0; }
+.modal.claro :is(.eg-dia, .eg-conq, .eg-rank-linha, .eg-sem) { background: linear-gradient(180deg, #ffffff, #eceff5); border: 1px solid #c3cbdb; color: #1b2438; }
