@@ -1341,3 +1341,13 @@ button:disabled { opacity: .72; }
 .eg-rival:not(#_) { display: grid; grid-template-columns: minmax(0, 1fr) 90px; gap: 6px 10px; align-items: end; padding: 8px 10px; border: 1px solid #c3cbdb; border-radius: 12px; background: linear-gradient(180deg, #fff, #eceff5); }
 .eg-rival > :is(.eg-mod, button):not(#_) { grid-column: 1 / -1; }
 @media (max-width: 760px) { .eg-rivais:not(#_) { grid-template-columns: minmax(0, 1fr); } }
+
+/* ===== lote 23g: ranking em colunas de cima para baixo e pódio em destaque ===== */
+.eg-rank:not(#_) { display: block; column-count: 2; column-gap: 16px; }
+.eg-rank-linha:not(#_) { break-inside: avoid; margin: 0 0 6px; grid-template-columns: 62px 1fr auto auto; }
+.eg-rank-linha.top:not(#_) { opacity: 1; padding: 9px 12px; font-size: .95rem; font-weight: 600; }
+.eg-rank-linha.top .eg-rank-pos:not(#_) { font-size: 1rem; white-space: nowrap; }
+.eg-rank-linha.top1:not(#_) { background: linear-gradient(180deg, #fff6cf, #f6d878); border: 2px solid #d4a514; color: #4a3500; }
+.eg-rank-linha.top2:not(#_) { background: linear-gradient(180deg, #f6f8fb, #d5dbe5); border: 2px solid #9aa5b8; color: #2c3445; }
+.eg-rank-linha.top3:not(#_) { background: linear-gradient(180deg, #fde9d6, #e9b88a); border: 2px solid #b8763a; color: #4a2a0c; }
+@media (max-width: 760px) { .eg-rank:not(#_) { column-count: 1; } }

@@ -115,8 +115,8 @@ export async function abrirRanking(modal: Modal, aviso: Aviso): Promise<void> {
   const linhas = r.linhas ?? [];
   const tabela = el("div", { class: "eg-rank" }, ...linhas.slice(0, 30).map((l, i) => {
     const nome = el("span", { class: "eg-rank-nome", ...(l.moldura?.cor ? { style: `border-color:${l.moldura.cor}` } : {}) }, `${l.npc ? "🤖 " : ""}${l.nome}`);
-    return el("div", { class: `eg-rank-linha${l.eu ? " eu" : ""}${l.npc ? " npc" : ""}` },
-      el("span", { class: "eg-rank-pos" }, `${i + 1}º`), nome, l.titulo ? el("small", {}, l.titulo) : el("small", {}), el("strong", {}, `${l.pontos}`));
+    return el("div", { class: `eg-rank-linha${l.eu ? " eu" : ""}${l.npc ? " npc" : ""}${i < 3 ? ` top top${i + 1}` : ""}` },
+      el("span", { class: "eg-rank-pos" }, i < 3 ? `${["🥇", "🥈", "🥉"][i]} ${i + 1}º` : `${i + 1}º`), nome, l.titulo ? el("small", {}, l.titulo) : el("small", {}), el("strong", {}, `${l.pontos}`));
   }));
   const pr = r.premios ?? {};
   modal.abrir("Ranking de Treinadores",
