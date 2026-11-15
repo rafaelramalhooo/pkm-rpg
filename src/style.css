@@ -1324,3 +1324,14 @@ button:disabled { opacity: .72; }
 .eg-premio:not(#_) { grid-template-columns: minmax(0, 1fr); }
 .eg-rodape-bt:empty:not(#_) { display: none; }
 .eg-rodape:not(:has(button)):not(#_) { display: none; }
+
+/* ===== lote 23e: janelas dos jogadores (check-in, conquistas, desafios, ranking) também largas ===== */
+.modal:has(.modal-corpo > .eg-conq):not(#_) { width: min(96vw, 940px); max-width: none; }
+.modal:has(.modal-corpo > .eg-conq) .modal-corpo:not(#_) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; align-items: start; align-content: start; grid-auto-rows: max-content; }
+.modal:has(.modal-corpo > .eg-conq) .modal-corpo > :not(.eg-conq):not(#_) { grid-column: 1 / -1; }
+.modal:has(.eg-dia):not(#_) { width: min(96vw, 820px); max-width: none; }
+.modal:has(.eg-rank):not(#_) { width: min(96vw, 820px); max-width: none; }
+.eg-rank:not(#_) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 16px; align-items: start; }
+@media (max-width: 760px) {
+  .modal:has(.modal-corpo > .eg-conq) .modal-corpo:not(#_), .eg-rank:not(#_) { grid-template-columns: minmax(0, 1fr); }
+}
