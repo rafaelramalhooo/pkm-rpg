@@ -1335,3 +1335,9 @@ button:disabled { opacity: .72; }
 @media (max-width: 760px) {
   .modal:has(.modal-corpo > .eg-conq) .modal-corpo:not(#_), .eg-rank:not(#_) { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ===== lote 23f: lista de rivais NPC ===== */
+.eg-rivais:not(#_) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; }
+.eg-rival:not(#_) { display: grid; grid-template-columns: minmax(0, 1fr) 90px; gap: 6px 10px; align-items: end; padding: 8px 10px; border: 1px solid #c3cbdb; border-radius: 12px; background: linear-gradient(180deg, #fff, #eceff5); }
+.eg-rival > :is(.eg-mod, button):not(#_) { grid-column: 1 / -1; }
+@media (max-width: 760px) { .eg-rivais:not(#_) { grid-template-columns: minmax(0, 1fr); } }
