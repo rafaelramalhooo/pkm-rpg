@@ -27,6 +27,9 @@ const campo = (rotulo: string, entrada: HTMLElement, dica?: string): HTMLElement
 const entrada = (tipo: string, valor: string | number | undefined, extra: Record<string, string> = {}): HTMLInputElement =>
   el("input", { type: tipo, class: "eg-in", value: valor === undefined ? "" : String(valor), ...extra });
 
+const grade = (...nos: Node[]): HTMLElement => el("div", { class: "eg-campos" }, ...nos);
+const bloco = (titulo: string, ...nos: Node[]): HTMLElement => el("div", { class: "eg-bloco" }, el("strong", { class: "eg-bloco-tit" }, titulo), ...nos);
+
 async function catalogo(): Promise<Catalogo> {
   const { data } = await supabase.rpc("mestre_catalogo_premios");
   return (data ?? { itens: [], cosmeticos: [] }) as Catalogo;
@@ -131,7 +134,7 @@ export async function abrirMestreCheckin(modal: Modal, aviso: Aviso): Promise<vo
     topo.det.append(
       campo("Tema da semana (só para o senhor se organizar)", tema),
       el("strong", {}, "Prêmio da semana (ganho quando a meta de dias é cumprida)"), ep.no,
-      el("strong", {}, "Prêmio de cada dia (abra o dia para editar)"), ...dias);
+      el("strong", {}, "Prêmio de cada dia (abra o dia para editar)"), el("div", { class: "eg-dias" }, ...dias));
     return { det: topo.det };
   });
   const copiarMarca = el("input", { type: "checkbox" });
@@ -159,9 +162,9 @@ export async function abrirMestreCheckin(modal: Modal, aviso: Aviso): Promise<vo
       "Cumprindo a meta de dias da semana, ele ganha também o prêmio semanal. O ciclo começa na data de início (que é o Dia 1 da Semana 1).",
       "Itens só aceitam o que existe no catálogo. Para salvar, use o botão fixo no rodapé."),
     secao("Configuração geral"),
-    campo("Data de início (Dia 1 da Semana 1)", inicio),
-    campo("Dias de check-in na semana para ganhar o prêmio semanal", meta, "De 1 a 7. Uma sequência com falhas ainda conta se atingir essa meta."),
-    campo("Quando terminar a Semana 8", modo),
+    grade(campo("Data de início (Dia 1 da Semana 1)", inicio),
+      campo("Dias de check-in na semana para ganhar o prêmio semanal", meta, "De 1 a 7. Uma sequência com falhas ainda conta se atingir essa meta."),
+      campo("Quando terminar a Semana 8", modo)),
     secao("Prêmios por semana", "Toque numa semana para abrir. O cabeçalho já mostra o prêmio salvo."),
     ...semanas.map((x) => x.det),
     copiarRot,
@@ -205,8 +208,7 @@ export async function abrirMestreConquistas(modal: Modal, aviso: Aviso): Promise
       const b = botao("Salvar esta conquista", () => void salvarUma({ ...c, nome: nome.value, meta: num(meta.value) || 1, ativa: ativa.checked }, ep.ler));
       cd.det.append(
         el("p", { class: "eg-dica" }, `${c.descricao} Regra: ${nomeMetrica(c.metrica)} — meta ${c.meta} — ${nomePeriodo(c.periodo)}.`),
-        campo("Nome da conquista", nome),
-        campo("Meta (quantidade para concluir)", meta),
+        grade(campo("Nome da conquista", nome), campo("Meta (quantidade para concluir)", meta)),
         el("label", { class: "eg-mod" }, ativa, " Conquista ativa (desmarque para esconder e parar)"),
         el("strong", {}, "Prêmio"), ep.no, b);
       return cd.det;
@@ -222,8 +224,8 @@ export async function abrirMestreConquistas(modal: Modal, aviso: Aviso): Promise
   const nEp = editorPremio({}, cat);
   const criar = botao("Criar conquista", () => void salvarUma({ id: nId.value.trim(), categoria: "Personalizada", nome: nNome.value, descricao: nDesc.value, metrica: nMet.value, meta: num(nMeta.value) || 1, periodo: nPer.value, recompensa: {}, ordem: 500, grupo: null, ativa: true }, nEp.ler).then(() => abrirMestreConquistas(modal, aviso)));
   const nova = el("details", { class: "eg-sem" }, el("summary", {}, el("span", { class: "eg-sum-tit" }, "+ Nova conquista")),
-    campo("Código (único, sem espaços)", nId), campo("Nome", nNome), campo("Descrição mostrada ao jogador", nDesc),
-    campo("O que conta", nMet), campo("Meta (quantidade)", nMeta), campo("Período", nPer, "Total = soma de sempre; Dia/Semana = precisa acontecer dentro de um único dia/semana."),
+    grade(campo("Código (único, sem espaços)", nId), campo("Nome", nNome), campo("Descrição mostrada ao jogador", nDesc),
+      campo("O que conta", nMet), campo("Meta (quantidade)", nMeta), campo("Período", nPer, "Total = soma de sempre; Dia/Semana = precisa acontecer dentro de um único dia/semana.")),
     el("strong", {}, "Prêmio"), nEp.no, criar);
   modal.abrir("Mestre · Conquistas",
     ajuda("Como funciona",
@@ -295,21 +297,22 @@ export async function abrirMestreRanking(modal: Modal, aviso: Aviso): Promise<vo
       "O teto diário limita quantos pontos por dia podem vir de NPCs ou de Pokémon selvagens, para ninguém subir só repetindo isso.",
       "Mudanças valem para os próximos eventos. Use o botão fixo no rodapé para salvar."),
     secao("Duração do período"),
-    campo("Duração (dias)", duracao, "Vale para os próximos períodos."),
-    el("label", { class: "eg-mod" }, aplicar, " Aplicar essa duração também ao período que já está em andamento"),
+    grade(campo("Duração (dias)", duracao, "Vale para os próximos períodos."),
+      el("label", { class: "eg-mod" }, aplicar, " Aplicar essa duração também ao período que já está em andamento")),
     secao("Pontos de ranking por evento", "Quantos pontos cada ação rende."),
-    ...pts.map((x) => campo(ROT_PONTOS[x.k] ?? x.k, x.i)),
+    grade(...pts.map((x) => campo(ROT_PONTOS[x.k] ?? x.k, x.i))),
     secao("Limite de pontos por dia", "Depois de atingir o teto, o resto do dia não soma mais pontos daquele tipo."),
-    ...tetos.map((x) => campo(ROT_TETOS[x.k] ?? x.k, x.i)),
+    grade(...tetos.map((x) => campo(ROT_TETOS[x.k] ?? x.k, x.i))),
     secao("Prêmios do período"),
-    campo("Pontos mínimos para ganhar qualquer prêmio", minimo, "Abaixo disso o jogador não recebe nem o prêmio de participação."),
-    el("strong", {}, "1º lugar"), podios[0].no, el("strong", {}, "2º lugar"), podios[1].no, el("strong", {}, "3º lugar"), podios[2].no,
-    el("strong", {}, "Participação (quem atingiu o mínimo)"), part.no,
+    grade(campo("Pontos mínimos para ganhar qualquer prêmio", minimo, "Abaixo disso o jogador não recebe nem o prêmio de participação.")),
+    el("div", { class: "eg-premios" },
+      bloco("1º lugar", podios[0].no), bloco("2º lugar", podios[1].no), bloco("3º lugar", podios[2].no),
+      bloco("Participação (quem atingiu o mínimo)", part.no)),
     secao("Rivais NPC", "Rivais fictícios aparecem no ranking. O fator multiplica os pontos do líder (1 = igual, 0,5 = metade, 0 = não pontua)."),
-    ...rivais.map((x) => campo(x.r.nome, x.f)),
+    grade(...rivais.map((x) => campo(x.r.nome, x.f))),
     secao("Encerrar período", "Paga os prêmios agora e começa um período novo. Use apenas se quiser antecipar o fim."), fechar,
     secao("Pontuação dos jogadores", "Dê ou tire pontos manualmente (aparece como ajuste do Mestre)."),
-    ...(lin.length ? lin : [el("p", { class: "eg-dica" }, "Ninguém pontuou ainda.")]),
+    el("div", { class: "eg-campos" }, ...(lin.length ? lin : [el("p", { class: "eg-dica" }, "Ninguém pontuou ainda.")])),
     rodape(msg, salvar));
 }
 
@@ -336,7 +339,7 @@ export async function abrirMestreMiniquests(modal: Modal, aviso: Aviso): Promise
       mensagem(msg, er ? er.message : `Salvo: ${nome.value}`, er ? "erro" : "ok");
     });
     cd.det.append(
-      campo("Nome do desafio", nome), campo("Dica mostrada ao jogador (onde encontrar)", dica),
+      grade(campo("Nome do desafio", nome), campo("Dica mostrada ao jogador (onde encontrar)", dica)),
       el("label", { class: "eg-mod" }, ativa, " Desafio ativo (entra no sorteio)"),
       el("strong", {}, "Prêmio"), ep.no, b);
     return cd.det;
@@ -396,8 +399,8 @@ export async function abrirMestreEngajamento(modal: Modal, _aviso: Aviso): Promi
   }, "sec");
   modal.abrir("Mestre · Engajamento",
     ajuda("Como funciona", "Cada módulo pode ser ligado ou desligado. Desligar esconde e pausa o módulo para todos, sem apagar nenhum dado; ao ligar de novo, tudo volta como estava."),
-    secao("Módulos"), ...caixas.map((x) => x.no),
+    secao("Módulos"), el("div", { class: "eg-campos" }, ...caixas.map((x) => x.no)),
     secao("Presentear com um ovo", "Entrega um ovo direto para o jogador escolhido (só espécies da Geração 1 no Arco 1)."),
-    campo("Jogador", jog), campo("Espécie", esp), campo("Passos para chocar", passos), dar,
+    grade(campo("Jogador", jog), campo("Espécie", esp), campo("Passos para chocar", passos)), dar,
     rodape(msg, salvar));
 }
