@@ -1266,3 +1266,35 @@ button:disabled { opacity: .72; }
 .eg-rodape-bt { display: flex; gap: 8px; flex-wrap: wrap; }
 .eg-rodape-bt button { flex: 1; }
 @media (max-width: 480px) { .eg-grade3 { grid-template-columns: 1fr 1fr; } .eg-linha { grid-template-columns: 1fr; } }
+
+/* ===== lote 23c: telas do Mestre que cabem na janela; dinheiro da Mochila em branco ===== */
+.ss-topo .ss-din:not(#_) { color: #fff; background: #00000066; }
+.modal:has(.eg-ajuda):not(#_) { width: min(96vw, 680px); }
+.modal:has(.eg-ajuda) .modal-corpo:not(#_) { padding: 0 16px 4px; gap: 6px; }
+.modal:has(.eg-ajuda) .modal-corpo > * { min-width: 0; max-width: 100%; }
+.eg-premio:not(#_) { min-width: 0; box-sizing: border-box; overflow: hidden; display: grid; gap: 8px; }
+.eg-premio :is(input, select):not(#_) { width: 100%; min-width: 0; box-sizing: border-box; margin: 0; padding: 6px 8px; font-size: .85rem; }
+.eg-grade3:not(#_), .eg-grade2:not(#_), .eg-linha:not(#_) { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; align-items: end; }
+.eg-linha:not(#_) { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+@media (max-width: 460px) { .eg-linha:not(#_) { grid-template-columns: minmax(0, 1fr); } }
+.eg-campo:not(#_) { margin: 0; min-width: 0; }
+.eg-rot:not(#_) { font-size: .74rem; line-height: 1.15; min-height: 2.3em; display: flex; align-items: flex-end; }
+.eg-in:not(#_) { margin: 0; }
+.eg-sem:not(#_) { margin: 8px 0; padding: 0; overflow: hidden; }
+.eg-sem > summary:not(#_) { list-style: none; display: block; padding: 10px 12px 10px 30px; position: relative; outline: none; border-radius: 12px; }
+.eg-sem > summary:not(#_)::-webkit-details-marker { display: none; }
+.eg-sem > summary:not(#_)::before { content: "▸"; position: absolute; left: 12px; top: 10px; color: #17316a; font-size: .9rem; }
+.eg-sem[open] > summary:not(#_)::before { content: "▾"; }
+.eg-sem[open] > summary:not(#_) { border-bottom: 1px solid #c3cbdb; border-radius: 12px 12px 0 0; background: #e9eefb; }
+.eg-sem > summary:focus-visible:not(#_) { box-shadow: 0 0 0 2px #ff8a1f inset; }
+.eg-sem > :not(summary):not(#_) { margin-left: 12px; margin-right: 12px; }
+.eg-sem[open] > :last-child:not(#_) { margin-bottom: 12px; }
+.eg-sem[open] > summary + *:not(#_) { margin-top: 10px; }
+.eg-sem .eg-sem:not(#_) { margin: 6px 0; }
+.eg-sem button:not(#_) { width: 100%; }
+.eg-sem strong:not(#_) { display: block; margin: 8px 0 2px; color: #17316a; font-size: .85rem; }
+.eg-rodape:not(#_) { margin-left: -16px; margin-right: -16px; padding: 10px 16px 6px; background: #fff; border-top: 1px solid #c3cbdb; }
+.eg-ajuda:not(#_) { font-size: .8rem; }
+.eg-mod-bloco:not(#_) { margin: 0; }
+.eg-mod-bloco input:not(#_) { width: auto; margin-top: 3px; }
+.modal:has(.eg-ajuda) .ev-item:not(#_) { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 8px; border: 1px solid #c3cbdb; border-radius: 10px; margin: 4px 0; }
