@@ -1351,3 +1351,12 @@ button:disabled { opacity: .72; }
 .eg-rank-linha.top2:not(#_) { background: linear-gradient(180deg, #f6f8fb, #d5dbe5); border: 2px solid #9aa5b8; color: #2c3445; }
 .eg-rank-linha.top3:not(#_) { background: linear-gradient(180deg, #fde9d6, #e9b88a); border: 2px solid #b8763a; color: #4a2a0c; }
 @media (max-width: 760px) { .eg-rank:not(#_) { column-count: 1; } }
+
+/* ===== lote 23h: rivais vivos (modo, ritmo, pontos extras) e notícias do ranking ===== */
+.eg-rival:not(#_) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.eg-rival-extra:not(#_) { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; }
+.eg-rival-extra input:not(#_) { flex: 1; min-width: 0; }
+.eg-rival-extra button:not(#_) { flex: 0 0 auto; width: auto; }
+.eg-noticias:not(#_) { margin: 4px 0 10px; padding: 8px 12px; border-radius: 12px; background: #fff7e6; border: 1px solid #f0cf8a; color: #4a3500; font-size: .85rem; }
+.eg-noticias strong:not(#_) { display: block; margin-bottom: 4px; color: #6b4a00; }
+.eg-noticias p:not(#_) { margin: 2px 0; }

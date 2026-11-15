@@ -110,7 +110,7 @@ export async function abrirRanking(modal: Modal, aviso: Aviso): Promise<void> {
   await carregarReferencias();
   const { data, error } = await supabase.rpc("ranking_tabela");
   if (error) return aviso(error.message, 4000, true);
-  const r = data as { ativo: boolean; periodo?: { fim: string; dias_restantes: number }; meus_pontos?: number; linhas?: Linha[]; premios?: { minimo?: number; podio?: Premio[]; participacao?: Premio } };
+  const r = data as { ativo: boolean; periodo?: { fim: string; dias_restantes: number }; meus_pontos?: number; noticias?: string[]; linhas?: Linha[]; premios?: { minimo?: number; podio?: Premio[]; participacao?: Premio } };
   if (!r.ativo) return modal.abrir("Ranking", el("p", { class: "sub" }, "O ranking não está ativo no momento."));
   const linhas = r.linhas ?? [];
   const tabela = el("div", { class: "eg-rank" }, ...linhas.slice(0, 30).map((l, i) => {
@@ -119,7 +119,9 @@ export async function abrirRanking(modal: Modal, aviso: Aviso): Promise<void> {
       el("span", { class: "eg-rank-pos" }, i < 3 ? `${["🥇", "🥈", "🥉"][i]} ${i + 1}º` : `${i + 1}º`), nome, l.titulo ? el("small", {}, l.titulo) : el("small", {}), el("strong", {}, `${l.pontos}`));
   }));
   const pr = r.premios ?? {};
+  const noticias = r.noticias ?? [];
   modal.abrir("Ranking de Treinadores",
+    ...(noticias.length ? [el("div", { class: "eg-noticias" }, el("strong", {}, "📰 Notícias do mundo"), ...noticias.map((n) => el("p", {}, n)))] : []),
     el("p", { class: "sub" }, `Termina em ${r.periodo?.dias_restantes ?? 0} dia(s). Seus pontos: ${r.meus_pontos ?? 0}. Treinadores NPC também disputam: só os jogadores levam prêmio.`),
     el("p", { class: "sub" }, `Prêmios (mínimo de ${pr.minimo ?? 0} pontos): 🥇 ${textoPremio(pr.podio?.[0])} · 🥈 ${textoPremio(pr.podio?.[1])} · 🥉 ${textoPremio(pr.podio?.[2])} · participação: ${textoPremio(pr.participacao)}`),
     linhas.length ? tabela : el("p", { class: "sub" }, "Ninguém pontuou ainda. Vença batalhas para abrir o placar!"),

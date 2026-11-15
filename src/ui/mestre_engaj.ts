@@ -236,12 +236,16 @@ export async function abrirMestreConquistas(modal: Modal, aviso: Aviso): Promise
 }
 
 // ---------- Ranking ----------
+const MODOS_RIVAL: [string, string][] = [["lider", "Segue o líder"], ["autonomo", "Autônomo (ritmo próprio)"], ["media", "Segue a média dos jogadores"]];
+const seletorModo = (v: string): HTMLSelectElement => {
+  const s = el("select", { class: "eg-in" }, ...MODOS_RIVAL.map(([k, r]) => el("option", { value: k }, r))) as HTMLSelectElement; s.value = v; return s;
+};
 interface DadosRanking {
   periodo: { id: number; inicio: string; fim: string };
   duracao: number;
   pontos: Record<string, number>; tetos: Record<string, number>; pares: number[];
   premios: { minimo: number; podio: Premio[]; participacao: Premio };
-  rivais: { id: string; nome: string; fator: number; ativo: boolean }[];
+  rivais: { id: string; nome: string; fator: number; ativo: boolean; modo: string; ritmo: number }[];
   jogadores: { id: string; nome: string; pontos: number }[];
 }
 const ROT_PONTOS: Record<string, string> = {
@@ -265,21 +269,36 @@ export async function abrirMestreRanking(modal: Modal, aviso: Aviso): Promise<vo
   const part = editorPremio(d.premios.participacao, cat);
   const rivais = d.rivais.map((r) => {
     const ativo = el("input", { type: "checkbox" }) as HTMLInputElement; ativo.checked = r.ativo;
-    return { r, n: entrada("text", r.nome, { maxlength: "30" }), f: entrada("number", r.fator, { step: "0.05", min: "0", max: "2" }), ativo };
+    return { r, n: entrada("text", r.nome, { maxlength: "30" }), f: entrada("number", r.fator, { step: "0.05", min: "0", max: "2" }), ativo,
+      modo: seletorModo(r.modo), ritmo: entrada("number", r.ritmo, { step: "1", min: "0", max: "1000" }) };
   });
-  const linhaRival = (x: (typeof rivais)[number]): HTMLElement => el("div", { class: "eg-rival" },
-    campo("Nome", x.n), campo("Fator", x.f),
+  const linhaRival = (x: (typeof rivais)[number]): HTMLElement => {
+    const cFator = campo("Fator (x do líder ou da média)", x.f);
+    const cRitmo = campo("Ritmo (pontos por dia)", x.ritmo);
+    const alternar = (): void => { const aut = x.modo.value === "autonomo"; cFator.style.display = aut ? "none" : ""; cRitmo.style.display = aut ? "" : "none"; };
+    x.modo.addEventListener("change", alternar); alternar();
+    const extra = entrada("number", "", { placeholder: "± pontos (ex.: 30 ou -10)" });
+    return el("div", { class: "eg-rival" },
+    campo("Nome", x.n), campo("Como pontua", x.modo), cFator, cRitmo,
     el("label", { class: "eg-mod" }, x.ativo, " Aparece no ranking"),
+    el("div", { class: "eg-rival-extra" }, extra, botao("Dar pontos", async () => {
+      const { error: er } = await supabase.rpc("mestre_rival_pontos", { p_id: x.r.id, p_delta: Math.trunc(Number(extra.value) || 0) });
+      if (er) return mensagem(msg, er.message);
+      mensagem(msg, `Pontos de ${x.n.value} ajustados.`, "ok"); extra.value = "";
+    }, "sec")),
     botao("Remover", async () => {
       if (!window.confirm(`Remover o rival "${x.n.value}"? Para só esconder, desmarque "Aparece no ranking".`)) return;
       const { error: er } = await supabase.rpc("mestre_rival_remover", { p_id: x.r.id });
       if (er) return mensagem(msg, er.message);
       void abrirMestreRanking(modal, aviso);
     }, "sec"));
+  };
   const novoNome = entrada("text", "", { maxlength: "30", placeholder: "Nome do novo rival" });
   const novoFator = entrada("number", 0.5, { step: "0.05", min: "0", max: "2" });
+  const novoModo = seletorModo("autonomo");
+  const novoRitmo = entrada("number", 40, { step: "1", min: "0", max: "1000" });
   const adicionar = botao("Adicionar rival", async () => {
-    const { error: er } = await supabase.rpc("mestre_rival_criar", { p_nome: novoNome.value, p_fator: Number(novoFator.value) });
+    const { error: er } = await supabase.rpc("mestre_rival_criar", { p_nome: novoNome.value, p_fator: Number(novoFator.value), p_modo: novoModo.value, p_ritmo: Number(novoRitmo.value) });
     if (er) return mensagem(msg, er.message);
     void abrirMestreRanking(modal, aviso);
   }, "sec");
@@ -288,7 +307,7 @@ export async function abrirMestreRanking(modal: Modal, aviso: Aviso): Promise<vo
       duracao: num(duracao.value), aplicar_atual: aplicar.checked,
       pontos: Object.fromEntries(pts.map((x) => [x.k, num(x.i.value)])), tetos: Object.fromEntries(tetos.map((x) => [x.k, num(x.i.value)])),
       premios: { minimo: num(minimo.value), podio: podios.map((x) => x.ler()), participacao: part.ler() },
-      rivais: rivais.map((x) => ({ id: x.r.id, nome: x.n.value.trim(), fator: Number(x.f.value) || 0, ativo: x.ativo.checked })),
+      rivais: rivais.map((x) => ({ id: x.r.id, nome: x.n.value.trim(), fator: Number(x.f.value) || 0, ativo: x.ativo.checked, modo: x.modo.value, ritmo: Number(x.ritmo.value) || 0 })),
     };
     const { error: er } = await supabase.rpc("mestre_ranking_salvar", { p });
     mensagem(msg, er ? er.message : "Configuração salva.", er ? "erro" : "ok");
@@ -327,10 +346,10 @@ export async function abrirMestreRanking(modal: Modal, aviso: Aviso): Promise<vo
     el("div", { class: "eg-premios" },
       bloco("1º lugar", podios[0].no), bloco("2º lugar", podios[1].no), bloco("3º lugar", podios[2].no),
       bloco("Participação (quem atingiu o mínimo)", part.no)),
-    secao("Rivais NPC", "Rivais fictícios aparecem no ranking para animar a disputa. Mude o nome à vontade. O fator multiplica os pontos do líder (1 = igual, 0,5 = metade, 0 = não pontua). Rival desmarcado some do ranking e pode voltar depois. As \"Vagas livres\" estão desligadas: troque o nome e marque para usar."),
+    secao("Rivais NPC", "Rivais fictícios aparecem no ranking para dar vida ao mundo. Cada um pontua de um jeito: \"Segue o líder\" (fator x os pontos do líder: bom para rivais inalcançáveis), \"Autônomo\" (ritmo próprio em pontos por dia, com dias parados e maratonas: pode ultrapassar qualquer um) ou \"Segue a média\" (fator x a média dos jogadores: sempre ao alcance de quem está começando). Rival desmarcado some do ranking e pode voltar. Use \"Dar pontos\" para uma ultrapassagem dramática. As \"Vagas livres\" estão desligadas: troque o nome e marque para usar."),
     el("div", { class: "eg-rivais" }, ...rivais.map(linhaRival)),
     secao("Novo rival"),
-    grade(campo("Nome", novoNome), campo("Fator", novoFator), adicionar),
+    grade(campo("Nome", novoNome), campo("Como pontua", novoModo), campo("Fator (se líder ou média)", novoFator), campo("Ritmo (se autônomo)", novoRitmo), adicionar),
     secao("Encerrar período", "Paga os prêmios agora e começa um período novo. Use apenas se quiser antecipar o fim."), fechar,
     secao("Pontuação dos jogadores", "Dê ou tire pontos manualmente (aparece como ajuste do Mestre)."),
     el("div", { class: "eg-campos" }, ...(lin.length ? lin : [el("p", { class: "eg-dica" }, "Ninguém pontuou ainda.")])),
