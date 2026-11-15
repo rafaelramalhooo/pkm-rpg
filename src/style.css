@@ -1244,3 +1244,25 @@ button:disabled { opacity: .72; }
 .eg-dia-ed { margin: 6px 0; }
 .eg-mod { display: block; padding: 4px 0; }
 .modal.claro :is(.eg-dia, .eg-conq, .eg-rank-linha, .eg-sem) { background: linear-gradient(180deg, #ffffff, #eceff5); border: 1px solid #c3cbdb; color: #1b2438; }
+
+/* ===== lote 23b: telas do Mestre (engajamento) mais claras ===== */
+.eg-ajuda { margin: 4px 0 10px; padding: 8px 10px; border-radius: 10px; background: #eef3ff; border: 1px solid #b9c8ee; color: #1b2438; font-size: .8rem; line-height: 1.35; }
+.eg-ajuda p { margin: 4px 0 0; }
+.eg-secao { margin-top: 14px; padding-top: 8px; border-top: 1px solid #c3cbdb; }
+.eg-secao .eg-cat { margin: 0 0 2px; color: #17316a; font-size: .95rem; }
+.eg-dica { display: block; margin: 2px 0 4px; font-size: .72rem; color: #5a6784; font-weight: 400; }
+.eg-campo { display: block; margin: 6px 0; }
+.eg-rot { display: block; font-size: .76rem; font-weight: 700; color: #17316a; margin-bottom: 2px; }
+.eg-grade2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; }
+.eg-grade3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 8px; }
+.eg-linha { display: grid; grid-template-columns: 2fr 1fr; gap: 6px 8px; align-items: end; }
+.eg-premio { margin: 6px 0 10px; padding: 8px; border-radius: 10px; background: #f6f8fc; border: 1px dashed #aeb9cf; }
+.eg-resumo { font-size: .78rem; font-weight: 700; color: #17316a; margin-bottom: 4px; }
+.eg-sum-tit { font-weight: 700; display: block; }
+.eg-sum-prem { display: block; font-size: .72rem; font-weight: 400; color: #5a6784; margin-top: 1px; }
+.eg-sem > summary { cursor: pointer; }
+.eg-mod-bloco { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; }
+.eg-rodape { position: sticky; bottom: 0; z-index: 5; margin-top: 12px; padding: 8px 0 4px; background: linear-gradient(180deg, #ffffff00, #ffffff 25%); }
+.eg-rodape-bt { display: flex; gap: 8px; flex-wrap: wrap; }
+.eg-rodape-bt button { flex: 1; }
+@media (max-width: 480px) { .eg-grade3 { grid-template-columns: 1fr 1fr; } .eg-linha { grid-template-columns: 1fr; } }
