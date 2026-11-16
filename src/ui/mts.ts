@@ -92,6 +92,7 @@ export async function abrirLojaMT(modal: Modal, poi: string, dinheiro: number, a
   if (!mts.length) nos.push(el("p", { class: "sub" }, "Não há MTs novas à venda agora."));
   for (const m of mts) {
     const linha = el("div", { class: "item-cartao loja mt-loja" }, ficha(m, ` · ₽ ${m.preco}`));
+    linha.dataset.q = (() => { const g = golpe(m.golpe_id); return `${rotulo(m)} ${m.num} ${g.nome} ${NOME_TIPO[g.tipo] ?? g.tipo} ${CAT[g.categoria] ?? ""}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); })();
     const b = el("button", { type: "button", class: "sec" }, "Comprar");
     b.addEventListener("click", async () => {
       b.disabled = true;
@@ -109,5 +110,14 @@ export async function abrirLojaMT(modal: Modal, poi: string, dinheiro: number, a
   const grade = el("div", { class: "grade-loja" });
   const fixos = nos.slice(0, 2); const itens = nos.slice(2);
   grade.append(...itens);
-  modal.abrir("MTs à venda", ...fixos, grade);
+  const busca = el("input", { type: "search", class: "mt-busca", placeholder: "🔍 Buscar MT (nome, número ou tipo)…" }) as HTMLInputElement;
+  const vazio = el("p", { class: "sub", hidden: "" }, "Nenhuma MT encontrada.");
+  const norm = (t: string): string => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  busca.addEventListener("input", () => {
+    const q = norm(busca.value.trim());
+    let n = 0;
+    Array.from(grade.children).forEach((c) => { const ok = !q || ((c as HTMLElement).dataset.q ?? "").includes(q); (c as HTMLElement).style.display = ok ? "" : "none"; if (ok) n++; });
+    vazio.hidden = n > 0;
+  });
+  modal.abrir("MTs à venda", ...fixos, busca, vazio, grade);
 }

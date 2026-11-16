@@ -18,6 +18,7 @@ import { aoEstado, consultar, type PingEstado } from "./acesso";
 import { abrirMochila as abrirMochilaSS } from "./mochila";
 import { abrirMTs, abrirLojaMT } from "./mts";
 import { abrirResumo } from "./resumo";
+import { caixaFala, definirFalante } from "./fala";
 import { criarAtalhos, type AcaoAtalho } from "./atalhos";
 import { blocoInsignias } from "./cartao";
 import { abrirOrganizar } from "./organizar";
@@ -629,7 +630,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     if (emBatalha) return false;
     const aceitou = await new Promise<boolean>((ok) => {
       const lutar = botao(ehDesafiante(t.id) ? `Aceitar o desafio! (−${custoDesafiante} PA)` : "Aceitar o desafio!", () => { modal.aoFechar(null); modal.fechar(); ok(true); }, "");
-      modal.abrir(`${t.classe} ${t.nome}`, el("p", { class: "fala" }, `"${t.falas.antes ?? "Vamos lutar!"}"`), lutar);
+      definirFalante(t.aparencia);
+      modal.abrir(`${t.classe} ${t.nome}`, caixaFala(`${t.classe} ${t.nome}`, t.falas.antes ?? "Vamos lutar!", lutar));
       modal.aoFechar(() => ok(false));
       lutar.focus();
     });
@@ -1014,7 +1016,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       treinadores: listarTreinadores,
       pistas: carregarPistas,
       aoTreinador,
-      aoNpcMissao: async (t) => { if (t.id === "prof-carvalho") { await abrirPoi({ id: "prof", tipo: "lab", x: 6, y: 7 } as unknown as Poi); return; } if (t.id === "mvpk") { await observarPokemon(modal, mostrarAviso, async (r) => { await carregarReferencias(); await lutar(r as ResultadoBatalha); }); atualizarHud(); void recarregarJogador(); return; } if (t.tipo === "fofoqueiro" || t.tipo === "mural") { await mostrarPistas(modal, t.tipo, t.tipo === "mural" ? "Mural de avisos" : "Fofoqueiro"); return; } if (t.id.startsWith("mv_")) { await interagirMv(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); return; } if (t.id.startsWith("pd_")) { await conversarPedra(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }); return; } await conversarNpc(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); },
+      aoNpcMissao: async (t) => { definirFalante(t.aparencia); if (t.id === "prof-carvalho") { await abrirPoi({ id: "prof", tipo: "lab", x: 6, y: 7 } as unknown as Poi); return; } if (t.id === "mvpk") { await observarPokemon(modal, mostrarAviso, async (r) => { await carregarReferencias(); await lutar(r as ResultadoBatalha); }); atualizarHud(); void recarregarJogador(); return; } if (t.tipo === "fofoqueiro" || t.tipo === "mural") { await mostrarPistas(modal, t.tipo, t.tipo === "mural" ? "Mural de avisos" : "Fofoqueiro"); return; } if (t.id.startsWith("mv_")) { await interagirMv(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); return; } if (t.id.startsWith("pd_")) { await conversarPedra(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }); return; } await conversarNpc(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); },
     });
   } catch (e) {
     mostrarAviso(e instanceof Error ? e.message : "Não foi possível abrir o jogo.");

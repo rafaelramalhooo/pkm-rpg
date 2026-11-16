@@ -1,6 +1,7 @@
 // Mundo vivo: NPCs do turno, Pokémon do dia, pistas (Fofoqueiro/Mural) e prêmios. Tudo é validado no servidor.
 import { supabase } from "../supabase";
 import { el } from "./dom";
+import { caixaFala } from "./fala";
 import { carregarReferencias, nomeItem } from "./dados";
 
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void; aoFechar: (fn: (() => void) | null) => void };
@@ -95,16 +96,16 @@ export async function interagirMv(modal: Modal, npcId: string, titulo: string, a
       const fechar = (v: { id: string } | null): void => { modal.aoFechar(null); modal.fechar(); resolve(v); };
       const nos: Node[] = [];
       if (r.mensagem) nos.push(el("p", { class: "sub" }, r.mensagem));
-      if (r.texto) nos.push(el("p", { class: "fala-npc" }, `"${r.texto}"`));
+      const extras: Node[] = [];
       const pr = textoPremio(r.premio);
-      if (pr) nos.push(el("div", { class: "rec-lista" }, ...pr.split(" · ").map((t) => el("span", {}, t))));
+      if (pr) extras.push(el("div", { class: "rec-lista" }, ...pr.split(" · ").map((t) => el("span", {}, t))));
       for (const o of r.opcoes ?? []) {
         const b = botao(`${o.rotulo}${o.custo_pa ? ` (−${o.custo_pa} PA)` : ""}`, () => fechar({ id: o.id }));
-        nos.push(b);
-        if (o.detalhe) nos.push(el("p", { class: "sub" }, o.detalhe));
+        extras.push(b);
+        if (o.detalhe) extras.push(el("p", { class: "sub" }, o.detalhe));
       }
-      nos.push(botao(r.opcoes?.length ? "Sair" : "Ok", () => fechar(null), "sec"));
-      modal.abrir(titulo, ...nos);
+      extras.push(botao(r.opcoes?.length ? "Sair" : "Ok", () => fechar(null), "sec"));
+      modal.abrir(titulo, ...nos, r.texto ? caixaFala(titulo, r.texto, ...extras) : el("div", {}, ...extras));
       modal.aoFechar(() => resolve(null));
     });
     if (!escolha) return;

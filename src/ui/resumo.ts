@@ -1,4 +1,6 @@
 import { el } from "./dom";
+import { supabase } from "../supabase";
+import { fichaEspecie } from "./pokedex";
 import { dicaPorId, dicaGolpe } from "./dica";
 import { barraHp, COR_TIPO, especie, golpe, imagemPokemon, NOME_TIPO, nomePokemon, type PokemonRow } from "./dados";
 
@@ -37,7 +39,7 @@ export function hexagono(p: PokemonRow): SVGElement {
 }
 
 /** Tela de resumo do Pokémon (estilo Arceus): retrato, tipos, hexágono de atributos, golpes, experiência. */
-export function abrirResumo(modal: Modal, p: PokemonRow, voltar?: () => void): void {
+export function abrirResumo(modal: Modal, p: PokemonRow, voltar?: () => void, aba: "resumo" | "dex" = "resumo"): void {
   const e = especie(p.especie_id);
   const hp = barraHp(p.hp_atual, p.hp_max);
   const hpFill = el("div", { class: `hp-fill ${hp.classe}` });
@@ -64,7 +66,46 @@ export function abrirResumo(modal: Modal, p: PokemonRow, voltar?: () => void): v
   const dir = el("div", { class: "rs-dir" }, hexagono(p),
     el("small", { class: "rs-info" }, `Natureza: ${p.natureza ?? "—"} · Amizade: ${p.amizade ?? "—"}/255`),
     el("div", { class: "rs-golpes" }, ...golpes));
-  const nos: Node[] = [el("div", { class: "rs-tela" }, esq, dir)];
+  const abas = el("div", { class: "rs-abas" });
+  for (const [k, t] of [["resumo", "📋 Resumo"], ["dex", "📖 Dex & Golpes"]] as const) {
+    const b = el("button", { type: "button", class: `rs-aba${k === aba ? " ativa" : ""}` }, t);
+    b.addEventListener("click", () => { if (k !== aba) abrirResumo(modal, p, voltar, k); });
+    abas.append(b);
+  }
+  const corpo: Node = aba === "dex" ? abaDex(p) : el("div", { class: "rs-tela" }, esq, dir);
+  const nos: Node[] = [abas, corpo];
   if (voltar) { const b = el("button", { type: "button", class: "sec" }, "◀ Voltar"); b.addEventListener("click", voltar); nos.push(b); }
   modal.abrir(`${e.nome} — Resumo`, ...nos);
+}
+
+
+/** Aba Dex: ficha da espécie + golpes por nível + MTs compatíveis (marca o que o Pokémon já sabe). */
+function abaDex(p: PokemonRow): HTMLElement {
+  const caixa = el("div", { class: "rs-dex" }, el("p", { class: "sub" }, "Carregando…"));
+  void (async () => {
+    const sabe = new Set(p.golpes.map((g) => g.id));
+    const [ficha, ap, comp, cat] = await Promise.all([
+      fichaEspecie(p.especie_id),
+      supabase.from("aprende").select("golpe_id,nivel").eq("especie_id", p.especie_id).order("nivel").limit(1000),
+      supabase.from("mt_compat").select("golpe_id").eq("especie_id", p.especie_id).limit(1000),
+      supabase.from("mt_catalogo").select("num,golpe_id").limit(1000),
+    ]);
+    const linha = (id: number, ini: string): HTMLElement => {
+      const g = golpe(id);
+      const r = el("div", { class: `dx-golpe${sabe.has(id) ? " sabe" : ""}` }, el("span", { class: "dx-nv" }, ini), el("b", {}, g.nome),
+        el("span", { class: "dx-info" }, `${NOME_TIPO[g.tipo] ?? g.tipo} · ${g.poder ?? "—"} · ${g.precisao ? g.precisao + "%" : "—"} · PP ${g.pp}`));
+      r.style.setProperty("--cor", COR_TIPO[g.tipo] ?? "#888");
+      dicaGolpe(r, dicaPorId(id), true);
+      return r;
+    };
+    const nivs = ((ap.data ?? []) as { golpe_id: number; nivel: number }[]);
+    const pode = new Set(((comp.data ?? []) as { golpe_id: number }[]).map((r) => r.golpe_id));
+    const mts = ((cat.data ?? []) as { num: number; golpe_id: number }[]).filter((m) => pode.has(m.golpe_id)).sort((a, b) => a.num - b.num);
+    caixa.replaceChildren(ficha,
+      el("div", { class: "dx-sec" }, el("strong", {}, `Golpes por nível (${nivs.length})`), el("small", {}, "Destacados: o Pokémon já sabe"),
+        el("div", { class: "dx-lista" }, ...(nivs.length ? nivs.map((r) => linha(r.golpe_id, r.nivel <= 1 ? "Nv 1" : `Nv ${r.nivel}`)) : [el("p", { class: "sub" }, "Sem dados.")]))),
+      el("div", { class: "dx-sec" }, el("strong", {}, `MTs compatíveis (${mts.length})`),
+        el("div", { class: "dx-lista" }, ...(mts.length ? mts.map((m) => linha(m.golpe_id, `MT${String(m.num).padStart(3, "0")}`)) : [el("p", { class: "sub" }, "Nenhuma MT compatível.")]))));
+  })();
+  return caixa;
 }

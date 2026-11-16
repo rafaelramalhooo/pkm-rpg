@@ -57,7 +57,8 @@ async function montar(b: Any, uid: string) {
     hp: 9999, golpes: a.golpes.map((g: Any) => ({ slug: slug.get(g.id), pp: g.pp })),
   }));
   const seed = [sorteio(65536), sorteio(65536), sorteio(65536), sorteio(65536)];
-  const r = criar({ time, inimigos, seed, rpg: bon.foco > 0 ? { foco: bon.foco } : null });
+  const evB = ((await admin.rpc("evento_batalha")).data ?? {}) as { clima?: string | null };
+  const r = criar({ time, inimigos, seed, rpg: bon.foco > 0 || evB.clima ? { ...(bon.foco > 0 ? { foco: bon.foco } : {}), ...(evB.clima ? { clima: evB.clima } : {}) } : null });
   const meta = {
     time: lista.map((p: Any) => p.id), participantes: [lista[0].id], fuga: 0, ativo: lista[0].id, treinador: nomeTreinador,
     inimigos: adv.map((a: Any) => ({ exp_base: a.exp_base, nivel: a.nivel, especie_id: a.especie_id, golpes: a.golpes, caiu: false })),
@@ -370,7 +371,8 @@ Deno.serve(async (req) => {
       if (b.tipo !== "selvagem") throw new Error("Não dá para capturar Pokémon de treinadores.");
       const mult0 = BOLAS[item];
       if (!mult0) throw new Error("Bola desconhecida.");
-      const mult = mult0 === 255 ? mult0 : mult0 * (1 + (await bonusDe(uid)).captura / 100);
+      const evB = ((await admin.rpc("evento_batalha")).data ?? {}) as { captura?: number; clima?: string | null };
+      const mult = mult0 === 255 ? mult0 : mult0 * (1 + (await bonusDe(uid)).captura / 100) * Number(evB.captura ?? 1);
       const d = dadosBasicos(estado);
       await gastarItem(uid, item);
       const sel = meta.inimigos[0];

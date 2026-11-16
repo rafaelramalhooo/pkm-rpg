@@ -1,6 +1,7 @@
 // Missões: estado para o HUD/Mapa Mundi e diálogo com os NPCs de missão (tudo validado no servidor).
 import { supabase } from "../supabase";
 import { el } from "./dom";
+import { caixaFala } from "./fala";
 import { carregarReferencias, nomeItem } from "./dados";
 import { textoEventos } from "./habilidades";
 import { processarEventos } from "./momentos";
@@ -31,9 +32,10 @@ export async function conversarNpc(modal: Modal, npcId: string, titulo: string, 
   const r = data as Resp;
   await new Promise<void>((fim) => {
     const fechar = (): void => { modal.aoFechar(null); modal.fechar(); fim(); };
-    const nos: Node[] = [el("p", { class: "fala-npc" }, `"${r.texto}"`)];
+    const nos: Node[] = [];
+    const extras: Node[] = nos;
     if (r.tipo === "oferta") {
-      nos.unshift(el("p", { class: "sub" }, `Missão: ${r.missao}`));
+      extras.push(el("p", { class: "sub" }, `Missão: ${r.missao}`));
       nos.push(el("p", { class: "sub" }, r.descricao ?? ""));
       const ok = el("button", { type: "button" }, "Aceitar a missão");
       ok.addEventListener("click", async () => {
@@ -58,7 +60,7 @@ export async function conversarNpc(modal: Modal, npcId: string, titulo: string, 
       b.addEventListener("click", fechar);
       nos.push(b);
     }
-    modal.abrir(titulo, ...nos);
+    modal.abrir(titulo, caixaFala(titulo, r.texto ?? "", ...nos));
     modal.aoFechar(() => fim());
   });
   if (r.tipo === "avanca") { aoMudar(); await processarEventos(r.eventos); }
@@ -72,14 +74,14 @@ export async function conversarPedra(modal: Modal, npcId: string, titulo: string
   const r = data as { res: string; nome: string; texto: string; pedra?: string; item?: string; preco?: number };
   await new Promise<void>((fim) => {
     const fechar = (): void => { modal.aoFechar(null); modal.fechar(); fim(); };
-    const nos: Node[] = [el("p", { class: "fala-npc" }, `"${r.texto}"`)];
+    const nos: Node[] = [];
     if (r.res === "avanca" && r.pedra) nos.push(el("p", { class: "sub" }, `Busca: ${r.pedra} — objetivo cumprido, siga adiante!`));
     if (r.res === "concluida" && r.item) nos.push(el("p", { class: "sub" }, `Você pagou ₽ ${r.preco ?? 0} e recebeu: ${nomeItem(r.item)}!`));
     if (r.res === "sem_dinheiro") nos.push(el("p", { class: "sub" }, `Valor necessário: ₽ ${r.preco ?? 0}.`));
     const b = el("button", { type: "button" }, "Ok");
     b.addEventListener("click", fechar);
     nos.push(b);
-    modal.abrir(titulo, ...nos);
+    modal.abrir(titulo, caixaFala(titulo, r.texto, ...nos));
     modal.aoFechar(() => fim());
   });
   if (r.res === "avanca" || r.res === "concluida") aoMudar();

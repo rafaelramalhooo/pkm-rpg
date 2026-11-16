@@ -1543,3 +1543,49 @@ button:disabled { opacity: .72; }
 .sd-capt { margin: 6px 0 4px; padding: 5px 8px; border-radius: 8px; font-size: .78rem; font-weight: 700; text-align: center; }
 .sd-capt.sim { background: #1f4d2f; color: #bff5cf; border: 1px solid #3f9a5e; }
 .sd-capt.nao { background: #3a3350; color: #e6dcff; border: 1px dashed #8c7fb8; }
+
+/* clima (evento do Mestre): leve camada animada sobre o jogo */
+body[data-clima="rain"]::after, body[data-clima="snow"]::after, body[data-clima="sand"]::after, body[data-clima="sun"]::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 40; }
+body[data-clima="rain"]::after { background: repeating-linear-gradient(105deg, rgba(180,200,255,.0) 0 10px, rgba(180,200,255,.35) 10px 11px, rgba(180,200,255,0) 11px 24px); animation: clima-chuva .5s linear infinite; background-color: rgba(30,50,90,.18); }
+body[data-clima="snow"]::after { background: radial-gradient(circle, rgba(255,255,255,.85) 0 1.5px, transparent 2px) 0 0/38px 38px, radial-gradient(circle, rgba(255,255,255,.6) 0 1px, transparent 1.6px) 14px 20px/26px 26px; animation: clima-neve 3s linear infinite; background-color: rgba(200,220,255,.08); }
+body[data-clima="sand"]::after { background: rgba(200,160,80,.22); animation: clima-areia 2s ease-in-out infinite alternate; }
+body[data-clima="sun"]::after { background: radial-gradient(circle at 85% 8%, rgba(255,220,120,.35), transparent 55%); }
+@keyframes clima-chuva { to { background-position: -24px 40px; } }
+@keyframes clima-neve { to { background-position: 10px 38px, 24px 46px; } }
+@keyframes clima-areia { to { background: rgba(200,160,80,.34); } }
+@media (prefers-reduced-motion: reduce) { body[data-clima]::after { animation: none !important; } }
+
+/* Aba Dex no resumo do Pokémon + busca de MTs */
+.rs-abas{display:flex;gap:6px;margin-bottom:8px;position:sticky;top:0;z-index:2}
+.rs-aba{flex:1;padding:8px 10px;border-radius:10px;border:1px solid #ffffff30;background:#ffffff10;color:inherit;font-weight:700;cursor:pointer}
+.rs-aba.ativa{background:#f5c54230;border-color:#f5c542;color:#f5c542}
+.rs-dex{max-height:min(68vh,560px);overflow-y:auto;padding-right:4px;-webkit-overflow-scrolling:touch}
+.rs-dex .dx-sec{margin-top:12px}
+.rs-dex .dx-sec>small{display:block;opacity:.7;margin:2px 0 6px}
+.dx-lista{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.dx-golpe{display:grid;grid-template-columns:58px 1fr;gap:2px 8px;align-items:center;padding:6px 8px;border-radius:8px;background:#ffffff0d;border-left:4px solid var(--cor,#888)}
+.dx-golpe.sabe{background:#f5c54222;outline:1px solid #f5c54280}
+.dx-golpe .dx-nv{font-weight:800;color:#f5c542;font-size:.8rem;grid-row:span 2}
+.dx-golpe .dx-info{font-size:.75rem;opacity:.75}
+.mt-busca{width:100%;box-sizing:border-box;margin:6px 0 8px;padding:10px 12px;border-radius:10px;border:1px solid #ffffff40;background:#00000040;color:inherit;font-size:1rem}
+@media (max-width:520px){.rs-dex{max-height:62vh}}
+
+/* Caixa de fala estilo RPG */
+.fala-wrap{display:flex;flex-direction:column;gap:8px;margin:4px 0}
+.fala-rpg{display:flex;gap:10px;align-items:stretch}
+.fala-retrato{flex:0 0 auto;width:72px;height:72px;align-self:flex-start;border-radius:12px;border:3px solid #f5c542;background:#0b1735 no-repeat;background-size:163px auto;background-position:-4px -37px;image-rendering:pixelated;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 2px 0 #000a}
+.fala-retrato.sem{background-image:none}
+.fala-corpo{position:relative;flex:1;min-height:96px;padding:22px 14px 18px;border:3px solid #f5c542;border-radius:12px;background:linear-gradient(180deg,#14224a,#0b1735);color:#fff;cursor:pointer;box-shadow:0 3px 0 #000a,inset 0 0 0 2px #ffffff18;outline:none}
+.fala-corpo:focus-visible{box-shadow:0 0 0 3px #4f8cff}
+.fala-placa{position:absolute;top:-13px;left:12px;display:flex;gap:6px;align-items:baseline;padding:2px 10px;border-radius:8px;background:#f5c542;color:#1b2438;font-size:.85rem;box-shadow:0 2px 0 #000a}
+.fala-placa small{font-size:.7rem;opacity:.75}
+.fala-texto{margin:0;font-size:1.05rem;line-height:1.5;min-height:3em;white-space:pre-wrap}
+.fala-seta{position:absolute;right:12px;bottom:6px;color:#f5c542;animation:fala-pisca 1s steps(2) infinite}
+.fala-dica{text-align:center;opacity:.65}
+.fala-extras{display:flex;flex-direction:column;gap:8px;animation:fala-entra .25s ease-out}
+@keyframes fala-pisca{50%{opacity:0}}
+@keyframes fala-entra{from{opacity:0;transform:translateY(6px)}}
+@media (max-width:520px){.fala-retrato{width:56px;height:56px;background-size:127px auto;background-position:-3px -29px}.fala-texto{font-size:1rem}}
+@media (prefers-reduced-motion:reduce){.fala-seta,.fala-extras{animation:none}}
+.modal.claro .fala-corpo,.mg-pop-caixa .fala-corpo{color:#fff}
+.fala-extras[hidden],.fala-dica[hidden]{display:none}
