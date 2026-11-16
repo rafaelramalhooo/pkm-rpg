@@ -3,7 +3,7 @@ import { aoTrocarTela, el, geracaoAtual, mensagem, montar } from "./dom";
 import type { Controle, Lugar, Poi, TreinadorMapa } from "../game/mundo";
 import { abrirBatalha, type ResultadoBatalha } from "./batalha";
 import {
-  barraHp, carregarReferencias, COR_TIPO, especie, golpe, imagemPokemon, meuTime, NOME_TIPO, nomeItem, textoSobre,
+  barraHp, carregarReferencias, chipsTipo, COR_TIPO, especie, golpe, imagemPokemon, meuTime, NOME_TIPO, nomeItem, textoSobre,
   nomePokemon, todasEspecies, type PokemonRow,
 } from "./dados";
 import { carregarMissao, conversarNpc, conversarPedra, type MissaoEstado } from "./missao";
@@ -405,7 +405,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       const fill = el("div", { class: `hp-fill ${hp.classe}` });
       fill.style.width = `${hp.pct}%`;
       return el("div", { class: `dash-pk${p.hp_atual <= 0 ? " caido" : ""}` }, imagemPokemon("frente", p.especie_id, "mini", p.brilhante),
-        el("div", { class: "dash-pk-info" }, el("strong", {}, nomePokemon(p)), el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`), el("div", { class: "hp-trilho" }, fill)));
+        el("div", { class: "dash-pk-info" }, el("strong", {}, nomePokemon(p)), el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`), chipsTipo(p.especie_id), el("div", { class: "hp-trilho" }, fill)));
     });
     const secao = (tit: string, itens: [string, () => void][]) => el("div", { class: "dash-sec" }, el("label", {}, tit), el("div", { class: "dash-menu" }, ...itens.map(([r, f]) => botao(r, () => { modal.voltarPara(() => void abrirDashboard()); f(); }, "sec"))));
     const recarregar = () => { atualizarHud(); void recarregarJogador(); };
@@ -697,7 +697,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       window.setTimeout(() => void lutarDesafio(), 1200);
     }
   };
-  const tempoSocial = window.setInterval(() => void verificarSocial(), 4000);
+  const tempoSocial = window.setInterval(() => void verificarSocial(), 6000);
   const tempoMissao = window.setInterval(() => { if (!document.hidden) { void atualizarMissao(); void verificarNovidades(mostrarAviso); void recarregarJogador(); void verificarMundoVivo(); } }, 30000);
   window.setTimeout(() => void recarregarJogador(), 1500);
   window.setTimeout(() => void verificarNovidades(mostrarAviso), 3000);

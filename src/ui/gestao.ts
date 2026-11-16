@@ -1,6 +1,6 @@
 import { supabase } from "../supabase";
 import { el } from "./dom";
-import { barraHp, carregarReferencias, golpe, imagemPokemon, NOME_TIPO } from "./dados";
+import { barraHp, carregarReferencias, chipsTipo, golpe, imagemPokemon, NOME_TIPO } from "./dados";
 import { INSIGNIAS, urlInsignia } from "./insignias";
 
 type Modal = { raiz: HTMLElement; abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
@@ -181,7 +181,7 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
       const fill = el("div", { class: `hp-fill ${hp.classe}` }); fill.style.width = `${hp.pct}%`;
       const b = el("button", { type: "button", class: `dash-pk mg-pk-card${p.hp_atual <= 0 ? " caido" : ""}` }, imagemPokemon("frente", p.especie_id, "mini", p.brilhante),
         el("div", { class: "dash-pk-info" }, el("strong", {}, `${p.brilhante ? "✨ " : ""}${p.apelido ?? nomeEsp.get(p.especie_id) ?? `#${p.especie_id}`}`),
-          el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`), el("div", { class: "hp-trilho" }, fill)));
+          el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`), chipsTipo(p.especie_id), el("div", { class: "hp-trilho" }, fill)));
       b.addEventListener("click", () => abrirPokemon(p));
       return b;
     };
@@ -228,7 +228,7 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
       abrirPop(voltar,
         el("div", { class: "mg-pop-cab" }, imagemPokemon("frente", p.especie_id, "dex-img"), el("div", { class: "mg-pop-id" },
           el("strong", { class: "dash-nome" }, `${p.brilhante ? "✨ " : ""}${p.apelido ?? nomeEsp.get(p.especie_id) ?? `#${p.especie_id}`}`),
-          el("span", { class: "sub" }, `${nomeEsp.get(p.especie_id) ?? ""} · Nv ${p.nivel} · ${p.posicao ? `Time #${p.posicao}` : "Caixa"} · ${p.hp_atual}/${p.hp_max} HP`),
+          el("span", { class: "sub" }, `${nomeEsp.get(p.especie_id) ?? ""} · Nv ${p.nivel} · ${p.posicao ? `Time #${p.posicao}` : "Caixa"} · ${p.hp_atual}/${p.hp_max} HP`), chipsTipo(p.especie_id),
           el("span", { class: "sub" }, `Natureza ${p.natureza ?? "—"} · XP ${p.exp ?? 0} · Amizade ${p.amizade ?? "—"}${p.evo_pend ? " · ⭐ pontos de evolução pendentes" : ""}`))),
         el("div", { class: "mg-sts" }, st("PV", p.hp_max), st("Ataque", p.atk), st("Defesa", p.def), st("Atq. Esp.", p.spa), st("Def. Esp.", p.spd), st("Veloc.", p.spe)),
         el("label", {}, "Golpes"), el("div", { class: "mg-golpes" }, ...(gs.length ? gs : [el("p", { class: "sub" }, "Sem golpes.")])),

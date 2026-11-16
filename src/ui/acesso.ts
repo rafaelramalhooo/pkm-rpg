@@ -7,7 +7,7 @@ export interface PingEstado {
 }
 export type ResultadoAcesso = "ok" | "bloqueado";
 
-const A_CADA_MS = 4000;
+const A_CADA_MS = 8000;
 let timer = 0;
 let entrou = 0;
 let tela: HTMLElement | null = null;

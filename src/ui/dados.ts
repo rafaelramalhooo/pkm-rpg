@@ -151,3 +151,13 @@ export function textoSobre(hex: string): string {
   const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   return L > 0.3 ? "#1b2438" : "#fff";
 }
+
+/** Selos coloridos com a tipagem da espécie (usados em fichas, cartões e na Gestão). */
+export function chipsTipo(especieId: number): HTMLElement {
+  const w = document.createElement("span"); w.className = "chips-tipo";
+  for (const t of especie(especieId).tipos) {
+    const c = document.createElement("span"); c.className = "chip-tipo"; c.textContent = NOME_TIPO[t] ?? t;
+    c.style.background = COR_TIPO[t] ?? "#888"; c.style.color = textoSobre(COR_TIPO[t] ?? "#888"); w.append(c);
+  }
+  return w;
+}

@@ -1535,3 +1535,11 @@ button:disabled { opacity: .72; }
 .mg-pop-caixa::-webkit-scrollbar-thumb:hover { background: var(--laranja); }
 /* lote 25d: a regra .modal.claro (overflow:hidden) vazou para o popup e escondia o fim da ficha; aqui a rolagem vence */
 .mg-pop > .mg-pop-caixa { overflow-x: hidden; overflow-y: scroll; }
+
+/* lote 26: selos de tipo e aviso de captura na batalha selvagem */
+.chips-tipo { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 0 3px; }
+.chips-tipo .chip-tipo { font-size: .62rem; padding: 1px 8px; }
+.mg-pop-cab .chips-tipo { margin-top: 4px; }
+.sd-capt { margin: 6px 0 4px; padding: 5px 8px; border-radius: 8px; font-size: .78rem; font-weight: 700; text-align: center; }
+.sd-capt.sim { background: #1f4d2f; color: #bff5cf; border: 1px solid #3f9a5e; }
+.sd-capt.nao { background: #3a3350; color: #e6dcff; border: 1px dashed #8c7fb8; }

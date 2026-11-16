@@ -67,7 +67,7 @@ function caixa(classe: string): Caixa {
 
 /** Abre a batalha. Resolve quando o jogador fecha (com o estado final). */
 export interface OpcoesBatalha { fundo?: string; nome?: string; aparencia?: number; brilhantes?: Set<number> }
-export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: OpcoesBatalha = {}): Promise<EstadoFinal> {
+export function abrirBatalha(inicial: ResultadoBatalha, meuId: string, opcoes: OpcoesBatalha = {}): Promise<EstadoFinal> {
   const fundoCena = opcoes.fundo ?? "campo";
   return new Promise((resolver) => {
     let ocupado = true;
@@ -139,6 +139,12 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       if (corpo) corpo.scrollTop = rolagem;
       if (noFim) linhaTempo.scrollTop = linhaTempo.scrollHeight;
     }
+    const jaCapturou = new Map<number, boolean>();
+    async function capturado(n: number): Promise<boolean> {
+      if (jaCapturou.has(n)) return jaCapturou.get(n) as boolean;
+      const { data } = await supabase.from("pokedex").select("capturado").eq("jogador", meuId).eq("especie_id", n).maybeSingle();
+      const r = Boolean(data?.capturado); jaCapturou.set(n, r); return r;
+    }
     let dexAlvo = 0;   // 0 = acompanha o inimigo em campo
     let dexChave = "";
     async function pintarPokedex(forcar = false): Promise<void> {
@@ -153,8 +159,10 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
       };
       const abas = el("div", { class: "sd-hist-abas" }, mk("Inimigo", ativos.adv.num, true), mk("Meu Pokémon", ativos.jog.num, false));
       const ficha = await painelBusca(alvo || undefined, { locais: false });
+      const capt = tipoBatalha === "selvagem" && !dexAlvo && ativos.adv.num ? await capturado(ativos.adv.num) : null;
       if (chave !== dexChave) return;
-      painelDex.replaceChildren(cabecalhoAux("Pokédex"), el("div", { class: "sd-hist-corpo" }, abas, ficha));
+      const notaCapt = capt === null ? [] : [el("p", { class: `sd-capt ${capt ? "sim" : "nao"}` }, capt ? "✅ Você já capturou este Pokémon." : "❔ Você ainda não capturou este Pokémon.")];
+      painelDex.replaceChildren(cabecalhoAux("Pokédex"), el("div", { class: "sd-hist-corpo" }, abas, ...notaCapt, ficha));
     }
     let chaveHist = "";
     const chaveAtual = (): string => JSON.stringify([historico.length, ativos.jog.hp, ativos.adv.hp, ativos.jog.status, ativos.adv.status, ativos.jog.bufs, ativos.adv.bufs, [...usados.jog.values()], [...usados.adv.values()], clima.atual, terreno.atual, [...volateis.jog], [...volateis.adv], [...ladoCond.jog], [...ladoCond.adv], terreno.extras]);
@@ -597,7 +605,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, _meuId: string, opcoes: 
     }
 
     async function menuMochila(r: Resposta): Promise<void> {
-      const todos = await minhaMochila(_meuId);
+      const todos = await minhaMochila(meuId);
       const bolas = tipoBatalha === "selvagem" ? todos.filter((i) => /ball$/.test(i.item)) : [];
       const cura = todos.filter((i) => CURAVEIS.includes(i.item));
       msg.textContent = "Mochila";
