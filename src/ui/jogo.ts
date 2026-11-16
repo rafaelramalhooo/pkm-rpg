@@ -18,6 +18,8 @@ import { aoEstado, consultar, type PingEstado } from "./acesso";
 import { abrirMochila as abrirMochilaSS } from "./mochila";
 import { abrirMTs, abrirLojaMT } from "./mts";
 import { abrirResumo } from "./resumo";
+import { criarAtalhos, type AcaoAtalho } from "./atalhos";
+import { abrirCartaoTreinador } from "./cartao";
 import { abrirOrganizar } from "./organizar";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
 import { abrirCasa, abrirCheckin, abrirConquistas, abrirCosmeticos, abrirMiniquests, abrirRanking, verificarNovidades } from "./engajamento";
@@ -81,51 +83,6 @@ function icone(nome: string): HTMLElement {
   return s;
 }
 type ItemMenu = { rotulo: string; fn: () => void; oculto?: boolean };
-
-/** Barra superior com menus suspensos (clique para abrir; fecha ao clicar fora ou escolher). */
-function barraNavegacao(grupos: { rotulo: string; itens: () => ItemMenu[] }[], marca: HTMLElement): { raiz: HTMLElement; fecharTudo: () => void } {
-  const abertos: HTMLElement[] = [];
-  const fecharTudo = () => {
-    for (const g of abertos) {
-      g.classList.remove("aberto");
-      g.querySelector("button")?.setAttribute("aria-expanded", "false");
-    }
-  };
-  const lista = grupos.map((g) => {
-    const caixa = el("div", { class: "nav-menu" });
-    const gatilho = el("button", { type: "button", class: "nav-gatilho", "aria-haspopup": "true", "aria-expanded": "false" }, g.rotulo, el("span", { class: "nav-seta", "aria-hidden": "true" }, "▾"));
-    const painel = el("div", { class: "nav-lista", role: "menu" });
-    gatilho.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const abrir = !caixa.classList.contains("aberto");
-      fecharTudo();
-      if (!abrir) return;
-      painel.replaceChildren(
-        ...g.itens().filter((i) => !i.oculto).map((i) => {
-          const b = el("button", { type: "button", class: "nav-item", role: "menuitem" }, i.rotulo);
-          b.addEventListener("click", () => {
-            fecharTudo();
-            i.fn();
-          });
-          return b;
-        }),
-      );
-      caixa.classList.add("aberto");
-      gatilho.setAttribute("aria-expanded", "true");
-      const r = gatilho.getBoundingClientRect();
-      painel.style.top = `${r.bottom + 6}px`;
-      painel.style.left = `${Math.max(8, Math.min(r.left, window.innerWidth - 208))}px`;
-    });
-    caixa.append(gatilho, painel);
-    abertos.push(caixa);
-    return caixa;
-  });
-  document.addEventListener("click", fecharTudo);
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") fecharTudo();
-  });
-  return { raiz: el("nav", { class: "nav", "aria-label": "Menu principal" }, marca, el("div", { class: "nav-grupos" }, ...lista)), fecharTudo };
-}
 
 export async function telaJogo(inicial: Jogador): Promise<void> {
   let j: Jogador = { ...inicial };
@@ -233,7 +190,10 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   };
   dpad.append(dir("cima", "▲"), dir("esquerda", "◀"), dir("direita", "▶"), dir("baixo", "▼"));
   const cartaoTreinador = el("div", { class: "cartao-treinador" }, emblema, el("div", { class: "tc-info" }, nomeTreinador, onde, el("div", { class: "tc-chips" }, dinheiro, pa)));
-  tela.append(aviso, cartaoTreinador, hudMissao, acoes, cartaoOferta, dpad);
+  cartaoTreinador.setAttribute("role", "button"); cartaoTreinador.setAttribute("tabindex", "0"); cartaoTreinador.title = "Abrir o menu";
+  cartaoTreinador.addEventListener("click", () => abrirMenuAvatar());
+  cartaoTreinador.addEventListener("keydown", (ev) => { if (ev.key === "Enter") abrirMenuAvatar(); });
+  tela.append(aviso, hudMissao, acoes, cartaoOferta, dpad);
 
   // ---------- painéis ----------
   const msgPainel = (): HTMLElement => el("p", { class: "msg", role: "status" });
@@ -314,6 +274,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     await abrirMTs(modal, mostrarAviso, abas("mts"), () => { atualizarHud(); void recarregarJogador(); });
   }
 
+  /** Lendários e pseudo-lendários da Geração 1: só aparecem na Pokédex depois de vistos e nunca têm local. */
+  const DEX_RAROS = new Set([144, 145, 146, 150, 151, 147, 148, 149]);
   async function abrirPokedex(): Promise<void> {
     const { data } = await supabase.from("pokedex").select("especie_id, capturado").eq("jogador", j.id);
     const vistos = new Map<number, boolean>();
@@ -321,13 +283,14 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const cap = [...vistos.values()].filter(Boolean).length;
     const celulas = todasEspecies().map((e) => {
       const v = vistos.get(e.id);
+      const raro = DEX_RAROS.has(e.id);
       const c = el("button", { type: "button", class: `dex ${v === undefined ? "novo" : v ? "cap" : "visto"}`, title: "Ver detalhes" });
       c.addEventListener("click", () => void abrirFichaDex(e.id));
       c.append(el("span", { class: "dex-n" }, String(e.id).padStart(3, "0")));
-      if (v !== undefined) c.append(imagemPokemon("frente", e.id, `dex-img${v ? "" : " silhueta"}`));
+      if (v !== undefined || !raro) c.append(imagemPokemon("frente", e.id, "dex-img"));
       else c.append(el("div", { class: "dex-img vazio" }, "?"));
-      c.append(el("span", { class: "dex-nome" }, v === undefined ? "???" : e.nome));
-      if (v) c.append(el("span", { class: "dex-sel", title: "Capturado" }, "●"));
+      c.append(el("span", { class: "dex-nome" }, v === undefined && raro ? "???" : e.nome));
+      if (v) c.append(el("span", { class: "dex-sel", title: "Capturado" }, "", el("i", { class: "dex-ball" })));
       return c;
     });
     const total = todasEspecies().length || 151;
@@ -613,6 +576,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
 
   // ---------- ações do jogo ----------
   async function recarregarJogador(): Promise<void> {
+    await supabase.rpc("pa_garantir");   // recarga diária das 6h (a agenda do servidor faz o mesmo; isto cobre quem já está online)
     const novo = await controle?.recarregarJogador();
     if (novo) {
       j = { ...j, ...novo };
@@ -726,7 +690,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     }
   };
   const tempoSocial = window.setInterval(() => void verificarSocial(), 4000);
-  const tempoMissao = window.setInterval(() => { if (!document.hidden) { void atualizarMissao(); void verificarNovidades(mostrarAviso); } }, 30000);
+  const tempoMissao = window.setInterval(() => { if (!document.hidden) { void atualizarMissao(); void verificarNovidades(mostrarAviso); void recarregarJogador(); } }, 30000);
+  window.setTimeout(() => void recarregarJogador(), 1500);
   window.setTimeout(() => void verificarNovidades(mostrarAviso), 3000);
 
   async function listarTreinadores(mapaId: string): Promise<TreinadorMapa[]> {
@@ -813,13 +778,13 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       const saldo = el("p", { class: "sub" }, `Seu dinheiro: ₽ ${j.dinheiro ?? 0}`);
       nos.push(saldo);
       if (p.tipo === "loja") nos.push(botao("💿 Ver MTs à venda", () => void abrirLojaMT(modal, p.id, j.dinheiro ?? 0, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }), "sec"));
+      const gradeLoja = el("div", { class: "grade-loja" });
       for (const it of p.estoque ?? []) {
-        const linha = el("div", { class: "item-cartao" }, el("div", { class: "item-txt" }, el("strong", {}, nomeItem(it.item)), el("small", {}, `₽ ${it.preco}`)));
-        for (const q of [1, 5]) {
-          linha.appendChild(botao(`Comprar ×${q}`, () => void comprar(p, it.item, q, msg, saldo), "sec"));
-        }
-        nos.push(linha);
+        const btns = el("div", { class: "item-btns" });
+        for (const q of [1, 5]) btns.appendChild(botao(`Comprar ×${q}`, () => void comprar(p, it.item, q, msg, saldo), "sec"));
+        gradeLoja.appendChild(el("div", { class: "item-cartao loja" }, el("div", { class: "item-txt" }, el("strong", {}, nomeItem(it.item)), el("small", {}, `₽ ${it.preco}`)), btns));
       }
+      nos.push(gradeLoja);
     } else if (p.acao === "presente") {
       nos.push(botao("Aceitar o presente", async () => {
         const { data, error } = await supabase.rpc("usar_poi", { p_poi: p.id });
@@ -863,7 +828,9 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     interagir();
   });
 
+  let atalhos: ReturnType<typeof criarAtalhos> | null = null;
   const aoTecla = (e: KeyboardEvent) => {
+    if (e.key === "F1") { e.preventDefault(); atalhos?.alternar(); return; }
     if ((e.ctrlKey || e.metaKey) && ["+", "=", "-", "_", "0"].includes(e.key)) {
       e.preventDefault();
       controle?.zoom(e.key === "0" ? 0 : e.key === "-" || e.key === "_" ? -1 : 1);
@@ -876,6 +843,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       return;
     }
     if (emBatalha || modal.aberto()) return;
+    if (/^[0-9]$/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) { if (atalhos?.executar((Number(e.key) + 9) % 10)) e.preventDefault(); return; }
     if (e.key === "e" || e.key === "E" || e.key === " " || e.key === "Enter") {
       if (!interagir() && oferta) void procurar();
       e.preventDefault();
@@ -898,10 +866,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   });
   const botoes = el("div", { class: "grupo" }, botao("🗺", () => { if (!emBatalha) abrirMundi(); }, "sec botao-menu botao-mapa"), botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"), botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"));
 
-  const marca = el("img", { class: "marca-img", src: `${import.meta.env.BASE_URL}assets/logo-rafar.png`, alt: "Rafar" });
   const abrirMundi = (): void => void atualizarMissao().then(() => abrirMapaMundi(modal, (m) => controle?.viajar(m) ?? Promise.resolve(false), mostrarAviso, missaoAtual?.estado === "ativa" && missaoAtual.mapa_id ? { mapa_id: missaoAtual.mapa_id, mapa_nome: missaoAtual.mapa_nome ?? "", nome: missaoAtual.nome, objetivo: missaoAtual.objetivo ?? "" } : null));
-  const { raiz: nav } = barraNavegacao(
-    [
+  const grupos: { rotulo: string; itens: () => ItemMenu[] }[] = [
       {
         rotulo: "Jogar",
         itens: () => [
@@ -945,27 +911,42 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
             { rotulo: "Ferramentas (importar, repor PA)", fn: abrirMenu },
           ] }]
         : []),
-    ],
-    marca,
-  );
+  ];
   const rodape = el("div", { class: "barra rodape" }, formChat, botoes);
   const dica = el("p", { class: "dica" }, "Setas/WASD andam · E interage · M abre o Mapa Mundi · B busca o Pokémon da prévia · Ctrl + / Ctrl − ajustam o zoom");
 
   const faixaEventos = iniciarFaixaEventos(modal);
   tela.append(faixaEventos);
-  const atalho = (nome: string, rotulo: string, fn: () => void) => {
-    const b = el("button", { type: "button", class: "nav-atalho", "aria-label": rotulo, title: rotulo }, icone(nome), el("span", { class: "nav-atalho-rot" }, rotulo));
-    b.addEventListener("click", (e) => { e.stopPropagation(); fn(); });
-    return b;
+  const rapidos: AcaoAtalho[] = [
+    { id: "Time", rotulo: "Time", grupo: "Acesso rápido", fn: () => void abrirTime() },
+    { id: "Mochila", rotulo: "Mochila", grupo: "Acesso rápido", fn: () => void abrirMochila() },
+    { id: "Pokédex", rotulo: "Pokédex", grupo: "Acesso rápido", fn: () => void abrirPokedex() },
+    { id: "MTs", rotulo: "MTs", grupo: "Acesso rápido", fn: () => void abrirMTsJanela() },
+    { id: "Cartão do Treinador", rotulo: "Cartão do Treinador", grupo: "Acesso rápido", fn: () => void abrirCartaoTreinador(modal, j.id) },
+  ];
+  const todasAcoes = (): AcaoAtalho[] => [
+    ...rapidos,
+    ...grupos.flatMap((g) => g.itens().map((i) => ({ id: i.rotulo, rotulo: i.rotulo, grupo: g.rotulo, fn: i.fn, oculto: i.oculto }))),
+  ];
+  const secoesMenu = (lista: AcaoAtalho[], aoEscolher: (a: AcaoAtalho) => void): HTMLElement[] => {
+    const porGrupo = new Map<string, AcaoAtalho[]>();
+    for (const a of lista) porGrupo.set(a.grupo, [...(porGrupo.get(a.grupo) ?? []), a]);
+    return [...porGrupo.entries()].map(([g, as]) => el("section", { class: "menu-sec" }, el("h2", {}, g), el("div", { class: "menu-grade" }, ...as.map((a) => botao(a.rotulo, () => aoEscolher(a), "menu-item")))));
   };
-  nav.querySelector(".nav-grupos")?.prepend(
-    atalho("painel", "Painel", () => void abrirDashboard()),
-    atalho("time", "Time", () => void abrirTime()),
-    atalho("mochila", "Mochila", () => void abrirMochila()),
-    atalho("pokedex", "Pokédex", () => void abrirPokedex()),
-  );
+  function abrirMenuAvatar(): void {
+    if (emBatalha) return;
+    modal.abrir(j.nome, ...secoesMenu(todasAcoes().filter((a) => !a.oculto), (a) => { modal.aoFechar(null); modal.fechar(); a.fn(); }));
+  }
+  const escolherAtalho = (titulo: string, atual: string | null): Promise<string | null | undefined> => new Promise((resolve) => {
+    modal.aoFechar(() => resolve(undefined));
+    const nos: Node[] = secoesMenu(todasAcoes().filter((a) => a.grupo !== "Minha conta"), (a) => { resolve(a.id); modal.aoFechar(null); modal.fechar(); });
+    if (atual) nos.unshift(botao("Remover este atalho", () => { resolve(null); modal.aoFechar(null); modal.fechar(); }, "sec"));
+    modal.abrir(titulo, ...nos);
+  });
+  atalhos = criarAtalhos(j.id, todasAcoes, escolherAtalho);
+  tela.append(el("div", { class: "hud-topo" }, cartaoTreinador, atalhos.raiz));
   void dica;
-  const minha = montar([el("div", { class: "jogo" }, nav, el("div", { class: "cartucho" }, tela, rodape), modal.raiz)], true);
+  const minha = montar([el("div", { class: "jogo" }, el("div", { class: "cartucho" }, tela, rodape), modal.raiz)], true);
 
   const { iniciarMundo } = await import("../game/mundo");
   if (minha !== geracaoAtual()) return;

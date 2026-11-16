@@ -1,3 +1,4 @@
+import { insigniaDoMapa, urlInsignia } from "./insignias";
 import { supabase } from "../supabase";
 import { el } from "./dom";
 
@@ -99,9 +100,10 @@ export async function abrirMapaMundi(
     if (GINASIOS[n.id]) {
       // selo dourado de Ginásio ao lado da cidade (escudo com estrela)
       const gx = n.x + r + 5.5, gy = n.y - r - 2;
-      g.append(svg("circle", { cx: n.x, cy: n.y, r: r + 3.2, class: "mm-gin-aro" }),
-        svg("path", { d: `M${gx - 4.2} ${gy - 4.6}h8.4v5.2c0 3-2.4 4.6-4.2 5.6c-1.8-1-4.2-2.6-4.2-5.6z`, class: "mm-gin-escudo" }),
-        svg("text", { x: gx, y: gy + 1.6, "text-anchor": "middle", class: "mm-gin-estrela" }, "★"));
+      const ins = insigniaDoMapa(n.id);
+      g.append(svg("circle", { cx: n.x, cy: n.y, r: r + 3.2, class: "mm-gin-aro" }));
+      if (ins) g.append(svg("image", { href: urlInsignia(ins.slug), x: gx - 7, y: gy - 8, width: 14, height: 14, class: "mm-gin-img" }));
+      else g.append(svg("path", { d: `M${gx - 4.2} ${gy - 4.6}h8.4v5.2c0 3-2.4 4.6-4.2 5.6c-1.8-1-4.2-2.6-4.2-5.6z`, class: "mm-gin-escudo" }));
       g.append(svg("title", {}, `Ginásio de ${n.nome} — insígnia ${GINASIOS[n.id]}`));
     }
     g.append(svg("text", { x: n.x, y: n.t === "cidade" || n.id === "reserva" ? n.y + r + 8 : n.y - r - 2.5, "text-anchor": "middle", class: n.t === "rota" ? "mm-nome pequeno" : "mm-nome" }, n.t === "rota" ? n.nome.replace("Rota ", "R") : n.nome));

@@ -8,7 +8,13 @@ type Aviso = (t: string, ms?: number, erro?: boolean) => void;
 interface MT { num: number; golpe_id: number; arco: number; preco: number; liberada: boolean; tenho: boolean }
 
 const rotulo = (m: MT): string => { const g = golpe(m.golpe_id); return `MT${String(m.num).padStart(3, "0")} · ${g.nome}`; };
-const detalhe = (m: MT): string => { const g = golpe(m.golpe_id); return `${NOME_TIPO[g.tipo] ?? g.tipo} · ${g.categoria === "status" ? "Status" : g.categoria === "physical" ? "Físico" : "Especial"} · Poder ${g.poder ?? "—"} · PP ${g.pp}`; };
+const CAT: Record<string, string> = { status: "Status", physical: "Físico", special: "Especial" };
+const detalhe = (m: MT): string => { const g = golpe(m.golpe_id); return `${NOME_TIPO[g.tipo] ?? g.tipo} · ${CAT[g.categoria] ?? g.categoria} · Poder ${g.poder ?? "—"} · Precisão ${g.precisao ? `${g.precisao}%` : "—"} · PP ${g.pp}`; };
+/** Ficha completa do golpe que a MT ensina: tipo, categoria, poder, precisão, PP e efeito. */
+const ficha = (m: MT, extra = ""): HTMLElement => {
+  const g = golpe(m.golpe_id);
+  return el("div", { class: "item-txt mt-ficha" }, el("strong", {}, rotulo(m)), el("small", {}, `${detalhe(m)}${extra}`), el("small", { class: "mt-desc" }, g.descricao ?? "Sem descrição disponível."));
+};
 
 async function listar(): Promise<MT[]> {
   const { data } = await supabase.rpc("mt_lista");
@@ -26,7 +32,7 @@ export async function abrirMTs(modal: Modal, aviso: Aviso, abas: HTMLElement | n
   const lista = el("div", { class: "mt-lista" });
   if (!minhas.length) lista.append(el("p", { class: "sub" }, "Você ainda não tem MTs."));
   for (const m of minhas) {
-    const b = el("button", { type: "button", class: "item-cartao mt-item" }, el("div", { class: "item-txt" }, el("strong", {}, rotulo(m)), el("small", {}, detalhe(m))));
+    const b = el("button", { type: "button", class: "item-cartao mt-item" }, ficha(m));
     b.addEventListener("click", () => void escolherPokemon(modal, m, time, aviso, aoMudar, abas));
     lista.append(b);
   }
@@ -37,7 +43,7 @@ export async function abrirMTs(modal: Modal, aviso: Aviso, abas: HTMLElement | n
 async function escolherPokemon(modal: Modal, m: MT, time: PokemonRow[], aviso: Aviso, aoMudar: () => void, abas: HTMLElement | null): Promise<void> {
   const { data } = await supabase.from("mt_compat").select("especie_id").eq("golpe_id", m.golpe_id);
   const pode = new Set(((data ?? []) as { especie_id: number }[]).map((r) => r.especie_id));
-  const nos: Node[] = [el("p", { class: "sub" }, `${rotulo(m)} — ${detalhe(m)}`)];
+  const nos: Node[] = [el("div", { class: "item-cartao mt-topo" }, ficha(m))];
   const voltar = el("button", { type: "button", class: "sec" }, "← Voltar");
   voltar.addEventListener("click", () => void abrirMTs(modal, aviso, abas, aoMudar));
   for (const p of time) {
@@ -67,7 +73,7 @@ async function escolherGolpe(modal: Modal, m: MT, p: PokemonRow, aviso: Aviso, a
   const nos: Node[] = [el("p", { class: "sub" }, `${nomePokemon(p)} já sabe 4 golpes. Qual esquecer para aprender ${golpe(m.golpe_id).nome}?`)];
   (p.golpes ?? []).forEach((g, i) => {
     const gi = golpe(g.id);
-    const b = el("button", { type: "button", class: "item-cartao mt-item" }, el("div", { class: "item-txt" }, el("strong", {}, gi.nome), el("small", {}, `${NOME_TIPO[gi.tipo] ?? gi.tipo} · Poder ${gi.poder ?? "—"}`)));
+    const b = el("button", { type: "button", class: "item-cartao mt-item" }, el("div", { class: "item-txt" }, el("strong", {}, gi.nome), el("small", {}, `${NOME_TIPO[gi.tipo] ?? gi.tipo} · ${CAT[gi.categoria] ?? gi.categoria} · Poder ${gi.poder ?? "—"} · PP ${gi.pp}`)));
     b.addEventListener("click", () => void ensinar(modal, m, p, i, aviso, aoMudar, abas));
     nos.push(b);
   });
@@ -85,7 +91,7 @@ export async function abrirLojaMT(modal: Modal, poi: string, dinheiro: number, a
   const nos: Node[] = [saldo, el("p", { class: "sub" }, "MTs são infinitas: compre uma vez e ensine a quantos Pokémon puderem aprender.")];
   if (!mts.length) nos.push(el("p", { class: "sub" }, "Não há MTs novas à venda agora."));
   for (const m of mts) {
-    const linha = el("div", { class: "item-cartao" }, el("div", { class: "item-txt" }, el("strong", {}, rotulo(m)), el("small", {}, `${detalhe(m)} · ₽ ${m.preco}`)));
+    const linha = el("div", { class: "item-cartao loja mt-loja" }, ficha(m, ` · ₽ ${m.preco}`));
     const b = el("button", { type: "button", class: "sec" }, "Comprar");
     b.addEventListener("click", async () => {
       b.disabled = true;
@@ -100,5 +106,8 @@ export async function abrirLojaMT(modal: Modal, poi: string, dinheiro: number, a
     linha.append(b);
     nos.push(linha);
   }
-  modal.abrir("MTs à venda", ...nos);
+  const grade = el("div", { class: "grade-loja" });
+  const fixos = nos.slice(0, 2); const itens = nos.slice(2);
+  grade.append(...itens);
+  modal.abrir("MTs à venda", ...fixos, grade);
 }

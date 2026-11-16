@@ -51,6 +51,8 @@ function ajustar(lado, time, jogador) {
       }
     }
     p.hp = Math.max(1, Math.min(m.hp, p.maxhp));
+    // PP: o Showdown assume PP Up (×1,6). Aqui o máximo é o PP base do golpe, o mesmo que o banco guarda e que a cura restaura.
+    p.moveSlots.forEach((ms) => { const base = Math.round(ms.maxpp * 5 / 8); ms.maxpp = base; ms.pp = Math.min(ms.pp, base); });
     (m.golpes ?? []).slice(0, 4).forEach((g, k) => { if (p.moveSlots[k] && g.pp != null) p.moveSlots[k].pp = Math.min(g.pp, p.moveSlots[k].maxpp); });
     if (!jogador) return;
     // golpe "Splash" escondido: serve para o jogador gastar o turno (bolas e itens)

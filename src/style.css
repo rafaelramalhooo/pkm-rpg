@@ -1366,3 +1366,80 @@ button:disabled { opacity: .72; }
 .mt-item { text-align: left; width: 100%; cursor: pointer; }
 .mt-item:disabled { opacity: .5; cursor: not-allowed; }
 .aba .ico-emoji { font-size: 1.25em; line-height: 1; }
+
+/* Cartão do Treinador e insígnias */
+.ct-cab { display: flex; align-items: center; gap: 14px; }
+.ct-avatar { width: 80px; height: 100px; border-radius: 14px; background: rgba(255,255,255,.08) no-repeat; background-size: 240px 640px; background-position: 0 -55px; image-rendering: pixelated; flex: 0 0 auto; }
+.ct-id { display: flex; flex-direction: column; gap: 2px; } .ct-id strong { font-size: 1.25rem; }
+.ct-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
+.ct-stats div { background: rgba(255,255,255,.07); border-radius: 10px; padding: 8px; text-align: center; display: flex; flex-direction: column; }
+.ct-stats b { font-size: 1.3rem; } .ct-stats span { font-size: .75rem; opacity: .8; }
+.ct-tit { margin: 6px 0; }
+.ct-insignias { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.ct-ins { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+.ct-ins img { width: 100%; max-width: 76px; aspect-ratio: 1; object-fit: contain; }
+.ct-ins img.falta { filter: grayscale(1) brightness(.75); opacity: .45; }
+.ct-ins.falta span, .ct-ins.falta small { opacity: .5; }
+.ct-ins small { font-size: .68rem; opacity: .75; }
+@media (max-width: 520px) { .ct-insignias { grid-template-columns: repeat(4, 1fr); gap: 6px; } .ct-ins img { max-width: 56px; } }
+
+/* Pokédex: todos com imagem; capturado = borda dourada + Pokébola */
+.dex.novo { opacity: 1; } .dex.novo .pk-img.dex-img { opacity: .85; }
+.dex.visto .pk-img.dex-img img { filter: none; }
+.dex.cap { border: 2px solid #f5c542; box-shadow: 0 0 8px #f5c54255; }
+.dex-sel { color: inherit; }
+.dex-ball { display: block; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #1b2438; background: linear-gradient(180deg, #e53935 0 45%, #1b2438 45% 55%, #fff 55% 100%); position: relative; }
+.dex-ball::after { content: ""; position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px; border-radius: 50%; background: #fff; border: 1px solid #1b2438; }
+
+/* ===== Lote 3: menu no avatar, atalhos, área de jogo maior, janelas ===== */
+.hud-topo { position: absolute; left: 10px; top: 10px; z-index: 4; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; max-width: calc(100% - 20px); }
+.hud-topo .cartao-treinador { position: static; cursor: pointer; }
+.hud-topo .cartao-treinador:hover { border-color: var(--laranja); }
+@media (min-width: 1000px) { .hud-topo { flex-direction: row; align-items: center; gap: 10px; } }
+/* avatar: figura (x 3–16, y 11–31 do quadro 16×32) enquadrada da cabeça ao peito */
+.tc-emblema { width: 64px; height: 64px; background-size: 181px auto; background-position: -4px -41px; }
+@media (max-width: 700px) { .tc-emblema { width: 48px; height: 48px; background-size: 136px auto; background-position: -3px -31px; } }
+.tela-jogo { height: calc(100dvh - 78px); }
+@media (orientation: landscape) and (max-height: 540px) { .tela-jogo { height: calc(100dvh - 4px); } }
+@media (max-width: 700px) and (orientation: portrait) { .tela-jogo { height: calc(100dvh - 70px); } }
+/* barra de atalhos */
+.atalhos { display: flex; align-items: center; gap: 4px; padding: 4px; background: var(--vidro); backdrop-filter: blur(10px); border: 1px solid #ffffff44; border-radius: 14px; box-shadow: 0 8px 24px #0007; }
+.atalhos-slots { display: flex; gap: 4px; }
+.atalhos.oculta .atalhos-slots, .atalhos.oculta .atalhos-edit { display: none; }
+.atalhos button { margin: 0; box-shadow: none; }
+.atalhos-toggle, .atalhos-edit { width: 30px; height: 36px; padding: 0; border-radius: 10px; background: #16294f; color: #fff; border: 1px solid #ffffff22; font-size: .85rem; }
+.atalhos.editando .atalhos-edit { background: var(--laranja); }
+.atalho-slot { position: relative; width: 42px; height: 40px; padding: 11px 2px 1px; border-radius: 10px; background: #ffffff14; border: 1px dashed #ffffff44; color: #fff; font-size: .55rem; line-height: 1.05; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; word-break: break-word; }
+.atalho-slot i { position: absolute; left: 4px; top: 1px; font-style: normal; font-weight: 800; font-size: .58rem; color: #ffd27a; }
+.atalho-slot.cheio { background: linear-gradient(180deg, #2a4a90, #14284f); border: 1px solid #ffffff44; }
+.atalho-slot:hover { border-color: var(--laranja); transform: none; }
+.atalhos.editando .atalho-slot { outline: 2px solid var(--laranja); }
+@media (max-width: 700px) { .atalho-slot { width: 31px; height: 36px; font-size: .5rem; } .atalhos-toggle, .atalhos-edit { width: 26px; } .atalhos { gap: 3px; padding: 3px; } .atalhos-slots { gap: 3px; } }
+/* menu do avatar */
+.menu-sec { display: flex; flex-direction: column; gap: 8px; }
+.menu-sec h2 { margin: 6px 0 0; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: #5b6b8f; }
+.menu-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.modal .menu-item { margin: 0; text-align: left; padding: 12px 14px; border-radius: 12px; font-size: .9rem; min-height: 46px; }
+/* janelas: largas no computador, tela cheia no celular, espaçamento uniforme */
+.modal { width: min(96vw, 920px); }
+.modal-corpo { padding: 4px 22px 10px; gap: 14px; max-height: calc(92dvh - 120px); }
+.modal-topo { padding: 18px 22px 12px; }
+.modal-corpo button { margin-top: 0; }
+.modal > button { margin: 6px 22px 18px; }
+.grade-loja { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.item-cartao.loja { grid-template-columns: 1fr; gap: 8px; padding: 12px 14px; }
+.item-cartao.loja .item-btns { display: flex; gap: 8px; flex-wrap: wrap; } .item-cartao.loja .item-btns button { flex: 1; min-width: 110px; padding: 9px 10px; }
+.mt-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.modal-corpo > .sub { margin: 0; }
+@media (max-width: 700px) {
+  .menu { padding: 0; place-items: stretch; }
+  .modal { width: 100vw; max-width: none; height: 100dvh; max-height: 100dvh; border-radius: 0; display: flex; flex-direction: column; }
+  .modal-corpo { flex: 1; max-height: none; padding: 4px 14px 10px; }
+  .modal-topo { padding: 14px 14px 8px; }
+  .modal > button { margin: 6px 14px max(14px, env(safe-area-inset-bottom)); align-self: stretch; }
+  .menu-grade, .grade-loja, .mt-lista { grid-template-columns: 1fr; }
+}
+
+.mt-desc { color: #33415f; font-size: .78rem; line-height: 1.35; margin-top: 2px; }
+.mt-item { align-items: flex-start; } .mt-topo { display: block; }
+.mt-lista .mt-item, .mt-item { min-height: 0; }
