@@ -1033,51 +1033,51 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .mg-pks button { padding: 4px 9px; font-size: .72rem; }
 
 /* tema claro: barra de título azul, corpo em branco com degradê cinza */
-.modal.claro { background: linear-gradient(180deg, #ffffff 0%, #eef1f6 55%, #dde2ea 100%); color: #1b2438; border: 1px solid #aeb9cf; box-shadow: 0 24px 60px #0a1a4a88; overflow: hidden; }
-.modal.claro .modal-topo { background: linear-gradient(180deg, #17316a, #0e1b3d); color: #fff; padding: 14px 18px; border-bottom: 3px solid var(--laranja); margin-bottom: 14px; }
-.modal.claro .modal-topo h1 { color: #fff; }
-.modal.claro .modal-corpo { color: #1b2438; scrollbar-color: #9aa7c2 transparent; }
-.modal.claro .modal-corpo label, .modal.claro .modal-corpo h3, .modal.claro .modal-corpo strong { color: #1b2438; }
-.modal.claro .sub, .modal.claro p.sub, .modal.claro .modal-corpo small { color: #566079; }
-.modal.claro .msg.ok { color: #17744a; } .modal.claro .msg.erro { color: #b3261e; } .modal.claro .hab-msg { color: #17744a; }
-.modal.claro .abas { background: #d5dbe7; border: 1px solid #b4bfd4; }
-.modal.claro .aba { color: #2c3a5c; } .modal.claro .aba:hover:not(.ativa) { background: #c3cde1; color: #0e1b3d; }
-.modal.claro .aba.ativa { color: #fff; }
-.modal.claro input[type=text], .modal.claro input[type=number], .modal.claro input[type=search], .modal.claro input[type=password], .modal.claro input[type=datetime-local], .modal.claro select, .modal.claro textarea { background: #fff; color: #1b2438; border: 1px solid #aeb9cf; border-radius: 8px; }
-.modal.claro input::placeholder { color: #8a94ab; }
+:is(.modal.claro, .mg-pop-caixa) { background: linear-gradient(180deg, #ffffff 0%, #eef1f6 55%, #dde2ea 100%); color: #1b2438; border: 1px solid #aeb9cf; box-shadow: 0 24px 60px #0a1a4a88; overflow: hidden; }
+:is(.modal.claro, .mg-pop-caixa) .modal-topo { background: linear-gradient(180deg, #17316a, #0e1b3d); color: #fff; padding: 14px 18px; border-bottom: 3px solid var(--laranja); margin-bottom: 14px; }
+:is(.modal.claro, .mg-pop-caixa) .modal-topo h1 { color: #fff; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) { color: #1b2438; scrollbar-color: #9aa7c2 transparent; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) label, :is(.modal.claro .modal-corpo, .mg-pop-caixa) h3, :is(.modal.claro .modal-corpo, .mg-pop-caixa) strong { color: #1b2438; }
+:is(.modal.claro, .mg-pop-caixa) .sub, :is(.modal.claro, .mg-pop-caixa) p.sub, :is(.modal.claro .modal-corpo, .mg-pop-caixa) small { color: #566079; }
+:is(.modal.claro, .mg-pop-caixa) .msg.ok { color: #17744a; } :is(.modal.claro, .mg-pop-caixa) .msg.erro { color: #b3261e; } :is(.modal.claro, .mg-pop-caixa) .hab-msg { color: #17744a; }
+:is(.modal.claro, .mg-pop-caixa) .abas { background: #d5dbe7; border: 1px solid #b4bfd4; }
+:is(.modal.claro, .mg-pop-caixa) .aba { color: #2c3a5c; } :is(.modal.claro, .mg-pop-caixa) .aba:hover:not(.ativa) { background: #c3cde1; color: #0e1b3d; }
+:is(.modal.claro, .mg-pop-caixa) .aba.ativa { color: #fff; }
+:is(.modal.claro, .mg-pop-caixa) input[type=text], :is(.modal.claro, .mg-pop-caixa) input[type=number], :is(.modal.claro, .mg-pop-caixa) input[type=search], :is(.modal.claro, .mg-pop-caixa) input[type=password], :is(.modal.claro, .mg-pop-caixa) input[type=datetime-local], :is(.modal.claro, .mg-pop-caixa) select, :is(.modal.claro, .mg-pop-caixa) textarea { background: #fff; color: #1b2438; border: 1px solid #aeb9cf; border-radius: 8px; }
+:is(.modal.claro, .mg-pop-caixa) input::placeholder { color: #8a94ab; }
 /* cartões e blocos */
-.modal.claro :is(.hab-card, .hab-classe, .hab-ajuda, .dash-tile, .dash-pk, .mg-item, .mg-pk, .mg-manut, .item-cartao, .ev-card, .ev-item, .org-linha, .cx-membro, .mc-pk, .mc-desc, .soc-card, .troca-pk, .acao-bloco, .fala, .dex, .cartao-acao) { background: linear-gradient(180deg, #ffffff, #eceff5); border: 1px solid #c3cbdb; color: #1b2438; box-shadow: 0 1px 3px #1b243818; }
-.modal.claro .mg-item { background: linear-gradient(180deg, #ffffff, #e9edf4); text-align: left; }
-.modal.claro .mg-item:hover, .modal.claro .hab-classe:hover { border-color: var(--laranja); }
-.modal.claro .mg-item strong, .modal.claro .hab-classe strong { color: #0e1b3d; }
-.modal.claro .mg-item span { color: #44506b; }
-.modal.claro .hab-classe span, .modal.claro .hab-classe small { color: #44506b; }
-.modal.claro .fala { border-left: 3px solid var(--laranja); }
-.modal.claro .dex.cap { background: linear-gradient(180deg, #fff6e5, #ffe2b8); border-color: var(--laranja); }
-.modal.claro .dex-n { color: #3f63c9; } .modal.claro .dex-nome { color: #1b2438; }
-.modal.claro .dex-img.silhueta img { filter: brightness(0) opacity(.5); } .modal.claro .dex-img.vazio { color: #9aa5ba; }
-.modal.claro .dex-prog { background: #cdd5e4; border-color: #b4bfd4; }
-.modal.claro .hp-trilho, .modal.claro .hab-xp { background: #cdd5e4; }
-.modal.claro .dash-pk .hp-num, .modal.claro .dash-pk-info span { color: #44506b; }
-.modal.claro .hab-total { color: #44506b; } .modal.claro .hab-total span:last-child { color: #a35a00; }
-.modal.claro .hab-req { color: #b3261e; } .modal.claro .classe-estilo { color: #a35a00; }
-.modal.claro .hab-ranks i { border-color: #d98e00; } .modal.claro .hab-ranks i.on { background: #f5a623; }
-.modal.claro .hab-selo { color: #6b768d; } .modal.claro .hab-selo.ativa { color: #17744a; }
-.modal.claro .item-qtd, .modal.claro .ss-qtd { color: #c25a00; }
-.modal.claro .cartao-vazio { background: #eef1f6; border: 2px dashed #aab5cb; color: #8794ad; }
-.modal.claro .cx-slot { background: #fff; border: 1px solid #c3cbdb; } .modal.claro .cx-slot.vazio { background: #eef1f6; border-style: dashed; } .modal.claro .cx-slot.sel { background: #ffe9c9; }
-.modal.claro .cx-mini { color: #1b2438; } .modal.claro .cx-aviso { background: #fff3d6; color: #6b4a00; border-color: #e6c36a; } .modal.claro .cx-aviso.ok { background: #dff5e6; color: #17603a; border-color: #8fd0a6; }
-.modal.claro .mg-chk { color: #1b2438; }
-.modal.claro .mg-bolinha { background: #aab2c3; } .modal.claro .mg-bolinha.on { background: #2fc255; box-shadow: 0 0 6px #2fc25599; }
-.modal.claro .ev-card-icone { color: inherit; }
-.modal.claro .mc-itens .ss-item, .modal.claro .ss-itens { background: #fff; }
-.modal.claro .dash-tile span { color: #566079; }
-.modal.claro .dinheiro-painel { color: #fff; }
-.modal.claro .org-btns button.ativo { color: #a35a00; border-color: #d98e00; }
-.modal.claro .breve, .modal.claro .hab-card.breve { opacity: .85; }
-.modal.claro .modal-corpo button:not(.sec):not(.aba):not(.modal-atalho):not(.perigo) { color: #fff; }
-.modal.claro > button { background: #44506b; color: #fff; box-shadow: 0 3px 0 #2c3650; }
-.modal.claro .modal-corpo .cartao-pk, .modal.claro .modal-corpo .cartao-pk * { color: #fff; }
+:is(.modal.claro, .mg-pop-caixa) :is(.hab-card, .hab-classe, .hab-ajuda, .dash-tile, .dash-pk, .mg-item, .mg-pk, .mg-manut, .item-cartao, .ev-card, .ev-item, .org-linha, .cx-membro, .mc-pk, .mc-desc, .soc-card, .troca-pk, .acao-bloco, .fala, .dex, .cartao-acao) { background: linear-gradient(180deg, #ffffff, #eceff5); border: 1px solid #c3cbdb; color: #1b2438; box-shadow: 0 1px 3px #1b243818; }
+:is(.modal.claro, .mg-pop-caixa) .mg-item { background: linear-gradient(180deg, #ffffff, #e9edf4); text-align: left; }
+:is(.modal.claro, .mg-pop-caixa) .mg-item:hover, :is(.modal.claro, .mg-pop-caixa) .hab-classe:hover { border-color: var(--laranja); }
+:is(.modal.claro, .mg-pop-caixa) .mg-item strong, :is(.modal.claro, .mg-pop-caixa) .hab-classe strong { color: #0e1b3d; }
+:is(.modal.claro, .mg-pop-caixa) .mg-item span { color: #44506b; }
+:is(.modal.claro, .mg-pop-caixa) .hab-classe span, :is(.modal.claro, .mg-pop-caixa) .hab-classe small { color: #44506b; }
+:is(.modal.claro, .mg-pop-caixa) .fala { border-left: 3px solid var(--laranja); }
+:is(.modal.claro, .mg-pop-caixa) .dex.cap { background: linear-gradient(180deg, #fff6e5, #ffe2b8); border-color: var(--laranja); }
+:is(.modal.claro, .mg-pop-caixa) .dex-n { color: #3f63c9; } :is(.modal.claro, .mg-pop-caixa) .dex-nome { color: #1b2438; }
+:is(.modal.claro, .mg-pop-caixa) .dex-img.silhueta img { filter: brightness(0) opacity(.5); } :is(.modal.claro, .mg-pop-caixa) .dex-img.vazio { color: #9aa5ba; }
+:is(.modal.claro, .mg-pop-caixa) .dex-prog { background: #cdd5e4; border-color: #b4bfd4; }
+:is(.modal.claro, .mg-pop-caixa) .hp-trilho, :is(.modal.claro, .mg-pop-caixa) .hab-xp { background: #cdd5e4; }
+:is(.modal.claro, .mg-pop-caixa) .dash-pk .hp-num, :is(.modal.claro, .mg-pop-caixa) .dash-pk-info span { color: #44506b; }
+:is(.modal.claro, .mg-pop-caixa) .hab-total { color: #44506b; } :is(.modal.claro, .mg-pop-caixa) .hab-total span:last-child { color: #a35a00; }
+:is(.modal.claro, .mg-pop-caixa) .hab-req { color: #b3261e; } :is(.modal.claro, .mg-pop-caixa) .classe-estilo { color: #a35a00; }
+:is(.modal.claro, .mg-pop-caixa) .hab-ranks i { border-color: #d98e00; } :is(.modal.claro, .mg-pop-caixa) .hab-ranks i.on { background: #f5a623; }
+:is(.modal.claro, .mg-pop-caixa) .hab-selo { color: #6b768d; } :is(.modal.claro, .mg-pop-caixa) .hab-selo.ativa { color: #17744a; }
+:is(.modal.claro, .mg-pop-caixa) .item-qtd, :is(.modal.claro, .mg-pop-caixa) .ss-qtd { color: #c25a00; }
+:is(.modal.claro, .mg-pop-caixa) .cartao-vazio { background: #eef1f6; border: 2px dashed #aab5cb; color: #8794ad; }
+:is(.modal.claro, .mg-pop-caixa) .cx-slot { background: #fff; border: 1px solid #c3cbdb; } :is(.modal.claro, .mg-pop-caixa) .cx-slot.vazio { background: #eef1f6; border-style: dashed; } :is(.modal.claro, .mg-pop-caixa) .cx-slot.sel { background: #ffe9c9; }
+:is(.modal.claro, .mg-pop-caixa) .cx-mini { color: #1b2438; } :is(.modal.claro, .mg-pop-caixa) .cx-aviso { background: #fff3d6; color: #6b4a00; border-color: #e6c36a; } :is(.modal.claro, .mg-pop-caixa) .cx-aviso.ok { background: #dff5e6; color: #17603a; border-color: #8fd0a6; }
+:is(.modal.claro, .mg-pop-caixa) .mg-chk { color: #1b2438; }
+:is(.modal.claro, .mg-pop-caixa) .mg-bolinha { background: #aab2c3; } :is(.modal.claro, .mg-pop-caixa) .mg-bolinha.on { background: #2fc255; box-shadow: 0 0 6px #2fc25599; }
+:is(.modal.claro, .mg-pop-caixa) .ev-card-icone { color: inherit; }
+:is(.modal.claro, .mg-pop-caixa) .mc-itens .ss-item, :is(.modal.claro, .mg-pop-caixa) .ss-itens { background: #fff; }
+:is(.modal.claro, .mg-pop-caixa) .dash-tile span { color: #566079; }
+:is(.modal.claro, .mg-pop-caixa) .dinheiro-painel { color: #fff; }
+:is(.modal.claro, .mg-pop-caixa) .org-btns button.ativo { color: #a35a00; border-color: #d98e00; }
+:is(.modal.claro, .mg-pop-caixa) .breve, :is(.modal.claro, .mg-pop-caixa) .hab-card.breve { opacity: .85; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button:not(.sec):not(.aba):not(.modal-atalho):not(.perigo) { color: #fff; }
+:is(.modal.claro, .mg-pop-caixa) > button { background: #44506b; color: #fff; box-shadow: 0 3px 0 #2c3650; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) .cartao-pk, :is(.modal.claro .modal-corpo, .mg-pop-caixa) .cartao-pk * { color: #fff; }
 
 /* ===== lote 20: Ginásios no Mapa Mundi, Pokédex, histórico de batalha, evolução livre, insígnias, itens ===== */
 .mm-gin-aro { fill: none; stroke: #ffd23c; stroke-width: 1.3; stroke-dasharray: 3 1.6; }
@@ -1144,30 +1144,30 @@ button.dex:hover:not(:disabled) { filter: brightness(1.2); }
 .mc-erro { color: #a31526; font-weight: 700; margin: 6px 0; }
 
 /* ===== lote 20: contraste (WCAG AA) ===== */
-.modal.claro .modal-corpo button:not(.sec):not(.aba):not(.modal-atalho):not(.perigo) { background: linear-gradient(180deg, #c85600, #a84400); border-color: #7a3300; color: #fff; }
-.modal.claro .modal-corpo button:not(.sec):not(.aba):not(.modal-atalho):not(.perigo):disabled { opacity: .85; background: #8a93a8; border-color: #6b7488; color: #fff; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button:not(.sec):not(.aba):not(.modal-atalho):not(.perigo) { background: linear-gradient(180deg, #c85600, #a84400); border-color: #7a3300; color: #fff; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button:not(.sec):not(.aba):not(.modal-atalho):not(.perigo):disabled { opacity: .85; background: #8a93a8; border-color: #6b7488; color: #fff; }
 button:disabled { opacity: .72; }
-.modal.claro .modal-corpo button.ss-item:not(#_), .modal.claro .modal-corpo button.dx-item:not(#_) { background: #fff; color: #1b2438; box-shadow: none; }
-.modal.claro .modal-corpo button.ss-item.sel:not(#_) { background: #fff2c4; color: #1b2438; }
-.modal.claro .ss-qtd { color: #8a3d00; opacity: 1; }
-.modal.claro .modal-corpo button.dx-item:not(#_) { color: #0e2a66; border: 1px solid #0e2a66; }
-.modal.claro .modal-corpo button.mc-pk:not(#_) { background: #fff; color: #1b2438; box-shadow: none; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button.ss-item:not(#_), :is(.modal.claro .modal-corpo, .mg-pop-caixa) button.dx-item:not(#_) { background: #fff; color: #1b2438; box-shadow: none; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button.ss-item.sel:not(#_) { background: #fff2c4; color: #1b2438; }
+:is(.modal.claro, .mg-pop-caixa) .ss-qtd { color: #8a3d00; opacity: 1; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button.dx-item:not(#_) { color: #0e2a66; border: 1px solid #0e2a66; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button.mc-pk:not(#_) { background: #fff; color: #1b2438; box-shadow: none; }
 .mc-pk.caido, .mc-pk.indisp { opacity: 1 !important; background: #e9ecf3 !important; } .mc-pk.caido small, .mc-pk.indisp small { color: #4a5568; } .mc-pk.indisp .mc-motivo { color: #a31526; }
-.modal.claro .sub, .modal.claro .hab-card .sub, .modal.claro .hab-card.breve .sub { color: #46526b; opacity: 1; }
-.modal.claro .cartao-acao { background: #14284f; color: #fff; border-color: #0e1b3d; }
-.modal.claro .modal-corpo button.cartao-pontos:not(#_) { background: linear-gradient(135deg, #ffc247, #f59a14); color: #2a1400; border-color: #8a4b00; }
-.modal.claro .dex-n { color: #1f3f9c; } .modal.claro .dex.novo { opacity: 1; background: #e9ecf3; border-color: #b9c2d6; } .modal.claro .dex.novo .dex-nome, .modal.claro .dex.novo .dex-n { color: #46526b; }
-.modal.claro .dex.cap .dex-sel { color: #0b7a4b; } .modal.claro .dex.cap { background: #e5f6ec; border-color: #1f8a5d; } .modal.claro .dex.visto { background: #fff; }
-.modal.claro .dex, .modal.claro .dex .dex-nome { color: #1b2438; }
+:is(.modal.claro, .mg-pop-caixa) .sub, :is(.modal.claro, .mg-pop-caixa) .hab-card .sub, :is(.modal.claro, .mg-pop-caixa) .hab-card.breve .sub { color: #46526b; opacity: 1; }
+:is(.modal.claro, .mg-pop-caixa) .cartao-acao { background: #14284f; color: #fff; border-color: #0e1b3d; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button.cartao-pontos:not(#_) { background: linear-gradient(135deg, #ffc247, #f59a14); color: #2a1400; border-color: #8a4b00; }
+:is(.modal.claro, .mg-pop-caixa) .dex-n { color: #1f3f9c; } :is(.modal.claro, .mg-pop-caixa) .dex.novo { opacity: 1; background: #e9ecf3; border-color: #b9c2d6; } :is(.modal.claro, .mg-pop-caixa) .dex.novo .dex-nome, :is(.modal.claro, .mg-pop-caixa) .dex.novo .dex-n { color: #46526b; }
+:is(.modal.claro, .mg-pop-caixa) .dex.cap .dex-sel { color: #0b7a4b; } :is(.modal.claro, .mg-pop-caixa) .dex.cap { background: #e5f6ec; border-color: #1f8a5d; } :is(.modal.claro, .mg-pop-caixa) .dex.visto { background: #fff; }
+:is(.modal.claro, .mg-pop-caixa) .dex, :is(.modal.claro, .mg-pop-caixa) .dex .dex-nome { color: #1b2438; }
 .manut-faixa { background: #8a4600 !important; color: #fff !important; }
 .sd-ferr-btn { background: #0e1b3d !important; }
-.modal.claro .dex, .modal.claro .dex.cap, .modal.claro .dex.visto, .modal.claro .dex.novo { background-image: none !important; }
-.modal.claro .dex { background-color: #fff !important; } .modal.claro .dex.cap { background-color: #e5f6ec !important; } .modal.claro .dex.novo { background-color: #e9ecf3 !important; }
-.modal.claro .dex-sel { color: #0b7a4b; }
+:is(.modal.claro, .mg-pop-caixa) .dex, :is(.modal.claro, .mg-pop-caixa) .dex.cap, :is(.modal.claro, .mg-pop-caixa) .dex.visto, :is(.modal.claro, .mg-pop-caixa) .dex.novo { background-image: none !important; }
+:is(.modal.claro, .mg-pop-caixa) .dex { background-color: #fff !important; } :is(.modal.claro, .mg-pop-caixa) .dex.cap { background-color: #e5f6ec !important; } :is(.modal.claro, .mg-pop-caixa) .dex.novo { background-color: #e9ecf3 !important; }
+:is(.modal.claro, .mg-pop-caixa) .dex-sel { color: #0b7a4b; }
 .modal .aba.ativa { background: linear-gradient(180deg, #c85600, #a84400); color: #fff; }
 .cartao-pk .chip-tipo { background: #000a !important; color: #fff !important; }
 .cartao-pk .chip-golpe { background: #000a; }
-.modal.claro .modal-corpo button:not(.sec):not(.aba):not(.modal-atalho):not(.perigo):disabled { background: #5b6478; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button:not(.sec):not(.aba):not(.modal-atalho):not(.perigo):disabled { background: #5b6478; }
 
 /* popups da batalha: histórico à esquerda, Pokédex à direita, metade do palco cada; botões nas faixas laterais */
 .sd-hist.esq { left: 0; border-radius: 6px 0 0 6px; } .sd-hist.dir { right: 0; border-radius: 0 6px 6px 0; }
@@ -1192,13 +1192,13 @@ button:disabled { opacity: .72; }
 }
 
 /* lote 20b: botões-cartão (listas, fichas, itens) voltam ao fundo claro com letra escura, como eram */
-.modal.claro .modal-corpo button:is(.mg-item, .hab-classe, .dash-tile, .dash-pk, .mg-pk, .item-cartao, .ev-item, .org-linha, .cx-membro, .mc-pk, .soc-card, .troca-pk, .acao-bloco, .ss-item, .dx-item):not(#_):not(#__) {
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button:is(.mg-item, .hab-classe, .dash-tile, .dash-pk, .mg-pk, .item-cartao, .ev-item, .org-linha, .cx-membro, .mc-pk, .soc-card, .troca-pk, .acao-bloco, .ss-item, .dx-item):not(#_):not(#__) {
   background: linear-gradient(180deg, #ffffff, #e9edf4); color: #1b2438; border: 1px solid #c3cbdb; box-shadow: 0 1px 3px #1b243818; text-shadow: none;
 }
-.modal.claro .modal-corpo button:is(.mg-item, .hab-classe, .dash-tile, .dash-pk, .mg-pk, .item-cartao, .ev-item, .org-linha, .cx-membro, .mc-pk, .soc-card, .troca-pk, .acao-bloco, .ss-item):not(#_):not(#__):hover { border-color: var(--laranja); filter: none; }
-.modal.claro .modal-corpo button.mg-item:not(#_) strong { color: #0e1b3d; }
-.modal.claro .modal-corpo button.mg-item:not(#_) span { color: #44506b; }
-.modal.claro .modal-corpo button.mg-item:not(#_) .sub { color: #5a6580; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button:is(.mg-item, .hab-classe, .dash-tile, .dash-pk, .mg-pk, .item-cartao, .ev-item, .org-linha, .cx-membro, .mc-pk, .soc-card, .troca-pk, .acao-bloco, .ss-item):not(#_):not(#__):hover { border-color: var(--laranja); filter: none; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button.mg-item:not(#_) strong { color: #0e1b3d; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button.mg-item:not(#_) span { color: #44506b; }
+:is(.modal.claro .modal-corpo, .mg-pop-caixa) button.mg-item:not(#_) .sub { color: #5a6580; }
 /* chips dentro dos cartões coloridos do Time: sempre texto claro sobre fundo escuro */
 .cartao-pk .chip-tipo, .cartao-pk .chip-golpe, .cartao-pk .chip-golpe i { color: #fff !important; text-shadow: 0 1px 2px #000c; }
 
@@ -1243,7 +1243,7 @@ button:disabled { opacity: .72; }
 .eg-sem summary { cursor: pointer; font-weight: 600; }
 .eg-dia-ed { margin: 6px 0; }
 .eg-mod { display: block; padding: 4px 0; }
-.modal.claro :is(.eg-dia, .eg-conq, .eg-rank-linha, .eg-sem) { background: linear-gradient(180deg, #ffffff, #eceff5); border: 1px solid #c3cbdb; color: #1b2438; }
+:is(.modal.claro, .mg-pop-caixa) :is(.eg-dia, .eg-conq, .eg-rank-linha, .eg-sem) { background: linear-gradient(180deg, #ffffff, #eceff5); border: 1px solid #c3cbdb; color: #1b2438; }
 
 /* ===== lote 23b: telas do Mestre (engajamento) mais claras ===== */
 .eg-ajuda { margin: 4px 0 10px; padding: 8px 10px; border-radius: 10px; background: #eef3ff; border: 1px solid #b9c8ee; color: #1b2438; font-size: .8rem; line-height: 1.35; }
@@ -1488,3 +1488,32 @@ button:disabled { opacity: .72; }
 .mg-golpe-desc { color: #33415f; margin-top: 2px; }
 .mg-pop-voltar { align-self: flex-start; margin: 0; }
 @media (max-width: 760px) { .mg-pop { padding: 0; } .mg-pop-caixa { width: 100vw; max-height: 100dvh; height: 100dvh; border-radius: 0; } .mg-pop-cols { grid-template-columns: 1fr; } .mg-tiles { grid-template-columns: repeat(2, 1fr) !important; } }
+
+/* ===== lote 25: popups da Gestão na paleta clara + hover legível + faixa de evento à direita ===== */
+.mg-pop-caixa { color: #1b2438; }
+.mg-pop-caixa :is(.dash-tile, .dash-pk, .mg-pk-card) { background: linear-gradient(180deg, #ffffff, #e9edf4); color: #1b2438; border: 1px solid #c3cbdb; box-shadow: 0 1px 3px #1b243818; text-shadow: none; }
+.mg-pop-caixa .dash-pk:hover, .mg-pop-caixa .mg-pk-card:hover { border-color: var(--laranja); filter: none; color: #1b2438; }
+.mg-pop-caixa :is(.dash-pk, .mg-pk-card) :is(strong, span, small) { color: #1b2438; text-shadow: none; }
+.mg-pop-caixa .dash-pk-info span, .mg-pop-caixa .hp-num { color: #44506b; }
+.mg-pop-caixa .hp-trilho { background: #cdd5e4; }
+.mg-pop-caixa .dash-tile strong { color: #0e1b3d; } .mg-pop-caixa .dash-tile span { color: #566079; }
+.mg-pop-caixa .mg-golpe { color: #1b2438; text-shadow: none; background: color-mix(in srgb, var(--cor, #888) 14%, #ffffff); border: 2px solid var(--cor, #888); }
+.mg-pop-caixa .mg-golpe .mg-nome { color: #0e1b3d; }
+.mg-pop-caixa .mg-golpe .mg-meta, .mg-pop-caixa .mg-golpe small { color: #44506b; opacity: 1; }
+.mg-pop-caixa .mg-golpe .mg-golpe-desc { color: #33415f; }
+.mg-pop-caixa .mg-st { background: #ffffff; border: 1px solid #c3cbdb; color: #1b2438; } .mg-pop-caixa .mg-st span { color: #566079; opacity: 1; }
+.mg-pop-caixa .mg-ins .ct-ins, .mg-pop-caixa .mg-ins .ct-ins:hover, .mg-pop-caixa .mg-ins .ct-ins:active { color: #1b2438; text-shadow: none; }
+.mg-pop-caixa .mg-ins .ct-ins span { color: #0e1b3d; } .mg-pop-caixa .mg-ins .ct-ins small { color: #566079; opacity: 1; }
+.mg-pop-caixa .mg-ins .ct-ins.falta span, .mg-pop-caixa .mg-ins .ct-ins.falta small { opacity: .55; }
+.mg-pop-caixa .mg-ins .ct-ins:hover { background: #fff4e2; border-color: var(--laranja); filter: none; }
+.mg-pop-caixa button.sec, .mg-pop-caixa button.sec:hover:not(:disabled) { color: #fff; }
+/* faixa de evento: canto superior direito (aviso logo abaixo, missão mais abaixo) */
+.faixa-evento { left: auto !important; right: 10px; top: 10px !important; transform: none !important; flex-direction: column; align-items: flex-end; justify-content: flex-start; max-width: min(46vw, 320px); z-index: 5; }
+.aviso { top: 58px; }
+.hud-missao { top: 108px; }
+.mg-pop-caixa .mg-golpe strong { color: #0e1b3d; }
+/* reset de golpes no Centro Pokémon */
+.modal .mt-golpe:not(#_):not(#__) { display: flex; flex-direction: column; gap: 2px; text-align: left; margin: 0; padding: 10px 12px; border-radius: 12px; background: linear-gradient(180deg, #ffffff, #e9edf4); color: #1b2438; border: 2px solid #c3cbdb; box-shadow: none; text-shadow: none; }
+.modal .mt-golpe:not(#_):not(#__):hover { border-color: var(--laranja); color: #1b2438; filter: none; background: #fff7ea; }
+.modal .mt-golpe.sel:not(#_):not(#__) { border-color: var(--laranja); background: #ffe9c9; }
+.modal .mt-golpe strong { color: #0e1b3d; } .modal .mt-golpe small { color: #44506b; }

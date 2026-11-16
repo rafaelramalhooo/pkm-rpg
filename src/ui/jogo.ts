@@ -21,6 +21,7 @@ import { abrirResumo } from "./resumo";
 import { criarAtalhos, type AcaoAtalho } from "./atalhos";
 import { blocoInsignias } from "./cartao";
 import { abrirOrganizar } from "./organizar";
+import { abrirResetGolpes } from "./resetgolpes";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
 import { abrirCasa, abrirCheckin, abrirConquistas, abrirCosmeticos, abrirMiniquests, abrirRanking, verificarNovidades } from "./engajamento";
 
@@ -779,6 +780,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       if (p.tipo === "centro") nos.push(botao("📅 Check-in diário", () => void abrirCheckin(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }), "sec"));
       if (p.tipo === "casa_jogador") nos.push(botao("🏠 Minha casa e ovos", () => void abrirCasa(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }), "sec"));
       if (p.tipo === "centro") nos.push(botao("Acessar as Caixas", () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud), "sec"));
+      if (p.tipo === "centro" && j.mapa_id !== "pallet" && j.mapa_id !== "porto") nos.push(botao("🔄 Resetar golpes (₽ 1.000)", () => { modal.voltarPara(() => void abrirPoi(p)); void abrirResetGolpes(modal, j.id, j.dinheiro ?? 0, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }); }, "sec"));
     } else if (p.acao === "dica" || p.acao === "quadro") {
       const lista = p.acao === "dica" ? p.dicas : p.textos;
       if (lista?.length) nos.push(el("p", { class: "sub" }, `“${lista[Math.floor(Math.random() * lista.length)]}”`));
