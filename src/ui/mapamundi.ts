@@ -102,7 +102,10 @@ export async function abrirMapaMundi(
       const gx = n.x + r + 5.5, gy = n.y - r - 2;
       const ins = insigniaDoMapa(n.id);
       g.append(svg("circle", { cx: n.x, cy: n.y, r: r + 3.2, class: "mm-gin-aro" }));
-      if (ins) g.append(svg("image", { href: urlInsignia(ins.slug), x: gx - 7, y: gy - 8, width: 14, height: 14, class: "mm-gin-img" }));
+      if (ins) {
+        g.append(svg("circle", { cx: gx, cy: gy - 1, r: 8.4, class: "mm-gin-fundo" }));
+        g.append(svg("image", { href: urlInsignia(ins.slug), x: gx - 6.2, y: gy - 7.2, width: 12.4, height: 12.4, class: "mm-gin-img" }));
+      }
       else g.append(svg("path", { d: `M${gx - 4.2} ${gy - 4.6}h8.4v5.2c0 3-2.4 4.6-4.2 5.6c-1.8-1-4.2-2.6-4.2-5.6z`, class: "mm-gin-escudo" }));
       g.append(svg("title", {}, `Ginásio de ${n.nome} — insígnia ${GINASIOS[n.id]}`));
     }

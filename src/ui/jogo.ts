@@ -31,11 +31,15 @@ function botao(texto: string, fn: () => void, classe = "sec"): HTMLButtonElement
 }
 
 /** Painel modal reutilizável. */
-function criarModal(): { raiz: HTMLElement; abrir: (titulo: string, ...nos: Node[]) => void; acoes: (...nos: Node[]) => void; fechar: () => void; aberto: () => boolean; aoFechar: (fn: (() => void) | null) => void } {
+function criarModal(): { raiz: HTMLElement; voltarPara: (reabrir: (() => void) | null) => void; abrir: (titulo: string, ...nos: Node[]) => void; acoes: (...nos: Node[]) => void; fechar: () => void; aberto: () => boolean; aoFechar: (fn: (() => void) | null) => void } {
   let ao: (() => void) | null = null;
   const titulo = el("h1", {});
   const corpo = el("div", { class: "modal-corpo" });
+  const retorno: (() => void)[] = [];
+  const voltar = el("button", { type: "button", class: "modal-voltar", hidden: "" }, "← Voltar");
+  voltar.addEventListener("click", () => { const r = retorno.pop(); voltar.hidden = retorno.length === 0; r?.(); });
   const fechar = () => {
+    retorno.length = 0; voltar.hidden = true;
     raiz.hidden = true;
     const f = ao;
     ao = null;
@@ -44,14 +48,16 @@ function criarModal(): { raiz: HTMLElement; abrir: (titulo: string, ...nos: Node
   const x = el("button", { type: "button", class: "modal-x", "aria-label": "Sair do painel" }, "✕");
   x.addEventListener("click", fechar);
   const acoesSlot = el("div", { class: "modal-acoes" });
-  const caixaModal = el("div", { class: "painel modal" }, el("div", { class: "modal-topo" }, titulo, acoesSlot, x), corpo, botao("Fechar", fechar));
+  const caixaModal = el("div", { class: "painel modal" }, el("div", { class: "modal-topo" }, voltar, titulo, acoesSlot, x), corpo, botao("Fechar", fechar));
   const raiz = el("div", { class: "menu", hidden: "" }, caixaModal);
   raiz.addEventListener("click", (e) => {
     if (e.target === raiz) fechar();
   });
   return {
     raiz,
+    voltarPara: (r) => { if (r) retorno.push(r); else retorno.length = 0; voltar.hidden = retorno.length === 0; },
     abrir: (t, ...nos) => {
+      voltar.hidden = retorno.length === 0;
       titulo.textContent = t;
       acoesSlot.replaceChildren();
       corpo.replaceChildren(...nos);
@@ -398,7 +404,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       return el("div", { class: `dash-pk${p.hp_atual <= 0 ? " caido" : ""}` }, imagemPokemon("frente", p.especie_id, "mini", p.brilhante),
         el("div", { class: "dash-pk-info" }, el("strong", {}, nomePokemon(p)), el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`), el("div", { class: "hp-trilho" }, fill)));
     });
-    const secao = (tit: string, itens: [string, () => void][]) => el("div", { class: "dash-sec" }, el("label", {}, tit), el("div", { class: "dash-menu" }, ...itens.map(([r, f]) => botao(r, f, "sec"))));
+    const secao = (tit: string, itens: [string, () => void][]) => el("div", { class: "dash-sec" }, el("label", {}, tit), el("div", { class: "dash-menu" }, ...itens.map(([r, f]) => botao(r, () => { modal.voltarPara(() => void abrirDashboard()); f(); }, "sec"))));
     const recarregar = () => { atualizarHud(); void recarregarJogador(); };
     const menus = el("div", { class: "dash-menus" },
       secao("Progresso", [["🏅 Conquistas", () => void abrirConquistas(modal, mostrarAviso)], ["📊 Ranking", () => void abrirRanking(modal, mostrarAviso)], ["🎯 Desafios da semana", () => void abrirMiniquests(modal, mostrarAviso)], ["📅 Check-in diário", () => void abrirCheckin(modal, mostrarAviso, recarregar)], ["🎖 Títulos e molduras", () => void abrirCosmeticos(modal, mostrarAviso)]]),
@@ -939,7 +945,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   const NO_PAINEL = new Set(["Habilidades", "Ações (PA)", "Jogadores (desafios e trocas)", "Conquistas", "Ranking de Treinadores", "Desafios da semana", "Minha casa e ovos", "Títulos e molduras", "Organizar time / Seguidor", "Check-in diário", "Onde estou", "Meus personagens / Reiniciar"]);
   function abrirMenuAvatar(): void {
     if (emBatalha) return;
-    modal.abrir(j.nome, ...secoesMenu(todasAcoes().filter((a) => !a.oculto && !NO_PAINEL.has(a.id)), (a) => { modal.aoFechar(null); modal.fechar(); a.fn(); }));
+    modal.abrir(j.nome, ...secoesMenu(todasAcoes().filter((a) => !a.oculto && !NO_PAINEL.has(a.id)), (a) => { modal.aoFechar(null); if (a.grupo === "Jogar") { modal.fechar(); a.fn(); } else { modal.voltarPara(abrirMenuAvatar); a.fn(); } }));
   }
   const escolherAtalho = (titulo: string, atual: string | null): Promise<string | null | undefined> => new Promise((resolve) => {
     modal.aoFechar(() => resolve(undefined));
@@ -1003,7 +1009,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     atualizarHud();
     void atualizarMissao();
     void resolverPendencias();
-    void supabase.from("pokemons").select("id", { count: "exact", head: true }).not("evo_pend", "is", null).then(({ count }) => { if (count) mostrarAviso("Você tem pontos de atributo para distribuir: abra o Time e toque no ⭐ do Pokémon.", 8000); });
+    void supabase.from("pokemons").select("id", { count: "exact", head: true }).eq("dono", j.id).not("evo_pend", "is", null).then(({ count }) => { if (count) mostrarAviso("Você tem pontos de atributo para distribuir: abra o Time e toque no ⭐ do Pokémon.", 8000); });
     void verificarSocial();
     if (!temRef) {
       mostrarAviso(j.papel === "mestre" ? "Mestre: abra Menu e clique em \"Importar dados do jogo\" e depois \"Importar sprites\"." : "O mundo ainda está sendo preparado. Tente de novo em instantes.", 8000);

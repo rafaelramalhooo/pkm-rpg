@@ -15,8 +15,10 @@ export async function distribuirPendentes(): Promise<void> {
   aberto = true;
   try {
     await carregarReferencias();
+    const uid = (await supabase.auth.getUser()).data.user?.id;
+    if (!uid) return;
     for (let guarda = 0; guarda < 12; guarda++) {
-      const { data } = await supabase.from("pokemons").select("id, especie_id, apelido, nivel, atk, def, spa, spd, spe, evo_pend").not("evo_pend", "is", null).limit(1);
+      const { data } = await supabase.from("pokemons").select("id, especie_id, apelido, nivel, atk, def, spa, spd, spe, evo_pend").eq("dono", uid).not("evo_pend", "is", null).limit(1);
       const p = ((data ?? []) as Pend[])[0];
       if (!p) return;
       const feito = await telaDistribuir(p);
@@ -71,7 +73,7 @@ function telaDistribuir(p: Pend): Promise<"ok" | "depois"> {
     const enviar = async (valores: Record<K, number>): Promise<void> => {
       ok.disabled = true; auto.disabled = true;
       const { error } = await supabase.rpc("distribuir_evolucao", { p_pokemon: p.id, p_aloc: valores });
-      if (error) { msg.className = "msg erro"; msg.textContent = error.message; auto.disabled = false; pintar(); return; }
+      if (error) { auto.disabled = false; pintar(); msg.className = "msg erro"; msg.textContent = error.message; return; }
       fechar("ok");
     };
     ok.addEventListener("click", () => void enviar({ ...aloc }));
