@@ -17,12 +17,12 @@ const sorteio = (n: number) => Math.floor(Math.random() * n);
 // deno-lint-ignore no-explicit-any
 type Any = any;
 
-async function bonusDe(uid: string): Promise<{ instinto: number; foco: number; campeao: number; captura: number }> {
+async function bonusDe(uid: string): Promise<{ instinto: number; foco: number; campeao: number; captura: number; domador: number; guardiao: number }> {
   try {
     const { data } = await admin.rpc("sim_bonus", { p_jogador: uid });
     const d = (data ?? {}) as Any;
-    return { instinto: Number(d.instinto ?? 0), foco: Number(d.foco ?? 0), campeao: Number(d.campeao ?? 0), captura: Number(d.captura ?? 0) };
-  } catch { return { instinto: 0, foco: 0, campeao: 0, captura: 0 }; }
+    return { instinto: Number(d.instinto ?? 0), foco: Number(d.foco ?? 0), campeao: Number(d.campeao ?? 0), captura: Number(d.captura ?? 0), domador: Number(d.domador ?? 0), guardiao: Number(d.guardiao ?? 0) };
+  } catch { return { instinto: 0, foco: 0, campeao: 0, captura: 0, domador: 0, guardiao: 0 }; }
 }
 
 async function montar(b: Any, uid: string) {
@@ -58,7 +58,7 @@ async function montar(b: Any, uid: string) {
   }));
   const seed = [sorteio(65536), sorteio(65536), sorteio(65536), sorteio(65536)];
   const evB = ((await admin.rpc("evento_batalha")).data ?? {}) as { clima?: string | null };
-  const r = criar({ time, inimigos, seed, rpg: bon.foco > 0 || evB.clima ? { ...(bon.foco > 0 ? { foco: bon.foco } : {}), ...(evB.clima ? { clima: evB.clima } : {}) } : null });
+  const r = criar({ time, inimigos, seed, rpg: bon.foco > 0 || evB.clima || (b.tipo === "selvagem" && bon.domador > 0) ? { ...(bon.foco > 0 ? { foco: bon.foco } : {}), ...(evB.clima ? { clima: evB.clima } : {}), ...(b.tipo === "selvagem" && bon.domador > 0 ? { domador: bon.domador } : {}) } : null });
   const meta = {
     time: lista.map((p: Any) => p.id), participantes: [lista[0].id], fuga: 0, ativo: lista[0].id, treinador: nomeTreinador,
     inimigos: adv.map((a: Any) => ({ exp_base: a.exp_base, nivel: a.nivel, especie_id: a.especie_id, golpes: a.golpes, caiu: false })),
@@ -381,7 +381,9 @@ Deno.serve(async (req) => {
       const a = Math.max(1, Math.floor(((3 * d.maxhp - 2 * d.hp) * (esp?.taxa_captura ?? 45) * mult * bonus) / (3 * d.maxhp)));
       const bb = a >= 255 ? 65536 : 1048560 / Math.sqrt(Math.sqrt(16711680 / a));
       let balancos = 0;
-      for (let i = 0; i < 4; i++) { if (bb >= 65536 || sorteio(65536) < bb) balancos++; else break; }
+      const primeira = !meta.bolas; meta.bolas = (meta.bolas ?? 0) + 1;   // Guardião Selvagem: a 1ª bola de cada captura nunca falha no 1º balanço
+      const guardiao = primeira && (await bonusDe(uid)).guardiao > 0;
+      for (let i = 0; i < 4; i++) { if (bb >= 65536 || (i === 0 && guardiao) || sorteio(65536) < bb) balancos++; else break; }
       const ok = balancos >= 4;
       antes.push({ t: "bola", bola: item, balancos: ok ? 3 : balancos, capturado: ok, nome: d.nomeA });
       if (ok) {

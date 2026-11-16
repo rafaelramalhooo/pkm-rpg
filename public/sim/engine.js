@@ -79,6 +79,7 @@ export function criar({ time, inimigos, seed, rpg }) {
   ajustar(b.sides[1], inimigos, false);
   // clima do evento do Mestre: o tempo dura a batalha inteira
   const CLIMAS = { rain: "raindance", sun: "sunnyday", sand: "sandstorm", snow: "snowscape" };
+  if (rpg?.domador > 0) { try { b.sides[1].pokemon.forEach((p) => { p.hp = Math.max(1, Math.floor(p.hp * (1 - 0.03 * rpg.domador))); }); } catch { /* sem domador */ } }   // Domador: selvagens começam com menos HP
   if (rpg?.clima && CLIMAS[rpg.clima]) { try { b.field.setWeather(CLIMAS[rpg.clima]); if (b.field.weatherState) b.field.weatherState.duration = 0; } catch { /* sem clima */ } }
   return resultado(b, 0);
 }
