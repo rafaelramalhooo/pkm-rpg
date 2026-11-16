@@ -1527,3 +1527,9 @@ button:disabled { opacity: .72; }
 
 /* lote 26: grade de aparências com rolagem (mais de 12 opções) */
 .aparencias.aparencias-rolavel { max-height: 300px; overflow-y: auto; padding: 4px; -webkit-overflow-scrolling: touch; }
+/* lote 25c: barra de rolagem sempre visível nos popups da Gestão (no Mac a padrão some sozinha) */
+.mg-pop-caixa { overflow-y: scroll; scrollbar-width: auto; scrollbar-color: #8a97b5 #e3e8f1; padding-bottom: 32px; }
+.mg-pop-caixa::-webkit-scrollbar { width: 14px; }
+.mg-pop-caixa::-webkit-scrollbar-track { background: #e3e8f1; border-radius: 0 20px 20px 0; }
+.mg-pop-caixa::-webkit-scrollbar-thumb { background: #8a97b5; border-radius: 10px; border: 3px solid #e3e8f1; min-height: 48px; }
+.mg-pop-caixa::-webkit-scrollbar-thumb:hover { background: var(--laranja); }
