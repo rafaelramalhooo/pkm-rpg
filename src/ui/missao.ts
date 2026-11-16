@@ -63,3 +63,24 @@ export async function conversarNpc(modal: Modal, npcId: string, titulo: string, 
   });
   if (r.tipo === "avanca") { aoMudar(); await processarEventos(r.eventos); }
 }
+
+/** Conversa com um NPC das cadeias de Pedras de Evolução (progresso e pagamento validados no servidor). */
+export async function conversarPedra(modal: Modal, npcId: string, titulo: string, aviso: (t: string, ms?: number, erro?: boolean) => void, aoMudar: () => void): Promise<void> {
+  await carregarReferencias();
+  const { data, error } = await supabase.rpc("pedra_interagir", { p_npc: npcId });
+  if (error || !data) return void aviso(error?.message ?? "Não foi possível conversar agora.", 4000, true);
+  const r = data as { res: string; nome: string; texto: string; pedra?: string; item?: string; preco?: number };
+  await new Promise<void>((fim) => {
+    const fechar = (): void => { modal.aoFechar(null); modal.fechar(); fim(); };
+    const nos: Node[] = [el("p", { class: "fala-npc" }, `"${r.texto}"`)];
+    if (r.res === "avanca" && r.pedra) nos.push(el("p", { class: "sub" }, `Busca: ${r.pedra} — objetivo cumprido, siga adiante!`));
+    if (r.res === "concluida" && r.item) nos.push(el("p", { class: "sub" }, `Você pagou ₽ ${r.preco ?? 0} e recebeu: ${nomeItem(r.item)}!`));
+    if (r.res === "sem_dinheiro") nos.push(el("p", { class: "sub" }, `Valor necessário: ₽ ${r.preco ?? 0}.`));
+    const b = el("button", { type: "button" }, "Ok");
+    b.addEventListener("click", fechar);
+    nos.push(b);
+    modal.abrir(titulo, ...nos);
+    modal.aoFechar(() => fim());
+  });
+  if (r.res === "avanca" || r.res === "concluida") aoMudar();
+}

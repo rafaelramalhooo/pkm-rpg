@@ -1360,3 +1360,9 @@ button:disabled { opacity: .72; }
 .eg-noticias:not(#_) { margin: 4px 0 10px; padding: 8px 12px; border-radius: 12px; background: #fff7e6; border: 1px solid #f0cf8a; color: #4a3500; font-size: .85rem; }
 .eg-noticias strong:not(#_) { display: block; margin-bottom: 4px; color: #6b4a00; }
 .eg-noticias p:not(#_) { margin: 2px 0; }
+
+/* Lote MTs */
+.mt-lista { display: flex; flex-direction: column; gap: 6px; }
+.mt-item { text-align: left; width: 100%; cursor: pointer; }
+.mt-item:disabled { opacity: .5; cursor: not-allowed; }
+.aba .ico-emoji { font-size: 1.25em; line-height: 1; }

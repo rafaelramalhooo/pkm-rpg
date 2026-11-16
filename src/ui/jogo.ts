@@ -6,7 +6,7 @@ import {
   barraHp, carregarReferencias, COR_TIPO, especie, golpe, imagemPokemon, meuTime, NOME_TIPO, nomeItem, textoSobre,
   nomePokemon, todasEspecies, type PokemonRow,
 } from "./dados";
-import { carregarMissao, conversarNpc, type MissaoEstado } from "./missao";
+import { carregarMissao, conversarNpc, conversarPedra, type MissaoEstado } from "./missao";
 import { abrirSocial, carregarPendencias } from "./social";
 import { resolverPendencias } from "./momentos";
 import { fichaEspecie, painelBusca } from "./pokedex";
@@ -16,6 +16,7 @@ import { abrirCaixas } from "./caixa";
 import { abrirHabilidades, abrirAcoes, acaoPA, textoEventos, exigirClasse } from "./habilidades";
 import { aoEstado, consultar, type PingEstado } from "./acesso";
 import { abrirMochila as abrirMochilaSS } from "./mochila";
+import { abrirMTs, abrirLojaMT } from "./mts";
 import { abrirResumo } from "./resumo";
 import { abrirOrganizar } from "./organizar";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
@@ -237,13 +238,13 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   // ---------- painéis ----------
   const msgPainel = (): HTMLElement => el("p", { class: "msg", role: "status" });
 
-  function abas(ativa: "time" | "mochila" | "pokedex"): HTMLElement {
-    const mk = (id: "time" | "mochila" | "pokedex", rot: string, fn: () => Promise<void>) => {
-      const b = el("button", { type: "button", class: `aba${id === ativa ? " ativa" : ""}`, "aria-pressed": String(id === ativa) }, icone(id), el("span", {}, rot));
+  function abas(ativa: "time" | "mochila" | "pokedex" | "mts"): HTMLElement {
+    const mk = (id: "time" | "mochila" | "pokedex" | "mts", rot: string, fn: () => Promise<void>) => {
+      const b = el("button", { type: "button", class: `aba${id === ativa ? " ativa" : ""}`, "aria-pressed": String(id === ativa) }, id === "mts" ? el("span", { class: "ico-emoji" }, "💿") : icone(id), el("span", {}, rot));
       b.addEventListener("click", () => void fn());
       return b;
     };
-    return el("div", { class: "abas" }, mk("time", "Time", abrirTime), mk("mochila", "Mochila", abrirMochila), mk("pokedex", "Pokédex", abrirPokedex));
+    return el("div", { class: "abas" }, mk("time", "Time", abrirTime), mk("mochila", "Mochila", abrirMochila), mk("mts", "MTs", abrirMTsJanela), mk("pokedex", "Pokédex", abrirPokedex));
   }
 
   async function abrirTime(): Promise<void> {
@@ -307,6 +308,10 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
 
   async function abrirMochila(): Promise<void> {
     await abrirMochilaSS(modal, j.id, j.dinheiro ?? 0, mostrarAviso, atualizarHud, abas("mochila"));
+  }
+
+  async function abrirMTsJanela(): Promise<void> {
+    await abrirMTs(modal, mostrarAviso, abas("mts"), () => { atualizarHud(); void recarregarJogador(); });
   }
 
   async function abrirPokedex(): Promise<void> {
@@ -735,13 +740,15 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const venceu = new Set((vs ?? []).map((v: { treinador: string }) => v.treinador));
     const { data: ms } = await supabase.from("npcs_missao").select("id, x, y, direcao, nome, classe, aparencia").eq("mapa_id", mapaId);
     const npcs = ((ms ?? []) as Omit<TreinadorMapa, "vencido" | "visao" | "falas" | "missao">[]).map((n) => ({ ...n, visao: 0, falas: {}, vencido: false, missao: true }));
+    const { data: pds } = await supabase.from("pedra_etapas").select("id, x, y, direcao, nome, classe, aparencia").eq("mapa_id", mapaId);
+    const pedras = ((pds ?? []) as Omit<TreinadorMapa, "vencido" | "visao" | "falas" | "missao">[]).map((n) => ({ ...n, visao: 0, falas: {}, vencido: false, missao: true }));
     const prof: TreinadorMapa[] = mapaId === "lab"
       ? [{ id: "prof-carvalho", x: 6, y: 6, direcao: "baixo", nome: "Carvalho", classe: "Prof.", aparencia: 10, visao: 0, falas: {}, vencido: false, missao: true } as unknown as TreinadorMapa]
       : [];
     const normais = ((ts ?? []) as Omit<TreinadorMapa, "vencido">[]).filter((t) => !t.id.startsWith("mq_"))
       .map((t) => (emRevanche.has(t.id) ? { ...t, visao: 0, vencido: false } : { ...t, vencido: venceu.has(t.id) }));
     const desafiantes = ((Array.isArray(mqs) ? mqs : []) as Omit<TreinadorMapa, "vencido">[]).map((t) => ({ ...t, vencido: false }));
-    return [...normais, ...desafiantes, ...npcs, ...prof];
+    return [...normais, ...desafiantes, ...npcs, ...pedras, ...prof];
   }
 
   async function procurar(): Promise<void> {
@@ -805,6 +812,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       await carregarReferencias();
       const saldo = el("p", { class: "sub" }, `Seu dinheiro: ₽ ${j.dinheiro ?? 0}`);
       nos.push(saldo);
+      if (p.tipo === "loja") nos.push(botao("💿 Ver MTs à venda", () => void abrirLojaMT(modal, p.id, j.dinheiro ?? 0, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }), "sec"));
       for (const it of p.estoque ?? []) {
         const linha = el("div", { class: "item-cartao" }, el("div", { class: "item-txt" }, el("strong", {}, nomeItem(it.item)), el("small", {}, `₽ ${it.preco}`)));
         for (const q of [1, 5]) {
@@ -980,7 +988,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       aviso: mostrarAviso,
       treinadores: listarTreinadores,
       aoTreinador,
-      aoNpcMissao: async (t) => { if (t.id === "prof-carvalho") { await abrirPoi({ id: "prof", tipo: "lab", x: 6, y: 7 } as unknown as Poi); return; } await conversarNpc(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); },
+      aoNpcMissao: async (t) => { if (t.id === "prof-carvalho") { await abrirPoi({ id: "prof", tipo: "lab", x: 6, y: 7 } as unknown as Poi); return; } if (t.id.startsWith("pd_")) { await conversarPedra(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }); return; } await conversarNpc(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); },
     });
   } catch (e) {
     mostrarAviso(e instanceof Error ? e.message : "Não foi possível abrir o jogo.");
