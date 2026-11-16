@@ -238,7 +238,7 @@ begin
     return jsonb_build_object('tipo', 'dex_visto', 'meta', meta, 'texto', format('Veja %s espécies novas na Pokédex', meta),
       'premio', jsonb_build_object('dinheiro', 100 * meta, 'xp_treinador', 15 * meta, 'itens', jsonb_build_array(jsonb_build_object('item', 'potion', 'qtd', 2))));
   elsif p_arq = 'entregador' then
-    select m.mapa_id, mp.nome into alvo from (select distinct mapa_id from public.mv_pontos where tipo_mapa = 'cidade' and mapa_id <> p_mapa order by random() limit 1) m join public.mapas mp on mp.id = m.mapa_id;
+    select m.mapa_id, mp.nome into alvo from (select d.mapa_id from (select distinct mapa_id from public.mv_pontos where tipo_mapa = 'cidade' and mapa_id <> p_mapa) d order by random() limit 1) m join public.mapas mp on mp.id = m.mapa_id;
     return jsonb_build_object('tipo', 'chegar', 'meta', 1, 'alvo', alvo.mapa_id, 'alvo_nome', alvo.nome, 'texto', format('Leve a encomenda até %s', alvo.nome),
       'premio', jsonb_build_object('dinheiro', 300, 'xp_treinador', 30, 'itens', jsonb_build_array(jsonb_build_object('item', 'super-potion', 'qtd', 2))));
   elsif p_arq = 'colecionador' then
