@@ -24,6 +24,7 @@ import { abrirOrganizar } from "./organizar";
 import { aparenciasLiberadas, preencherGrade } from "./personagem";
 import { abrirResetGolpes } from "./resetgolpes";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
+import { carregarMvMapa, carregarPistas, ehDesafiante, interagirMv, mostrarPistas, mostrarPremiosNovos, observarPokemon } from "./mundovivo";
 import { abrirCasa, abrirCheckin, abrirConquistas, abrirCosmeticos, abrirMiniquests, abrirRanking, verificarNovidades } from "./engajamento";
 
 function botao(texto: string, fn: () => void, classe = "sec"): HTMLButtonElement {
@@ -627,7 +628,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   async function aoTreinador(t: TreinadorMapa): Promise<boolean> {
     if (emBatalha) return false;
     const aceitou = await new Promise<boolean>((ok) => {
-      const lutar = botao("Aceitar o desafio!", () => { modal.aoFechar(null); modal.fechar(); ok(true); }, "");
+      const lutar = botao(ehDesafiante(t.id) ? `Aceitar o desafio! (−${custoDesafiante} PA)` : "Aceitar o desafio!", () => { modal.aoFechar(null); modal.fechar(); ok(true); }, "");
       modal.abrir(`${t.classe} ${t.nome}`, el("p", { class: "fala" }, `"${t.falas.antes ?? "Vamos lutar!"}"`), lutar);
       modal.aoFechar(() => ok(false));
       lutar.focus();
@@ -697,11 +698,28 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     }
   };
   const tempoSocial = window.setInterval(() => void verificarSocial(), 4000);
-  const tempoMissao = window.setInterval(() => { if (!document.hidden) { void atualizarMissao(); void verificarNovidades(mostrarAviso); void recarregarJogador(); } }, 30000);
+  const tempoMissao = window.setInterval(() => { if (!document.hidden) { void atualizarMissao(); void verificarNovidades(mostrarAviso); void recarregarJogador(); void verificarMundoVivo(); } }, 30000);
   window.setTimeout(() => void recarregarJogador(), 1500);
   window.setTimeout(() => void verificarNovidades(mostrarAviso), 3000);
 
+  let turnoMv = -1;
+  async function verificarMundoVivo(): Promise<void> {
+    try {
+      const { data } = await supabase.rpc("mv_garantir");
+      const d = data as { ativo?: boolean; turno?: number } | null;
+      if (d?.ativo && typeof d.turno === "number" && d.turno !== turnoMv) {
+        if (turnoMv !== -1) mostrarAviso("O mundo mudou: novos rostos pelos caminhos... e algo raro foi avistado.", 5500);
+        turnoMv = d.turno;
+        if (turnoMv === -1) return;
+      }
+      if (d?.ativo) void mostrarPremiosNovos(mostrarAviso);
+    } catch { /* sem mundo vivo */ }
+  }
+  window.setTimeout(() => void verificarMundoVivo(), 4000);
+  let custoDesafiante = 2;
   async function listarTreinadores(mapaId: string): Promise<TreinadorMapa[]> {
+    const mv = await carregarMvMapa(mapaId); // gera o turno/dia se preciso e limpa os desafiantes antigos antes de listar
+    custoDesafiante = mv.desafiante_pa ?? 2;
     const [{ data: ts }, { data: vs }, { data: rev }, { data: mqs }] = await Promise.all([
       supabase.from("treinadores").select("id, x, y, direcao, visao, nome, classe, aparencia, falas").eq("mapa_id", mapaId),
       supabase.from("treinadores_vencidos").select("treinador").eq("jogador", j.id),
@@ -718,9 +736,14 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       ? [{ id: "prof-carvalho", x: 6, y: 6, direcao: "baixo", nome: "Carvalho", classe: "Prof.", aparencia: 13, visao: 0, falas: {}, vencido: false, missao: true } as unknown as TreinadorMapa]
       : [];
     const normais = ((ts ?? []) as Omit<TreinadorMapa, "vencido">[]).filter((t) => !t.id.startsWith("mq_"))
-      .map((t) => (emRevanche.has(t.id) ? { ...t, visao: 0, vencido: false } : { ...t, vencido: venceu.has(t.id) }));
+      .map((t) => (ehDesafiante(t.id) ? { ...t, visao: 0, vencido: venceu.has(t.id) } : emRevanche.has(t.id) ? { ...t, visao: 0, vencido: false } : { ...t, vencido: venceu.has(t.id) }));
+    const vivos: TreinadorMapa[] = mv.ativo ? [
+      ...(mv.npcs ?? []).map((n) => ({ id: n.id, x: n.x, y: n.y, direcao: n.direcao, nome: n.nome, classe: n.classe, aparencia: n.aparencia, visao: 0, falas: {}, vencido: false, missao: true } as TreinadorMapa)),
+      ...(mv.fixos ?? []).map((f) => ({ id: f.id, x: f.x, y: f.y, direcao: f.direcao, nome: f.tipo === "mural" ? "" : f.nome, classe: f.tipo === "mural" ? "Mural" : "Fofoqueiro", aparencia: f.aparencia, visao: 0, falas: {}, vencido: false, missao: true, tipo: f.tipo } as TreinadorMapa)),
+      ...(mv.pokemon ?? []).filter((p) => !p.tentou).map((p) => ({ id: "mvpk", x: p.x, y: p.y, direcao: p.direcao, nome: "raro", classe: "Algo", aparencia: 12, visao: 0, falas: {}, vencido: false, missao: true, tipo: "pokemon" } as TreinadorMapa)),
+    ] : [];
     const desafiantes = ((Array.isArray(mqs) ? mqs : []) as Omit<TreinadorMapa, "vencido">[]).map((t) => ({ ...t, vencido: false }));
-    return [...normais, ...desafiantes, ...npcs, ...pedras, ...prof];
+    return [...normais, ...desafiantes, ...npcs, ...pedras, ...prof, ...vivos];
   }
 
   async function procurar(): Promise<void> {
@@ -915,6 +938,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
             { rotulo: "Conquistas (editar)", fn: () => void import("./mestre_engaj").then((m) => m.abrirMestreConquistas(modal, mostrarAviso)) },
             { rotulo: "Ranking (configurar)", fn: () => void import("./mestre_engaj").then((m) => m.abrirMestreRanking(modal, mostrarAviso)) },
             { rotulo: "Desafios da semana (editar)", fn: () => void import("./mestre_engaj").then((m) => m.abrirMestreMiniquests(modal, mostrarAviso)) },
+            { rotulo: "Mundo vivo (NPCs, desafiantes)", fn: () => void import("./mestre_mundo").then((m) => m.abrirMestreMundo(modal, mostrarAviso)) },
             { rotulo: "Missões dos jogadores", fn: () => void abrirMissoesMestre() },
             { rotulo: "Ferramentas (importar, repor PA)", fn: abrirMenu },
           ] }]
@@ -977,8 +1001,9 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       },
       aviso: mostrarAviso,
       treinadores: listarTreinadores,
+      pistas: carregarPistas,
       aoTreinador,
-      aoNpcMissao: async (t) => { if (t.id === "prof-carvalho") { await abrirPoi({ id: "prof", tipo: "lab", x: 6, y: 7 } as unknown as Poi); return; } if (t.id.startsWith("pd_")) { await conversarPedra(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }); return; } await conversarNpc(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); },
+      aoNpcMissao: async (t) => { if (t.id === "prof-carvalho") { await abrirPoi({ id: "prof", tipo: "lab", x: 6, y: 7 } as unknown as Poi); return; } if (t.id === "mvpk") { await observarPokemon(modal, mostrarAviso, async (r) => { await carregarReferencias(); await lutar(r as ResultadoBatalha); }); atualizarHud(); void recarregarJogador(); return; } if (t.tipo === "fofoqueiro" || t.tipo === "mural") { await mostrarPistas(modal, t.tipo, t.tipo === "mural" ? "Mural de avisos" : "Fofoqueiro"); return; } if (t.id.startsWith("mv_")) { await interagirMv(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); return; } if (t.id.startsWith("pd_")) { await conversarPedra(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }); return; } await conversarNpc(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); },
     });
   } catch (e) {
     mostrarAviso(e instanceof Error ? e.message : "Não foi possível abrir o jogo.");

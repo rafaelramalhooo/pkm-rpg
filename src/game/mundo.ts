@@ -42,6 +42,8 @@ export interface TreinadorMapa {
   falas: { antes?: string; derrota?: string }; vencido: boolean;
   /** NPC de missão: só conversa (não desafia). */
   missao?: boolean;
+  /** Mundo vivo: fofoqueiro e mural (balão automático) ou o Pokémon do dia (brilho nas moitas). */
+  tipo?: "fofoqueiro" | "mural" | "pokemon";
 }
 
 export interface Lugar { mapa_id: string; nome_mapa: string; x: number; y: number; naGrama: boolean; poi: Poi | null; npc: TreinadorMapa | null }
@@ -56,6 +58,8 @@ export interface Ganchos {
   aviso(texto: string): void;
   /** Treinadores NPC do mapa (com a marca de quais o jogador já venceu). */
   treinadores?(mapaId: string): Promise<TreinadorMapa[]>;
+  /** Rumores do Fofoqueiro e do Mural (balões automáticos). */
+  pistas?(): Promise<{ fofoca: string[]; mural: string[] }>;
   /** Um treinador viu o jogador. Resolve com true se o jogador o venceu. */
   aoTreinador?(t: TreinadorMapa): Promise<boolean>;
   /** O jogador falou com um NPC de missão. */
@@ -389,9 +393,62 @@ class CenaMundo extends Phaser.Scene {
       lista = (await this.ganchos.treinadores?.(mapaId)) ?? [];
     } catch { /* sem treinadores: segue o jogo */ }
     if (this.encerrada || this.mapa?.id !== mapaId) return;
+    this.garantirTexturasMv();
     for (const d of lista) {
-      const ficha = this.criarFicha(`${d.classe} ${d.nome}`, d.aparencia, d.x, d.y, d.direcao, false, d.missao ? "#7ae7c7" : d.vencido ? "#8b97b8" : "#ffd27a");
+      const ficha = this.criarFicha(`${d.classe} ${d.nome}`.trim(), d.aparencia, d.x, d.y, d.direcao, false, d.missao ? "#7ae7c7" : d.vencido ? "#8b97b8" : "#ffd27a");
+      if (d.tipo === "mural") ficha.sprite.setTexture("mv_mural").setOrigin(0.5, 0.875);
+      if (d.tipo === "pokemon") {
+        ficha.sprite.setTexture("mv_brilho").setOrigin(0.5, 0.875);
+        ficha.nome.setColor("#ffe66b");
+        this.tweens.add({ targets: ficha.sprite, alpha: { from: 0.45, to: 1 }, scale: { from: 0.8, to: 1.15 }, duration: 750, yoyo: true, repeat: -1 });
+      }
       this.npcs.set(d.id, { d, ficha });
+    }
+    void this.carregarPistas();
+  }
+
+  private pistas: { fofoca: string[]; mural: string[] } = { fofoca: [], mural: [] };
+  private mvIdx = new Map<string, number>();
+  private timerMv?: Phaser.Time.TimerEvent;
+
+  private garantirTexturasMv(): void {
+    if (!this.textures.exists("mv_mural")) {
+      const g = this.make.graphics({ x: 0, y: 0 }, false);
+      g.fillStyle(0x5b3a1a, 1); g.fillRect(2, 10, 2, 6); g.fillRect(12, 10, 2, 6);
+      g.fillStyle(0x8a5a2b, 1); g.fillRect(0, 1, 16, 10);
+      g.fillStyle(0xe8d9a8, 1); g.fillRect(2, 3, 5, 3); g.fillRect(9, 3, 5, 3); g.fillRect(2, 7, 12, 2);
+      g.lineStyle(1, 0x3a2410, 1); g.strokeRect(0.5, 1.5, 15, 9);
+      g.generateTexture("mv_mural", 16, 16); g.destroy();
+    }
+    if (!this.textures.exists("mv_brilho")) {
+      const g = this.make.graphics({ x: 0, y: 0 }, false);
+      g.fillStyle(0xfff3a0, 1); g.fillRect(7, 1, 2, 14); g.fillRect(1, 7, 14, 2);
+      g.fillStyle(0xffffff, 1); g.fillRect(6, 6, 4, 4);
+      g.generateTexture("mv_brilho", 16, 16); g.destroy();
+    }
+  }
+
+  private async carregarPistas(): Promise<void> {
+    if (!this.ganchos.pistas) return;
+    const temFixo = [...this.npcs.values()].some((n) => n.d.tipo === "fofoqueiro" || n.d.tipo === "mural");
+    if (!temFixo) return;
+    try { this.pistas = await this.ganchos.pistas(); } catch { return; }
+    this.timerMv?.remove();
+    this.timerMv = this.time.addEvent({ delay: 6500, loop: true, callback: () => this.baloesFixos() });
+    this.baloesFixos();
+  }
+
+  /** Fofoqueiro e Mural: balão automático (sem clicar) enquanto o jogador está por perto. */
+  private baloesFixos(): void {
+    if (this.encerrada || this.desafiando) return;
+    for (const [id, n] of this.npcs) {
+      if (n.d.tipo !== "fofoqueiro" && n.d.tipo !== "mural") continue;
+      if (Math.abs(n.d.x - this.jogador.x) + Math.abs(n.d.y - this.jogador.y) > 5) continue;
+      const lista = n.d.tipo === "mural" ? this.pistas.mural : this.pistas.fofoca;
+      if (!lista.length) continue;
+      const i = (this.mvIdx.get(id) ?? 0) % lista.length;
+      this.mvIdx.set(id, i + 1);
+      this.mostrarBalao(n.ficha, lista[i], 6000, 130);
     }
   }
 
@@ -499,11 +556,11 @@ class CenaMundo extends Phaser.Scene {
     f.balao?.destroy();
   }
 
-  private mostrarBalao(f: Ficha, texto: string): void {
+  private mostrarBalao(f: Ficha, texto: string, duracao = 5000, max = 60): void {
     f.balao?.destroy();
     f.balaoTimer?.remove();
     const b = this.add
-      .text(0, 0, texto.slice(0, 60), {
+      .text(0, 0, texto.slice(0, max), {
         fontFamily: "monospace", fontSize: "6px", color: "#0f380f", backgroundColor: "#f0f8c0",
         padding: { x: 3, y: 2 }, wordWrap: { width: 90 }, align: "center",
       })
@@ -512,7 +569,7 @@ class CenaMundo extends Phaser.Scene {
     b.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
     f.balao = b;
     this.posicionarAcessorios(f);
-    f.balaoTimer = this.time.delayedCall(5000, () => {
+    f.balaoTimer = this.time.delayedCall(duracao, () => {
       b.destroy();
       if (f.balao === b) f.balao = undefined;
     });
