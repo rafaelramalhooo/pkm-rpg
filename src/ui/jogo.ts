@@ -746,13 +746,24 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     return [...normais, ...desafiantes, ...npcs, ...pedras, ...prof, ...vivos];
   }
 
+  let pescaGratis = false;
+  window.addEventListener("pkm-pesca", async () => {
+    if (emBatalha) return;
+    modal.fechar();
+    const { data } = await supabase.rpc("gerar_oferta");
+    if (!data) return;
+    mostrarOferta(data as Oferta);
+    pescaGratis = true;
+    await procurar();
+  });
   async function procurar(): Promise<void> {
     if (emBatalha || !oferta) return;
     cartaoOferta.querySelectorAll("button").forEach((b) => ((b as HTMLButtonElement).disabled = true));
+    const gratis = pescaGratis; pescaGratis = false;
     const { data, error } = await supabase.rpc("procurar_pokemon");
     limparOferta();
     if (error || !data) return void mostrarAviso(error?.message ?? "Nada por aqui.", 3200, true);
-    mostrarAviso(`Pokémon à vista! −1 PA (restam ${Math.max(0, j.pa - 1)})`, 3000);
+    mostrarAviso(gratis ? "Fisgou um Pokémon! A luta já estava paga." : `Pokémon à vista! −1 PA (restam ${Math.max(0, j.pa - 1)})`, 3000);
     await lutar(data as ResultadoBatalha);
   }
 

@@ -195,7 +195,7 @@ export async function abrirAcoes(modal: Modal, uid: string, aviso: Aviso, aoMuda
     info("Cuidar:", "+1 de amizade no Pokémon (máx. 255), até 3 vezes por dia por Pokémon (+1 por rank de Afeto). Com Alimentador, também rende XP. A amizade será usada em evoluções por amizade (em breve)."),
     info("Pesquisar:", "estude uma espécie que você já viu (1 vez por espécie): +40 XP de treinador e ₽150 (+10 XP e +₽25 por rank de Olhar Atento). A cada 10 espécies pesquisadas, bônus de ₽500."),
     info("Explorar:", "vasculhe o ponto onde você está (1 vez por dia em cada ponto do mapa): 60% de chance de ₽100–400 e 40% de um item (Poção ou Poké Bola); +25% de recompensa por rank de Exploração; +10 XP de treinador."),
-    info("Pescar:", "só em costas e rios. 15% de chance de pescar um item (Poção, Poké Bola ou Great Ball), +10% por rank de Rede de Pesca; +10 XP de treinador ao pescar."),
+    info("Pescar:", "exige a Vara de Pesca (vendida em portos e feiras) e estar ao lado de água (lago, rio ou mar). Pode fisgar um Pokémon aquático da região (luta sem custo extra), um item ou nada; Rede de Pesca aumenta a chance. +10 XP de treinador ao pescar com sucesso."),
     info("Barganhar:", "40% de chance de conseguir 10% de desconto na sua próxima compra em loja (o desconto é usado na compra seguinte)."));
 
   modal.abrir("Ações (gastam 1 PA)",
@@ -206,6 +206,6 @@ export async function abrirAcoes(modal: Modal, uid: string, aviso: Aviso, aoMuda
     pesq,
     el("div", { class: "acao-linha" },
       simples("Explorar aqui", "acao_explorar", (d) => (d.tipo === "dinheiro" ? `Você achou ₽${d.valor}!` : `Você achou ${d.qtd}× ${nomeItem(String(d.item))}!`)),
-      simples("Pescar", "acao_pescar", (d) => (d.tipo === "nada" ? "Nada mordeu a isca..." : d.tipo === "dinheiro" ? `Você pescou ₽${d.valor}!` : `Você pescou ${d.qtd}× ${nomeItem(String(d.item))}!`)),
+      simples("Pescar", "acao_pescar", (d) => { if (d.tipo === "pokemon") { window.setTimeout(() => window.dispatchEvent(new CustomEvent("pkm-pesca")), 50); return `Um ${String(d.nome)} (Nv ${String(d.nivel)}) mordeu a isca!`; } return d.tipo === "nada" ? "Nada mordeu a isca..." : d.tipo === "dinheiro" ? `Você pescou ₽${d.valor}!` : `Você pescou ${d.qtd}× ${nomeItem(String(d.item))}!`; }),
       simples("Barganhar", "acao_barganhar", (d) => (d.ok ? "Barganha bem-sucedida! 10% de desconto na próxima compra." : "O lojista não cedeu desta vez."))));
 }
