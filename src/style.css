@@ -1443,3 +1443,19 @@ button:disabled { opacity: .72; }
 .mt-desc { color: #33415f; font-size: .78rem; line-height: 1.35; margin-top: 2px; }
 .mt-item { align-items: flex-start; } .mt-topo { display: block; }
 .mt-lista .mt-item, .mt-item { min-height: 0; }
+
+/* Painel do Treinador consolidado */
+.dash-ins { margin-top: 14px; }
+.dash-ins .ct-insignias { grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 6px; }
+.dash-ins .ct-ins img { max-width: 52px; }
+.dash-ins .ct-ins span { font-size: .68rem; font-weight: 700; } .dash-ins .ct-ins small { font-size: .6rem; }
+.dash-menus { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.dash-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin-top: 6px; }
+.dash-menu button { margin: 0; text-align: left; padding: 10px 12px; font-size: .85rem; }
+
+.mg-reset { border-color: #c0304a !important; } .mg-reset-caixa { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.mg-reset-cod { font-size: 1.6rem; letter-spacing: .25em; color: #c0304a; font-family: monospace; }
+.mg-reset-in { max-width: 220px; text-transform: uppercase; letter-spacing: .2em; font-family: monospace; font-size: 1.1rem; }
+.mg-pk-ficha { margin-top: 8px; padding: 10px; border-radius: 10px; background: #00000010; display: flex; flex-direction: column; gap: 8px; }
+.mg-sts { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; } .mg-st { text-align: center; background: #ffffff55; border-radius: 8px; padding: 4px; display: flex; flex-direction: column; } .mg-st b { font-size: 1rem; } .mg-st span { font-size: .65rem; opacity: .7; }
+.mg-golpe { display: flex; flex-direction: column; padding: 6px 8px; border-radius: 8px; background: #ffffff55; } .mg-golpe small { font-size: .72rem; opacity: .8; }

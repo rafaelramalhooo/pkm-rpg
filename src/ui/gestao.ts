@@ -1,9 +1,10 @@
 import { supabase } from "../supabase";
 import { el } from "./dom";
+import { carregarReferencias, golpe, NOME_TIPO } from "./dados";
 
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
 interface Resumo { id: string; nome: string; papel: string; pa: number; dinheiro: number; mapa_id: string; insignias: string[]; campeao: boolean; email: string | null; pokemons: number; maior_nivel: number; online?: boolean; visto_ha?: number | null; classe_rpg?: string | null }
-interface Pk { id: string; especie_id: number; apelido: string | null; nivel: number; hp_atual: number; hp_max: number; posicao: number | null; brilhante: boolean }
+interface Pk { exp?: number; natureza?: string; amizade?: number; atk?: number; def?: number; spa?: number; spd?: number; spe?: number; golpes?: { id: number; pp: number }[]; evo_pend?: unknown; id: string; especie_id: number; apelido: string | null; nivel: number; hp_atual: number; hp_max: number; posicao: number | null; brilhante: boolean }
 interface Ficha {
   jogador: { id: string; nome: string; papel: string; pa: number; dinheiro: number; mapa_id: string; x: number; y: number; insignias: string[]; campeao: boolean };
   email: string | null; pokemons: Pk[]; itens: { item: string; qtd: number }[]; treinadores: number; pokedex: number;
@@ -21,6 +22,7 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
     supabase.from("mapas").select("id, nome").order("nome").limit(100),
   ]);
   if (error) { aviso(error.message); return; }
+  await carregarReferencias();
   let jogadores = (lista ?? []) as Resumo[];
   const especies = (esp ?? []) as { id: number; nome: string }[];
   const nomeEsp = new Map(especies.map((e) => [e.id, e.nome]));
@@ -161,8 +163,20 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
       cu.addEventListener("click", async () => { if (await chamar("mestre_editar_pokemon", { p_id: p.id, p_campos: { curar: true } })) await abrirFicha(id); });
       const rm = el("button", { type: "button", class: "sec" }, "Remover");
       rm.addEventListener("click", async () => { if (!window.confirm(`Remover ${p.apelido ?? nomeEsp.get(p.especie_id)} definitivamente?`)) return; if (await chamar("mestre_remover_pokemon", { p_id: p.id })) await abrirFicha(id); });
+      const det = el("div", { class: "mg-pk-ficha", hidden: "" });
+      const ver = el("button", { type: "button", class: "sec" }, "Ver ficha");
+      ver.addEventListener("click", () => {
+        if (!det.hidden) { det.hidden = true; ver.textContent = "Ver ficha"; return; }
+        const st = (r: string, v?: number) => el("div", { class: "mg-st" }, el("b", {}, String(v ?? "—")), el("span", {}, r));
+        const gs = (p.golpes ?? []).map((g) => { const gi = golpe(g.id); return el("div", { class: "mg-golpe" }, el("strong", {}, gi.nome), el("small", {}, `${NOME_TIPO[gi.tipo] ?? gi.tipo} · ${gi.categoria === "status" ? "Status" : gi.categoria === "physical" ? "Físico" : "Especial"} · Poder ${gi.poder ?? "—"} · Prec. ${gi.precisao ? `${gi.precisao}%` : "—"} · PP ${g.pp}/${gi.pp}`)); });
+        det.replaceChildren(
+          el("p", { class: "sub" }, `Natureza: ${p.natureza ?? "—"} · XP ${p.exp ?? 0} · Amizade ${p.amizade ?? "—"}${p.evo_pend ? " · ⭐ pontos de evolução pendentes" : ""}`),
+          el("div", { class: "mg-sts" }, st("PV", p.hp_max), st("Atq", p.atk), st("Def", p.def), st("AtqE", p.spa), st("DefE", p.spd), st("Vel", p.spe)),
+          el("label", {}, "Golpes"), ...(gs.length ? gs : [el("p", { class: "sub" }, "Sem golpes.")]));
+        det.hidden = false; ver.textContent = "Ocultar ficha";
+      });
       return el("div", { class: "mg-pk" }, el("strong", {}, `${p.posicao ? `#${p.posicao}` : "Caixa"} · ${nomeEsp.get(p.especie_id) ?? p.especie_id} · ${p.hp_atual}/${p.hp_max} HP`),
-        el("div", { class: "mg-linha" }, campo("Apelido", ap), campo("Nível", nv), el("label", { class: "mg-chk" }, br, "✨ Brilhante")), el("div", { class: "mg-linha" }, sv, cu, rm));
+        el("div", { class: "mg-linha" }, campo("Apelido", ap), campo("Nível", nv), el("label", { class: "mg-chk" }, br, "✨ Brilhante")), el("div", { class: "mg-linha" }, ver, sv, cu, rm), det);
     });
 
     const dEsp = el("input", { type: "text", list: "mg-esp", placeholder: "nome ou nº da espécie" });
@@ -200,6 +214,35 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
     );
   }
 
+  // ---- reset geral: exige digitar o código aleatório gerado pelo servidor ----
+  const resetBotao = el("button", { type: "button", class: "perigo" }, "⚠ Resetar TODOS os jogadores");
+  const resetCaixa = el("div", { class: "mg-reset-caixa", hidden: "" });
+  resetBotao.addEventListener("click", async () => {
+    const { data: cod, error: e } = await supabase.rpc("mestre_reset_codigo");
+    if (e || !cod) return void dizer(e?.message ?? "Não foi possível gerar o código.", false);
+    const entrada = el("input", { type: "text", maxlength: "6", autocomplete: "off", placeholder: "Digite o código", class: "mg-reset-in" }) as HTMLInputElement;
+    const ir = el("button", { type: "button", class: "perigo" }, "Apagar tudo e recomeçar") as HTMLButtonElement;
+    const cancelar = el("button", { type: "button", class: "sec" }, "Cancelar");
+    ir.disabled = true;
+    entrada.addEventListener("input", () => { ir.disabled = entrada.value.trim().toUpperCase() !== String(cod); });
+    cancelar.addEventListener("click", () => { resetCaixa.hidden = true; resetCaixa.replaceChildren(); });
+    ir.addEventListener("click", async () => {
+      ir.disabled = true;
+      const { data: n, error: e2 } = await supabase.rpc("mestre_resetar_todos", { p_codigo: entrada.value.trim() });
+      if (e2) { dizer(e2.message, false); return; }
+      resetCaixa.hidden = true; resetCaixa.replaceChildren();
+      dizer(`Reset concluído: ${String(n)} personagem(ns) recomeçaram do zero. A manutenção foi ligada; desligue-a quando quiser reabrir o jogo.`);
+      const { data: l } = await supabase.rpc("mestre_jogadores");
+      jogadores = (l ?? []) as Resumo[]; desenharLista();
+    });
+    resetCaixa.replaceChildren(
+      el("p", { class: "sub" }, "Isto apaga Pokémon, itens, Pokédex, insígnias, missões e progresso de TODOS os jogadores (menos o Mestre). Ficam só o nome e a aparência de cada personagem, que voltam à cidade inicial. Não dá para desfazer."),
+      el("p", {}, "Para confirmar, digite o código: ", el("strong", { class: "mg-reset-cod" }, String(cod))), entrada, el("div", { class: "mg-linha" }, ir, cancelar));
+    resetCaixa.hidden = false; entrada.focus();
+  });
+  const painelReset = el("details", { class: "mg-manut mg-reset" }, el("summary", {}, "⚠ Reiniciar o jogo (zona de perigo)"),
+    el("p", { class: "sub" }, "Recomeça todos os jogadores do zero, mantendo só o personagem criado. O Mestre não é afetado."), resetBotao, resetCaixa);
+
   desenharLista();
-  modal.abrir("Gestão do Mestre", painelManut, el("div", { class: "mg-wrap" }, el("div", { class: "mg-esq" }, el("div", { class: "mg-online" }, contador, filtro), busca, esq), dir), msg);
+  modal.abrir("Gestão do Mestre", painelManut, painelReset, el("div", { class: "mg-wrap" }, el("div", { class: "mg-esq" }, el("div", { class: "mg-online" }, contador, filtro), busca, esq), dir), msg);
 }

@@ -19,7 +19,7 @@ import { abrirMochila as abrirMochilaSS } from "./mochila";
 import { abrirMTs, abrirLojaMT } from "./mts";
 import { abrirResumo } from "./resumo";
 import { criarAtalhos, type AcaoAtalho } from "./atalhos";
-import { abrirCartaoTreinador } from "./cartao";
+import { blocoInsignias } from "./cartao";
 import { abrirOrganizar } from "./organizar";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
 import { abrirCasa, abrirCheckin, abrirConquistas, abrirCosmeticos, abrirMiniquests, abrirRanking, verificarNovidades } from "./engajamento";
@@ -381,7 +381,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   // ---------- Dashboard ----------
   async function abrirDashboard(): Promise<void> {
     await carregarReferencias();
-    const [time, painel] = await Promise.all([meuTime(j.id), supabase.rpc("meu_painel")]);
+    const [time, painel, insBloco] = await Promise.all([meuTime(j.id), supabase.rpc("meu_painel"), blocoInsignias(j.id)]);
     const st = (painel.data ?? {}) as { pokemons?: number; pokedex?: number; treinadores?: number; itens?: number; maior_nivel?: number };
     const tile = (rot: string, val: string | number) => el("div", { class: "dash-tile" }, el("strong", {}, String(val)), el("span", {}, rot));
     const avatar = el("span", { class: "tc-emblema dash-avatar", "aria-hidden": "true" });
@@ -398,13 +398,16 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       return el("div", { class: `dash-pk${p.hp_atual <= 0 ? " caido" : ""}` }, imagemPokemon("frente", p.especie_id, "mini", p.brilhante),
         el("div", { class: "dash-pk-info" }, el("strong", {}, nomePokemon(p)), el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`), el("div", { class: "hp-trilho" }, fill)));
     });
-    const atalhos = [
-      botao("Habilidades", () => void abrirHabilidades(modal, mostrarAviso, atualizarHud), "modal-atalho"), botao("Ações (PA)", () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador()), "modal-atalho"), botao("Organizar time", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor()), "modal-atalho"), botao("Personagens", () => void abrirPersonagens(), "modal-atalho")];
+    const secao = (tit: string, itens: [string, () => void][]) => el("div", { class: "dash-sec" }, el("label", {}, tit), el("div", { class: "dash-menu" }, ...itens.map(([r, f]) => botao(r, f, "sec"))));
+    const recarregar = () => { atualizarHud(); void recarregarJogador(); };
+    const menus = el("div", { class: "dash-menus" },
+      secao("Progresso", [["🏅 Conquistas", () => void abrirConquistas(modal, mostrarAviso)], ["📊 Ranking", () => void abrirRanking(modal, mostrarAviso)], ["🎯 Desafios da semana", () => void abrirMiniquests(modal, mostrarAviso)], ["📅 Check-in diário", () => void abrirCheckin(modal, mostrarAviso, recarregar)], ["🎖 Títulos e molduras", () => void abrirCosmeticos(modal, mostrarAviso)]]),
+      secao("Treinador", [["Habilidades", () => void abrirHabilidades(modal, mostrarAviso, atualizarHud)], ["Ações (PA)", () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador())], ["Organizar time / Seguidor", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor())], ["🏠 Minha casa e ovos", () => void abrirCasa(modal, mostrarAviso, recarregar)]]),
+      secao("Social e conta", [["Jogadores (desafios e trocas)", () => void abrirSocial(modal, j.id, mostrarAviso, recarregar, lutarDesafio)], ["Meus personagens / Reiniciar", () => void abrirPersonagens()]]));
     modal.abrir("Painel do treinador", el("div", { class: "dash-wide" },
-      el("div", { class: "dash-esq" }, cab, grade),
+      el("div", { class: "dash-esq" }, cab, grade, insBloco),
       el("div", { class: "dash-dir" }, el("label", {}, "Time ativo"),
-        linhas.length ? el("div", { class: "dash-time" }, ...linhas) : el("p", { class: "sub" }, "Você ainda não tem Pokémon. Fale com o Professor Carvalho no laboratório."))));
-    modal.acoes(...atalhos);
+        linhas.length ? el("div", { class: "dash-time" }, ...linhas) : el("p", { class: "sub" }, "Você ainda não tem Pokémon. Fale com o Professor Carvalho no laboratório."), menus)));
   }
 
   // ---------- Personagens (até 2) e reinício ----------
@@ -918,11 +921,10 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   const faixaEventos = iniciarFaixaEventos(modal);
   tela.append(faixaEventos);
   const rapidos: AcaoAtalho[] = [
-    { id: "Time", rotulo: "Time", grupo: "Acesso rápido", fn: () => void abrirTime() },
-    { id: "Mochila", rotulo: "Mochila", grupo: "Acesso rápido", fn: () => void abrirMochila() },
-    { id: "Pokédex", rotulo: "Pokédex", grupo: "Acesso rápido", fn: () => void abrirPokedex() },
-    { id: "MTs", rotulo: "MTs", grupo: "Acesso rápido", fn: () => void abrirMTsJanela() },
-    { id: "Cartão do Treinador", rotulo: "Cartão do Treinador", grupo: "Acesso rápido", fn: () => void abrirCartaoTreinador(modal, j.id) },
+    { id: "Time", rotulo: "Time", grupo: "Treinador", fn: () => void abrirTime() },
+    { id: "Mochila", rotulo: "Mochila", grupo: "Treinador", fn: () => void abrirMochila() },
+    { id: "Pokédex", rotulo: "Pokédex", grupo: "Treinador", fn: () => void abrirPokedex() },
+    { id: "MTs", rotulo: "MTs", grupo: "Treinador", fn: () => void abrirMTsJanela() },
   ];
   const todasAcoes = (): AcaoAtalho[] => [
     ...rapidos,
@@ -933,9 +935,11 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     for (const a of lista) porGrupo.set(a.grupo, [...(porGrupo.get(a.grupo) ?? []), a]);
     return [...porGrupo.entries()].map(([g, as]) => el("section", { class: "menu-sec" }, el("h2", {}, g), el("div", { class: "menu-grade" }, ...as.map((a) => botao(a.rotulo, () => aoEscolher(a), "menu-item")))));
   };
+  /** Itens que vivem dentro do Painel do Treinador (continuam disponíveis como atalho). */
+  const NO_PAINEL = new Set(["Habilidades", "Ações (PA)", "Jogadores (desafios e trocas)", "Conquistas", "Ranking de Treinadores", "Desafios da semana", "Minha casa e ovos", "Títulos e molduras", "Organizar time / Seguidor", "Check-in diário", "Onde estou", "Meus personagens / Reiniciar"]);
   function abrirMenuAvatar(): void {
     if (emBatalha) return;
-    modal.abrir(j.nome, ...secoesMenu(todasAcoes().filter((a) => !a.oculto), (a) => { modal.aoFechar(null); modal.fechar(); a.fn(); }));
+    modal.abrir(j.nome, ...secoesMenu(todasAcoes().filter((a) => !a.oculto && !NO_PAINEL.has(a.id)), (a) => { modal.aoFechar(null); modal.fechar(); a.fn(); }));
   }
   const escolherAtalho = (titulo: string, atual: string | null): Promise<string | null | undefined> => new Promise((resolve) => {
     modal.aoFechar(() => resolve(undefined));
@@ -999,7 +1003,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     atualizarHud();
     void atualizarMissao();
     void resolverPendencias();
-    void distribuirPendentes();
+    void supabase.from("pokemons").select("id", { count: "exact", head: true }).not("evo_pend", "is", null).then(({ count }) => { if (count) mostrarAviso("Você tem pontos de atributo para distribuir: abra o Time e toque no ⭐ do Pokémon.", 8000); });
     void verificarSocial();
     if (!temRef) {
       mostrarAviso(j.papel === "mestre" ? "Mestre: abra Menu e clique em \"Importar dados do jogo\" e depois \"Importar sprites\"." : "O mundo ainda está sendo preparado. Tente de novo em instantes.", 8000);
