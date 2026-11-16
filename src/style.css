@@ -1533,3 +1533,5 @@ button:disabled { opacity: .72; }
 .mg-pop-caixa::-webkit-scrollbar-track { background: #e3e8f1; border-radius: 0 20px 20px 0; }
 .mg-pop-caixa::-webkit-scrollbar-thumb { background: #8a97b5; border-radius: 10px; border: 3px solid #e3e8f1; min-height: 48px; }
 .mg-pop-caixa::-webkit-scrollbar-thumb:hover { background: var(--laranja); }
+/* lote 25d: a regra .modal.claro (overflow:hidden) vazou para o popup e escondia o fim da ficha; aqui a rolagem vence */
+.mg-pop > .mg-pop-caixa { overflow-x: hidden; overflow-y: scroll; }
