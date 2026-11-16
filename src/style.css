@@ -1517,3 +1517,10 @@ button:disabled { opacity: .72; }
 .modal .mt-golpe:not(#_):not(#__):hover { border-color: var(--laranja); color: #1b2438; filter: none; background: #fff7ea; }
 .modal .mt-golpe.sel:not(#_):not(#__) { border-color: var(--laranja); background: #ffe9c9; }
 .modal .mt-golpe strong { color: #0e1b3d; } .modal .mt-golpe small { color: #44506b; }
+/* lote 25b: insígnias da Gestão voltam ao visual anterior (sem fundo laranja) + rolagem sem cortes */
+.mg-pop-caixa .mg-ins .ct-ins:not(#_):not(#__) { background: transparent; border: 1px solid transparent; box-shadow: none; border-radius: 10px; padding: 4px; margin: 0; }
+.mg-pop-caixa .mg-ins .ct-ins:not(#_):not(#__):hover { background: #ffffff80; border-color: var(--laranja); filter: none; }
+.mg-pop-caixa { box-sizing: border-box; max-width: 100vw; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.mg-pop-caixa * { box-sizing: border-box; }
+.mg-pop-cols > *, .mg-pop-caixa .mg-grade > *, .mg-pop-caixa .mg-campo { min-width: 0; }
+@media (max-width: 760px) { .mg-pop-cols { grid-template-columns: minmax(0, 1fr); } .mg-pop-caixa { padding: 16px 14px 28px; } .mg-ins { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
