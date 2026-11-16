@@ -82,8 +82,8 @@ export interface Controle {
 
 const T = 16;
 const PASSO_MS = 150;
-// p0–p11: aparências dos jogadores; p12–p47: NPCs (recolorações, ver sprites-novos/catalogo.json)
-const TOTAL_SPRITES = 48;
+// p0–p11: aparências dos jogadores; p12–p48: NPCs (recolorações, ver sprites-novos/catalogo.json)
+const TOTAL_SPRITES = 49;
 const QUADROS: Record<Direcao, number> = { baixo: 0, esquerda: 3, direita: 6, cima: 9 };
 const DELTA: Record<Direcao, [number, number]> = { cima: [0, -1], baixo: [0, 1], esquerda: [-1, 0], direita: [1, 0] };
 declare const __BUILD__: string;
