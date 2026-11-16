@@ -19,6 +19,7 @@ import { abrirMochila as abrirMochilaSS } from "./mochila";
 import { abrirMTs, abrirLojaMT } from "./mts";
 import { abrirResumo } from "./resumo";
 import { caixaFala, definirFalante } from "./fala";
+import { iniciarChat } from "./chat";
 import { criarAtalhos, type AcaoAtalho } from "./atalhos";
 import { blocoInsignias } from "./cartao";
 import { abrirOrganizar } from "./organizar";
@@ -900,15 +901,17 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   window.addEventListener("keydown", aoTecla);
 
   // ---------- barra inferior ----------
-  const chat = el("input", { type: "text", maxlength: "60", placeholder: "Dizer algo...", autocomplete: "off", "aria-label": "Chat" });
+  const chatUi = iniciarChat(modal, j.id, j.nome, mostrarAviso, tela, j.papel === "mestre");
+  const chat = el("input", { type: "text", maxlength: "120", placeholder: "Dizer algo (todos veem)...", autocomplete: "off", "aria-label": "Chat" });
   const formChat = el("form", { class: "chat" }, chat);
   formChat.addEventListener("submit", (ev) => {
     ev.preventDefault();
     controle?.dizer(chat.value);
+    if (chat.value.trim()) void chatUi.enviarGlobal(chat.value);
     chat.value = "";
     chat.blur();
   });
-  const botoes = el("div", { class: "grupo" }, botao("🗺", () => { if (!emBatalha) abrirMundi(); }, "sec botao-menu botao-mapa"), botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"), botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"));
+  const botoes = el("div", { class: "grupo" }, chatUi.botao, botao("🗺", () => { if (!emBatalha) abrirMundi(); }, "sec botao-menu botao-mapa"), botao("−", () => controle?.zoom(-1), "sec botao-menu botao-zoom"), botao("+", () => controle?.zoom(1), "sec botao-menu botao-zoom"));
 
   const abrirMundi = (): void => void atualizarMissao().then(() => abrirMapaMundi(modal, (m) => controle?.viajar(m) ?? Promise.resolve(false), mostrarAviso, missaoAtual?.estado === "ativa" && missaoAtual.mapa_id ? { mapa_id: missaoAtual.mapa_id, mapa_nome: missaoAtual.mapa_nome ?? "", nome: missaoAtual.nome, objetivo: missaoAtual.objetivo ?? "" } : null));
   const grupos: { rotulo: string; itens: () => ItemMenu[] }[] = [
@@ -931,6 +934,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           { rotulo: "Painel do treinador", fn: () => void abrirDashboard() },
           { rotulo: "Habilidades", fn: () => void abrirHabilidades(modal, mostrarAviso, atualizarHud) },
           { rotulo: "Ações (PA)", fn: () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador()) },
+          { rotulo: "Chat (global e privado)", fn: () => chatUi.abrir() },
+          { rotulo: "Amigos", fn: () => chatUi.abrirAmigos() },
           { rotulo: "Jogadores (desafios e trocas)", fn: () => void abrirSocial(modal, j.id, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }, lutarDesafio) },
           { rotulo: "Caixas", fn: () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud) },
           { rotulo: "Conquistas", fn: () => void abrirConquistas(modal, mostrarAviso) },
@@ -1016,6 +1021,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       treinadores: listarTreinadores,
       pistas: carregarPistas,
       aoTreinador,
+      aoClicarJogador: (id) => chatUi.abrirCartao(id),
       aoNpcMissao: async (t) => { definirFalante(t.aparencia); if (t.id === "prof-carvalho") { await abrirPoi({ id: "prof", tipo: "lab", x: 6, y: 7 } as unknown as Poi); return; } if (t.id === "mvpk") { await observarPokemon(modal, mostrarAviso, async (r) => { await carregarReferencias(); await lutar(r as ResultadoBatalha); }); atualizarHud(); void recarregarJogador(); return; } if (t.tipo === "fofoqueiro" || t.tipo === "mural") { await mostrarPistas(modal, t.tipo, t.tipo === "mural" ? "Mural de avisos" : "Fofoqueiro"); return; } if (t.id.startsWith("mv_")) { await interagirMv(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); return; } if (t.id.startsWith("pd_")) { await conversarPedra(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }); return; } await conversarNpc(modal, t.id, `${t.classe} ${t.nome}`, mostrarAviso, () => { void atualizarMissao(); atualizarHud(); void recarregarJogador(); }); },
     });
   } catch (e) {
@@ -1024,6 +1030,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   }
   if (minha !== geracaoAtual()) {
     iniciado.encerrar();
+    chatUi.encerrar();
     window.removeEventListener("keydown", aoTecla);
     return;
   }
@@ -1036,6 +1043,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     window.clearInterval(tempoSocial);
     window.clearInterval(tempoMissao);
     window.removeEventListener("keydown", aoTecla);
+    chatUi.encerrar();
     iniciado.encerrar();
   });
 

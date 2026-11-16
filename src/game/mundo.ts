@@ -64,6 +64,8 @@ export interface Ganchos {
   aoTreinador?(t: TreinadorMapa): Promise<boolean>;
   /** O jogador falou com um NPC de missão. */
   aoNpcMissao?(t: TreinadorMapa): Promise<void>;
+  /** O jogador tocou em outro jogador no mapa (abre o cartão dele). */
+  aoClicarJogador?(id: string, nome: string): void;
 }
 
 export interface Controle {
@@ -924,7 +926,11 @@ class CenaMundo extends Phaser.Scene {
     }
     for (const [chave, p] of Object.entries(presentes)) {
       const f = this.outros.get(chave);
-      if (!f) this.outros.set(chave, this.criarFicha(p.nome, p.aparencia, p.x, p.y, p.dir));
+      if (!f) {
+        const nova = this.criarFicha(p.nome, p.aparencia, p.x, p.y, p.dir);
+        nova.sprite.setInteractive({ useHandCursor: true }).on("pointerup", () => this.ganchos.aoClicarJogador?.(chave, p.nome));
+        this.outros.set(chave, nova);
+      }
       else if (!f.sprite.anims.isPlaying) this.colocar(f, p.x, p.y);
     }
     for (const chave of [...this.outros.keys()]) {
