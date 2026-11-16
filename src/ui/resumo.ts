@@ -62,7 +62,7 @@ export function abrirResumo(modal: Modal, p: PokemonRow, voltar?: () => void): v
     el("div", { class: "hp" }, el("span", { class: "hp-rot" }, "HP"), el("div", { class: "hp-trilho" }, hpFill), el("span", { class: "hp-num" }, `${p.hp_atual}/${p.hp_max}`)),
     el("div", { class: "rs-exp" }, el("small", {}, `EXP ${p.exp} · faltam ${Math.max(0, prox - p.exp)} para o nível ${p.nivel + 1}`), el("div", { class: "exp-trilho" }, expFill)));
   const dir = el("div", { class: "rs-dir" }, hexagono(p),
-    el("small", { class: "rs-info" }, `Natureza: ${p.natureza ?? "—"} · Amizade: ${p.amizade ?? "—"}`),
+    el("small", { class: "rs-info" }, `Natureza: ${p.natureza ?? "—"} · Amizade: ${p.amizade ?? "—"}/255`),
     el("div", { class: "rs-golpes" }, ...golpes));
   const nos: Node[] = [el("div", { class: "rs-tela" }, esq, dir)];
   if (voltar) { const b = el("button", { type: "button", class: "sec" }, "◀ Voltar"); b.addEventListener("click", voltar); nos.push(b); }

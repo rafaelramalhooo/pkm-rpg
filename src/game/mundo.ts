@@ -82,6 +82,8 @@ export interface Controle {
 
 const T = 16;
 const PASSO_MS = 150;
+// p0–p11: aparências dos jogadores; p12–p47: NPCs (recolorações, ver sprites-novos/catalogo.json)
+const TOTAL_SPRITES = 48;
 const QUADROS: Record<Direcao, number> = { baixo: 0, esquerda: 3, direita: 6, cima: 9 };
 const DELTA: Record<Direcao, [number, number]> = { cima: [0, -1], baixo: [0, 1], esquerda: [-1, 0], direita: [1, 0] };
 declare const __BUILD__: string;
@@ -158,14 +160,14 @@ class CenaMundo extends Phaser.Scene {
   }
 
   preload(): void {
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < TOTAL_SPRITES; i++) {
       this.load.spritesheet(`p${i}`, `${BASE}assets/personagens/p${i}.png`, { frameWidth: 16, frameHeight: 32 });
     }
     this.load.image("grama-alta", `${BASE}assets/grama-alta.png`);
   }
 
   create(): void {
-    for (let i = 0; i < 12; i++) criarAnimacoes(this, i);
+    for (let i = 0; i < TOTAL_SPRITES; i++) criarAnimacoes(this, i);
     const kb = this.input.keyboard!;
     kb.disableGlobalCapture();
     this.teclas = kb.addKeys("UP,DOWN,LEFT,RIGHT,W,A,S,D", false) as Record<string, Phaser.Input.Keyboard.Key>;

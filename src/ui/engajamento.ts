@@ -220,7 +220,8 @@ export async function abrirCosmeticos(modal: Modal, aviso: Aviso): Promise<void>
 // ---------- Novidades (conquistas novas e prêmios do ranking) ----------
 export async function verificarNovidades(aviso: Aviso): Promise<void> {
   await carregarReferencias();
-  const [{ data: cq }, { data: rk }] = await Promise.all([supabase.rpc("conquistas_novas"), supabase.rpc("ranking_meus_premios")]);
+  const [{ data: cq }, { data: rk }, { data: ev }] = await Promise.all([supabase.rpc("conquistas_novas"), supabase.rpc("ranking_meus_premios"), supabase.rpc("avisos_evolucao_meus")]);
+  for (const t of (Array.isArray(ev) ? ev : []) as string[]) aviso(`✨ ${t}`, 9000);
   for (const c of (cq ?? []) as { nome: string; recompensa: Premio }[]) aviso(`🏆 Conquista: ${c.nome}! Prêmio: ${textoPremio(c.recompensa)}`, 9000);
   for (const p of (rk ?? []) as { posicao: number | null; pontos: number; premio: Premio }[]) {
     aviso(p.posicao ? `🏅 Ranking encerrado: você ficou em ${p.posicao}º lugar! Prêmio: ${textoPremio(p.premio)}` : `Ranking encerrado: obrigado por participar! Prêmio: ${textoPremio(p.premio)}`, 12000);
