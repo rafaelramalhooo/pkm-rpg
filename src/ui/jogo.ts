@@ -21,6 +21,7 @@ import { abrirResumo } from "./resumo";
 import { criarAtalhos, type AcaoAtalho } from "./atalhos";
 import { blocoInsignias } from "./cartao";
 import { abrirOrganizar } from "./organizar";
+import { aparenciasLiberadas, preencherGrade } from "./personagem";
 import { abrirResetGolpes } from "./resetgolpes";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
 import { abrirCasa, abrirCheckin, abrirConquistas, abrirCosmeticos, abrirMiniquests, abrirRanking, verificarNovidades } from "./engajamento";
@@ -461,18 +462,14 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     if (lista.length < 2) {
       let aparencia = 0;
       const nome = el("input", { type: "text", maxlength: "12", autocomplete: "off", placeholder: "Nome do 2º personagem" });
-      const botoesA = Array.from({ length: 12 }, (_, i) => {
-        const b = el("button", { type: "button", class: "aparencia", "aria-label": `Visual ${i + 1}`, "aria-pressed": String(i === 0) });
-        b.style.backgroundImage = `url(${BASE}assets/personagens/p${i}.png)`;
-        b.addEventListener("click", () => { aparencia = i; botoesA.forEach((x, k) => x.setAttribute("aria-pressed", String(k === i))); });
-        return b;
-      });
+      const gradeA = el("div", { class: "aparencias" });
+      void aparenciasLiberadas().then((lista) => preencherGrade(gradeA, lista, (n) => { aparencia = n; }));
       const criar = botao("Criar 2º personagem e jogar com ele", async () => {
         const { error } = await supabase.rpc("criar_novo_personagem", { p_nome: nome.value, p_aparencia: aparencia });
         if (error) return void mensagem(msg, error.message);
         location.reload();
       }, "");
-      nos.push(el("label", {}, "Criar segundo personagem"), nome, el("div", { class: "aparencias" }, ...botoesA), criar);
+      nos.push(el("label", {}, "Criar segundo personagem"), nome, gradeA, criar);
     }
 
     const reiniciar = confirmar(botao("Reiniciar o jogo deste personagem", () => undefined, "sec"), "Reiniciar o jogo deste personagem", "Confirmar: apagar time, mochila e Pokédex?", async () => {
@@ -718,7 +715,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const { data: pds } = await supabase.from("pedra_etapas").select("id, x, y, direcao, nome, classe, aparencia").eq("mapa_id", mapaId);
     const pedras = ((pds ?? []) as Omit<TreinadorMapa, "vencido" | "visao" | "falas" | "missao">[]).map((n) => ({ ...n, visao: 0, falas: {}, vencido: false, missao: true }));
     const prof: TreinadorMapa[] = mapaId === "lab"
-      ? [{ id: "prof-carvalho", x: 6, y: 6, direcao: "baixo", nome: "Carvalho", classe: "Prof.", aparencia: 10, visao: 0, falas: {}, vencido: false, missao: true } as unknown as TreinadorMapa]
+      ? [{ id: "prof-carvalho", x: 6, y: 6, direcao: "baixo", nome: "Carvalho", classe: "Prof.", aparencia: 13, visao: 0, falas: {}, vencido: false, missao: true } as unknown as TreinadorMapa]
       : [];
     const normais = ((ts ?? []) as Omit<TreinadorMapa, "vencido">[]).filter((t) => !t.id.startsWith("mq_"))
       .map((t) => (emRevanche.has(t.id) ? { ...t, visao: 0, vencido: false } : { ...t, vencido: venceu.has(t.id) }));

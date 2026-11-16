@@ -1524,3 +1524,6 @@ button:disabled { opacity: .72; }
 .mg-pop-caixa * { box-sizing: border-box; }
 .mg-pop-cols > *, .mg-pop-caixa .mg-grade > *, .mg-pop-caixa .mg-campo { min-width: 0; }
 @media (max-width: 760px) { .mg-pop-cols { grid-template-columns: minmax(0, 1fr); } .mg-pop-caixa { padding: 16px 14px 28px; } .mg-ins { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* lote 26: grade de aparências com rolagem (mais de 12 opções) */
+.aparencias.aparencias-rolavel { max-height: 300px; overflow-y: auto; padding: 4px; -webkit-overflow-scrolling: touch; }
