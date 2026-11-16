@@ -1,7 +1,8 @@
 import { supabase } from "../supabase";
 import { el } from "./dom";
-import { imagemPokemon, nomePokemon, carregarReferencias, type PokemonRow } from "./dados";
+import { imagemPokemon, nomeItem, nomePokemon, carregarReferencias, type PokemonRow } from "./dados";
 import { abrirCaixas } from "./caixa";
+import { abrirItemSeguro } from "./itemseguro";
 
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
 
@@ -33,9 +34,10 @@ export async function abrirOrganizar(modal: Modal, uid: string, aviso: (t: strin
       seguidor = novo; aoMudar(); desenhar();
     }, false, "Anda ao seu lado fora da Pokébola");
     if (seguidor === p.id) sg.classList.add("ativo");
+    const it = b(p.item_seguro ? "🎒 " + nomeItem(p.item_seguro) : "🎒 Item", () => void abrirItemSeguro(modal, uid, p, aviso as (t: string, ms?: number, erro?: boolean) => void, aoMudar, () => void abrirOrganizar(modal, uid, aviso, aoMudar)), false, "Item que o Pokémon segura na batalha");
     return el("div", { class: `org-linha${p.hp_atual <= 0 ? " caido" : ""}` }, imagemPokemon("frente", p.especie_id, "mini", p.brilhante),
       el("div", { class: "org-info" }, el("strong", {}, nomePokemon(p)), el("span", {}, `Nv ${p.nivel} · ${p.hp_atual}/${p.hp_max} HP`)),
-      el("div", { class: "org-btns" }, sg, ...botoes));
+      el("div", { class: "org-btns" }, it, sg, ...botoes));
   };
 
   const verCaixas = el("button", { type: "button", class: "sec" }, "Ver Caixas (guardar e trocar só no Centro Pokémon ou no Laboratório)");

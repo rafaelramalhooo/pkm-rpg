@@ -20,6 +20,14 @@ try {
     return accuracy;
   };
 } catch { /* sem foco */ }
+// itens Escolha: o golpe escondido "Splash" (usado para gastar o turno em bolas e itens) não trava o Pokémon
+for (const id of ["choiceband", "choicespecs", "choicescarf"]) {
+  try {
+    const it = dex9.items.get(id);
+    const orig = it.onModifyMove;
+    it.onModifyMove = function (move, ...r) { if (move?.id === "splash") return; return orig?.call(this, move, ...r); };
+  } catch { /* sem patch */ }
+}
 const abrir = (estado) => {
   const b = Battle.fromJSON(JSON.parse(JSON.stringify(estado)));
   b.rpg = estado.rpg ?? null;
@@ -33,7 +41,7 @@ function conjunto(m, i) {
   for (const k of IVS) ivs[k] = m.ivs?.[k] ?? 31;
   return {
     name: m.apelido || m.nome, species: m.especie, level: m.nivel, nature: cap(m.natureza),
-    ability: "No Ability", item: m.lente ? "widelens" : "", moves: m.golpes.map((g) => g.slug).slice(0, 4), gender: "",
+    ability: "No Ability", item: m.item ? m.item : (m.lente ? "widelens" : ""), moves: m.golpes.map((g) => g.slug).slice(0, 4), gender: "",
     happiness: 100 + i, // guarda a posição original do Pokémon (a ordem do time muda ao trocar)
     evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }, ivs,
   };

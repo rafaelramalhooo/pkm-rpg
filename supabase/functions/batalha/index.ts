@@ -47,7 +47,7 @@ async function montar(b: Any, uid: string) {
   const bon = await bonusDe(uid);
   const mu = (k: string) => 1 + ((k === "atk" || k === "spa" ? bon.instinto : 0) + bon.campeao) / 100;
   const time = lista.map((p: Any) => ({
-    especie: nomeEspecie(p.especie_id), nome: nome.get(p.especie_id), apelido: p.apelido, nivel: p.nivel, natureza: p.natureza,
+    especie: nomeEspecie(p.especie_id), nome: nome.get(p.especie_id), apelido: p.apelido, nivel: p.nivel, natureza: p.natureza, item: p.item_seguro ? String(p.item_seguro).replace(/-/g, "") : "",
     ivs: ivs(p), hp: p.hp_atual, golpes: p.golpes.map((g: Any) => ({ slug: slug.get(g.id), pp: g.pp })),
     aj: p.ajuste ?? {}, mult: { atk: mu("atk"), def: mu("def"), spa: mu("spa"), spd: mu("spd"), spe: mu("spe") },
   }));
@@ -106,7 +106,7 @@ async function timeDuelo(uid: string, amistoso: boolean) {
     ids: pks.map((p: Any) => p.id),
     exp: pks.map((p: Any) => ({ exp_base: Math.floor(expB.get(p.especie_id) ?? 50), nivel: p.nivel })),
     time: pks.map((p: Any) => ({
-      especie: nomeEspecie(p.especie_id), nome: nome.get(p.especie_id), apelido: p.apelido, nivel: p.nivel, natureza: p.natureza,
+      especie: nomeEspecie(p.especie_id), nome: nome.get(p.especie_id), apelido: p.apelido, nivel: p.nivel, natureza: p.natureza, item: p.item_seguro ? String(p.item_seguro).replace(/-/g, "") : "",
       ivs: { hp: p.iv_hp, atk: p.iv_atk, def: p.iv_def, spa: p.iv_spa, spd: p.iv_spd, spe: p.iv_spe },
       aj: p.ajuste ?? {},
       mult: { atk: mu("atk"), def: mu("def"), spa: mu("spa"), spd: mu("spd"), spe: mu("spe") },

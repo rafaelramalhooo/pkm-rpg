@@ -23,20 +23,23 @@ export async function acaoPA(rpc: string, args: Record<string, unknown>, uid: st
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
 type Aviso = (t: string, ms?: number, erro?: boolean) => void;
 
-interface Hab { id: string; classe: string; ordem: number; nome: string; descricao: string; bonus: number; req: { id: string; rank: number }[]; ativo: boolean }
+interface Hab { tier: number; id: string; classe: string; ordem: number; nome: string; descricao: string; bonus: number; req: { id: string; rank: number }[]; ativo: boolean }
 interface Estado {
-  classe: string | null; nivel: number; xp: number; xp_atual_nivel: number; xp_prox: number | null;
+  classe: string | null; classe_sec?: string | null; nivel: number; xp: number; xp_atual_nivel: number; xp_prox: number | null;
   pontos_total: number; pontos_gastos: number; habilidades: Record<string, number>; pesquisadas: number;
 }
 
 const CLASSES: { nome: string; texto: string; estilo: string }[] = [
-  { nome: "Treinador", texto: "Focado em batalhas e treino: mais recompensas, resistência e força em combate.", estilo: "Para quem gosta de lutar e evoluir o time rápido. Hoje já funciona: Mestre de Treino (Treinar rende mais XP aos Pokémon)." },
-  { nome: "Criador", texto: "Focado em cuidar dos Pokémon: amizade, treino intenso, caixas e (no futuro) ovos.", estilo: "Para quem gosta de cuidar e criar laços. Hoje já funciona: Afeto (mais usos de Cuidar por dia), Alimentador (Cuidar rende XP) e Treino Intenso (+% de XP ao Treinar)." },
-  { nome: "Pesquisador", texto: "Focado em explorar o mundo: pesquisas, pesca, descontos e descobertas.", estilo: "Para quem gosta de explorar e descobrir. Hoje já funciona: Olhar Atento (Pesquisar rende mais), Exploração, Rede de Pesca, Economia (lojas mais baratas) e Pokédex Viva." },
+  { nome: "Treinador", texto: "Focado em batalhas e treino: mais recompensas, resistência e força em combate.", estilo: "Para quem gosta de lutar e evoluir o time rápido." },
+  { nome: "Criador", texto: "Focado em cuidar dos Pokémon: amizade, treino intenso, caixas e ovos.", estilo: "Para quem gosta de cuidar e criar laços." },
+  { nome: "Pesquisador", texto: "Focado em explorar o mundo: pesquisas, Pokédex e descobertas.", estilo: "Para quem gosta de explorar e descobrir." },
+  { nome: "Comerciante", texto: "Focado em dinheiro e lojas: descontos, renda e negócios.", estilo: "Para quem gosta de negociar e juntar fortuna." },
+  { nome: "Ranger", texto: "Focado em captura, pesca e Pokémon selvagens.", estilo: "Para quem gosta de caçar, pescar e capturar." },
+  { nome: "Estrategista", texto: "Focado em status, itens segurados e tática de batalha.", estilo: "Para quem gosta de planejar cada turno." },
 ];
 
 const semEfeito = (h: { descricao: string }): boolean => /em breve/i.test(h.descricao); // liberada para comprar, mas sem efeito ligado no jogo
-const PONTOS_ESCADA = "Cada habilidade tem 3 ranks. Aprender o rank 1 custa 1 ponto, o rank 2 custa 2 e o rank 3 custa 3 (6 pontos no total). O bônus soma a cada rank.";
+const PONTOS_ESCADA = "Cada habilidade tem 3 ranks. O custo do próximo rank é (tier − 1) + rank: Tier I custa 1/2/3, Tier II 2/3/4, Tier III 3/4/5 e Mestria 4/5/6. O bônus soma a cada rank.";
 
 /** Quadro "como funciona" (classes, XP de treinador, pontos e ranks). */
 function quadroComoFunciona(): HTMLElement {
@@ -45,7 +48,7 @@ function quadroComoFunciona(): HTMLElement {
     el("p", {}, el("strong", {}, "Classe: "), "define qual árvore de habilidades você desenvolve. É escolhida uma vez só (só o Mestre pode redefinir)."),
     el("p", {}, el("strong", {}, "XP de treinador: "), "é diferente do XP dos Pokémon e sobe seu nível de treinador. Você ganha XP de treinador ao:"),
     el("ul", {}, li("Vencer um treinador pela primeira vez: +40 XP"), li("Registrar uma espécie nova na Pokédex (captura): +30 XP (+5 por rank de Pokédex Viva)"), li("Pesquisar uma espécie (ação de PA): +40 XP (+10 por rank de Olhar Atento)"), li("Explorar: +10 XP · Pescar com sucesso: +10 XP"), li("Concluir etapas de missão (valor varia por missão)")),
-    el("p", {}, el("strong", {}, "Pontos de habilidade: "), "você ganha 1 ponto a cada nível de treinador e mais 1 a cada 5 níveis somados dos seus 6 Pokémon mais fortes (ex.: soma 25 = +5 pontos). Subir o time também rende pontos!"),
+    el("p", {}, el("strong", {}, "Pontos de habilidade: "), "você ganha 1 ponto a cada 2 níveis de treinador e mais 1 a cada 10 níveis somados dos seus 6 Pokémon mais fortes (ex.: soma 50 = +5 pontos). Subir o time também rende pontos!"),
     el("p", {}, el("strong", {}, "Ranks: "), PONTOS_ESCADA),
     el("p", {}, el("strong", {}, "“Liberada para teste”: "), "estas habilidades já podem ser aprendidas (fase de testes), mas o efeito delas ainda não está ligado no jogo."),
     el("p", { class: "sub" }, "Nível de treinador: o nível 2 exige 50 XP, o 3 exige 150, o 4 exige 300, e assim por diante (cada nível pede mais que o anterior)."));
@@ -68,7 +71,7 @@ export async function exigirClasse(aviso: Aviso, aoEscolher: () => void): Promis
       el("div", { class: "hab-classes" }, ...CLASSES.map((c) => {
         const ativas = habs.filter((h) => h.classe === c.nome && !semEfeito(h));
         const b = el("button", { type: "button", class: "hab-classe" }, el("strong", {}, c.nome), el("span", {}, c.texto), el("span", { class: "classe-estilo" }, c.estilo),
-          el("small", {}, `Habilidades com efeito no jogo (${ativas.length} de 10): ${ativas.map((h) => h.nome).join(", ")}`));
+          el("small", {}, `Habilidades com efeito no jogo (${ativas.length} de 15): ${ativas.map((h) => h.nome).join(", ")}`));
         b.addEventListener("click", () => confirmar(c.nome));
         return b;
       }))));
@@ -130,28 +133,58 @@ export async function abrirHabilidades(modal: Modal, aviso: Aviso, aoMudar: () =
 
   const nomes = new Map(habs.map((h) => [h.id, h.nome]));
   const cabecalho = el("div", {}, cab, quadroComoFunciona());
-  const cartoes = habs.filter((h) => h.classe === e.classe).map((h) => {
+  const TIER = ["", "Tier I — Básicas", "Tier II — Intermediárias", "Tier III — Avançadas", "Mestria"];
+  const temOutra = (cl: string): boolean => habs.some((x) => x.classe !== cl && (e.habilidades[x.id] ?? 0) >= 2);
+  const cartao = (h: Hab, secundaria: boolean) => {
     const rank = e.habilidades[h.id] ?? 0;
     const faltam = h.req.filter((r) => (e.habilidades[r.id] ?? 0) < r.rank);
-    const custo = rank + 1;
+    const custo = (h.tier - 1) + rank + 1;
+    const semOutra = h.tier === 4 && !temOutra(h.classe);
     const bolas = el("span", { class: "hab-ranks" }, ...[1, 2, 3].map((n) => el("i", { class: n <= rank ? "on" : "" })));
     const b = el("button", { type: "button", class: "sec hab-comprar" }, rank >= 3 ? "Máximo" : `Aprender (${custo} pt)`);
-    b.disabled = rank >= 3 || faltam.length > 0 || livres < custo;
+    b.disabled = rank >= 3 || faltam.length > 0 || livres < custo || semOutra || (secundaria && h.tier > 2);
     b.addEventListener("click", async () => {
       const { error: er } = await supabase.rpc("comprar_habilidade", { p_hab: h.id });
       if (er) return void aviso(er.message, 4000, true);
       aoMudar();
       void abrirHabilidades(modal, aviso, aoMudar);
     });
-    const req = faltam.length ? el("small", { class: "hab-req" }, `Requer: ${faltam.map((r) => `${nomes.get(r.id)} rank ${r.rank}`).join(", ")}`) : null;
+    const reqTxt = [...faltam.map((r) => `${nomes.get(r.id)} rank ${r.rank}`), ...(semOutra ? ["1 habilidade de outra classe no rank 2"] : [])];
+    const req = reqTxt.length ? el("small", { class: "hab-req" }, `Requer: ${reqTxt.join(", ")}`) : null;
     const card = el("div", { class: `hab-card${semEfeito(h) ? " breve" : ""}` }, el("div", { class: "hab-topo" }, el("strong", {}, h.nome), bolas), el("span", { class: semEfeito(h) ? "hab-selo" : "hab-selo ativa" }, semEfeito(h) ? "🧪 Liberada para teste (efeito ainda não implementado)" : "✔ Ativa no jogo"), el("p", {}, h.descricao.replace(/ \(em breve\)\.?$/, ".")));
     const un = UNIDADE[h.id];
     if (un) card.append(el("div", { class: "hab-total" }, el("span", {}, `Agora: ${rank ? "+" + fmt(h.bonus * rank) : "—"}${rank ? un : ""}`), el("span", {}, `Rank 1: +${fmt(h.bonus)} · Rank 2: +${fmt(h.bonus * 2)} · Rank 3: +${fmt(h.bonus * 3)}${un}`)));
     if (req) card.append(req);
     card.append(b);
     return card;
-  });
-  modal.abrir("Habilidades do treinador", cabecalho, el("div", { class: "hab-grade" }, ...cartoes));
+  };
+  const secaoClasse = (cl: string, secundaria: boolean): HTMLElement[] => {
+    const lista = habs.filter((h) => h.classe === cl);
+    const nos: HTMLElement[] = [el("h3", { class: "hab-classe-titulo" }, secundaria ? `${cl} (secundária — só Tiers I e II)` : `${cl} (principal)`)];
+    for (const t of [1, 2, 3, 4]) {
+      const doTier = lista.filter((h) => h.tier === t);
+      if (!doTier.length || (secundaria && t > 2)) continue;
+      nos.push(el("label", {}, `${TIER[t]} · custo ${t}/${t + 1}/${t + 2} pt`), el("div", { class: "hab-grade" }, ...doTier.map((h) => cartao(h, secundaria))));
+    }
+    return nos;
+  };
+  const blocos: HTMLElement[] = [...secaoClasse(e.classe, false)];
+  if (e.classe_sec) blocos.push(...secaoClasse(e.classe_sec, true));
+  else if (e.nivel >= 5) {
+    const msg2 = el("p", { class: "sub" }, "Você liberou a classe secundária (Tiers I e II dela, e é necessária para as Mestrias). A escolha é definitiva:");
+    const linha = el("div", { class: "mg-linha" }, ...CLASSES.filter((c) => c.nome !== e.classe).map((c) => {
+      const b = el("button", { type: "button", class: "sec" }, c.nome);
+      b.addEventListener("click", async () => {
+        const { error: er } = await supabase.rpc("escolher_classe_secundaria", { p_classe: c.nome });
+        if (er) return void aviso(er.message, 4000, true);
+        aoMudar();
+        void abrirHabilidades(modal, aviso, aoMudar);
+      });
+      return b;
+    }));
+    blocos.push(el("h3", { class: "hab-classe-titulo" }, "Classe secundária"), msg2, linha);
+  } else blocos.push(el("p", { class: "sub" }, "🔒 Classe secundária: libera no nível de treinador 5. As Mestrias exigem 1 habilidade (rank 2) de outra classe."));
+  modal.abrir("Habilidades do treinador", cabecalho, ...blocos);
 }
 
 /** Menu de ações que gastam PA: Treinar, Cuidar, Pesquisar, Explorar, Pescar, Barganhar. */
