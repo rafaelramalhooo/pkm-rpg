@@ -749,7 +749,7 @@ class CenaMundo extends Phaser.Scene {
       this.sombraSeg?.setPosition(alvoX, alvoY - 1).setDepth(8 + alvoY);
       return;
     }
-    const ix = this.seg.x, iy = this.seg.y, c = { t: 0 };
+    const ix = this.seg.x, iy = this.seg.y + voo, c = { t: 0 }; // iy em coordenadas do chão (sem a altura de voo)
     const tw = this.segTween = this.tweens.add({
       targets: c, t: 1, duration: ms, ease: "Linear",
       onUpdate: () => {
