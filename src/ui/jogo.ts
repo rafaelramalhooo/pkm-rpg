@@ -7,7 +7,7 @@ import {
   nomePokemon, todasEspecies, type PokemonRow,
 } from "./dados";
 import { carregarMissao, conversarNpc, conversarPedra, type MissaoEstado } from "./missao";
-import { criarDiario } from "./quests";
+import { abrirQuests } from "./quests";
 import { abrirSocial, carregarPendencias } from "./social";
 import { resolverPendencias } from "./momentos";
 import { fichaEspecie, painelBusca } from "./pokedex";
@@ -107,12 +107,13 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   let paMax = 30;
   let missaoAtual: MissaoEstado | null = null;
   const hudMissao = el("button", { type: "button", class: "hud-missao", hidden: "", "aria-label": "Missão ativa" });
-  const diario = criarDiario((q) => {
-    void abrirMapaMundi(modal, (m) => controle?.viajar(m) ?? Promise.resolve(false), mostrarAviso, q.mapa_id ? { mapa_id: q.mapa_id, mapa_nome: q.mapa ?? "", nome: q.titulo, objetivo: q.passo ?? "" } : undefined);
-  });
+  const abrirDiario = (): void => {
+    void abrirQuests(modal, (q) => {
+      void abrirMapaMundi(modal, (m) => controle?.viajar(m) ?? Promise.resolve(false), mostrarAviso, q.mapa_id ? { mapa_id: q.mapa_id, mapa_nome: q.mapa ?? "", nome: q.titulo, objetivo: q.passo ?? "" } : undefined);
+    });
+  };
   const atualizarMissao = async (): Promise<void> => {
     try { missaoAtual = await carregarMissao(); } catch { missaoAtual = null; }
-    void diario.atualizar();
     void controle?.atualizarMarcas();
     hudMissao.hidden = true; // substituído pelo Diário de Quests
   };
@@ -212,7 +213,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   cartaoTreinador.setAttribute("role", "button"); cartaoTreinador.setAttribute("tabindex", "0"); cartaoTreinador.title = "Abrir o menu";
   cartaoTreinador.addEventListener("click", () => abrirMenuAvatar());
   cartaoTreinador.addEventListener("keydown", (ev) => { if (ev.key === "Enter") abrirMenuAvatar(); });
-  tela.append(aviso, hudMissao, diario.raiz, reserva.faixa, acoes, cartaoOferta, dpad);
+  tela.append(aviso, hudMissao, reserva.faixa, acoes, cartaoOferta, dpad);
 
   // ---------- painéis ----------
   const msgPainel = (): HTMLElement => el("p", { class: "msg", role: "status" });
@@ -420,7 +421,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const secao = (tit: string, itens: [string, () => void][]) => el("div", { class: "dash-sec" }, el("label", {}, tit), el("div", { class: "dash-menu" }, ...itens.map(([r, f]) => botao(r, () => { modal.voltarPara(() => void abrirDashboard()); f(); }, "sec"))));
     const recarregar = () => { atualizarHud(); void recarregarJogador(); };
     const menus = el("div", { class: "dash-menus" },
-      secao("Progresso", [["🏅 Conquistas", () => void abrirConquistas(modal, mostrarAviso)], ["📊 Ranking", () => void abrirRanking(modal, mostrarAviso)], ["🎯 Desafios da semana", () => void abrirMiniquests(modal, mostrarAviso)], ["📅 Check-in diário", () => void abrirCheckin(modal, mostrarAviso, recarregar)], ["🎖 Títulos e molduras", () => void abrirCosmeticos(modal, mostrarAviso)]]),
+      secao("Progresso", [["📜 Quests (J)", () => abrirDiario()], ["🏅 Conquistas", () => void abrirConquistas(modal, mostrarAviso)], ["📊 Ranking", () => void abrirRanking(modal, mostrarAviso)], ["🎯 Desafios da semana", () => void abrirMiniquests(modal, mostrarAviso)], ["📅 Check-in diário", () => void abrirCheckin(modal, mostrarAviso, recarregar)], ["🎖 Títulos e molduras", () => void abrirCosmeticos(modal, mostrarAviso)]]),
       secao("Treinador", [["Talentos", () => void abrirHabilidades(modal, mostrarAviso, atualizarHud)], ["Ações (PA)", () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador())], ["Organizar time / Seguidor", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor())], ["🏠 Minha casa e ovos", () => void abrirCasa(modal, mostrarAviso, recarregar)]]),
       secao("Social e conta", [["Jogadores (desafios e trocas)", () => void abrirSocial(modal, j.id, mostrarAviso, recarregar, lutarDesafio)], ["Meus personagens / Reiniciar", () => void abrirPersonagens()], ["📜 Créditos", () => void abrirCreditos(modal)]]));
     modal.abrir("Painel do treinador", el("div", { class: "dash-wide" },
@@ -894,7 +895,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       return;
     }
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-    if ((e.key === "j" || e.key === "J") && !e.ctrlKey && !e.metaKey && !e.altKey) { if (!emBatalha) { diario.alternar(); e.preventDefault(); } return; }
+    if ((e.key === "j" || e.key === "J") && !e.ctrlKey && !e.metaKey && !e.altKey) { if (!emBatalha) { abrirDiario(); e.preventDefault(); } return; }
     if ((e.key === "m" || e.key === "M") && !e.ctrlKey && !e.metaKey && !e.altKey) {
       if (modal.aberto() && modal.raiz.querySelector(".mm-fundo")) { modal.fechar(); e.preventDefault(); }
       else if (!emBatalha && !modal.aberto() && !document.querySelector(".classe-obrig, .manut-tela")) { abrirMundi(); e.preventDefault(); }
