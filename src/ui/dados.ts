@@ -169,7 +169,7 @@ export function chipsTipo(especieId: number): HTMLElement {
 
 // ---------- seguidor animado (PMDCollab SpriteCollab, no bucket privado: sprites/seguidor/) ----------
 
-export interface MetaSeguidor { w: number; h: number; d: number[]; s: 0 | 1 }
+export interface MetaSeguidor { w: number; h: number; d: number[]; s: 0 | 1; b?: number /* linha dos pés (px, de cima para baixo) */ }
 let metaSeg: Promise<Record<string, MetaSeguidor>> | null = null;
 /** Medidas das folhas de caminhada (tamanho do quadro, duração de cada quadro em ms, se existe versão brilhante). */
 export function metaSeguidor(): Promise<Record<string, MetaSeguidor>> {

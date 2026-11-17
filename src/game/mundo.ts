@@ -708,7 +708,7 @@ class CenaMundo extends Phaser.Scene {
     this.segTex = undefined;
     this.segAnim = { chave, n };
     this.sombraSeg = this.add.ellipse(px(this.jogador.x), py(this.jogador.y), 12, 4, 0x000000, 0.28);
-    const sp = this.add.sprite(px(this.jogador.x), py(this.jogador.y), chave, 0).setOrigin(0.5, 0.78);
+    const sp = this.add.sprite(px(this.jogador.x), py(this.jogador.y), chave, 0).setOrigin(0.5, meta.b != null ? Math.min(1, (meta.b + 1) / meta.h) : 0.78);
     sp.setScale(Math.min(0.75, 26 / meta.h));
     this.seg = sp; this.segId = d.id;
     this.posicionarSeguidor(this.jogador.x, this.jogador.y, 0, this.jogador.direcao);
