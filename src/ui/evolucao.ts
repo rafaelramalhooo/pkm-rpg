@@ -56,7 +56,8 @@ function telaDistribuir(p: Pend): Promise<"ok" | "depois"> {
       const f = finais();
       const rOk = regraOk();
       msg.className = rOk ? "msg" : "msg erro";
-      msg.textContent = rOk ? `Maior atributo: ${Math.max(...f)} · menor: ${Math.min(...f)} (o maior não pode passar do dobro do menor).` : `O maior atributo (${Math.max(...f)}) passou do dobro do menor (${Math.min(...f)}). Ajuste os pontos.`;
+      const lim = Math.max(2, razaoAuto); const limTxt = lim <= 2 ? "o dobro" : `${lim.toFixed(2)}x (esta espécie já nasce desigual)`;
+      msg.textContent = rOk ? `Maior atributo: ${Math.max(...f)} · menor: ${Math.min(...f)} (o maior não pode passar de ${limTxt} do menor).` : `O maior atributo (${Math.max(...f)}) passou de ${limTxt} do menor (${Math.min(...f)}). Ajuste os pontos.`;
       ok.disabled = sobra !== 0 || !rOk;
     };
     const lista = STATS.map(([k, nome]) => {
