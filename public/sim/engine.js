@@ -84,7 +84,18 @@ export function criar({ time, inimigos, seed, rpg }) {
   return resultado(b, 0);
 }
 
-function visivel(linhas, lado = 0) {
+/** o golpe "Splash" extra (último slot, depois dos golpes reais) serve só para gastar o turno; o Splash de verdade do Pokémon (Magikarp) é um golpe normal */
+function slotOculto(p, i) {
+  const reais = p?.set?.moves?.length ?? 4;
+  return !!p && i >= reais && p.moveSlots?.[i]?.id === "splash";
+}
+function splashEscondido(l, ctx) {
+  const m = /^\|move\|p1a: ([^|]*)\|Splash\|/.exec(l);
+  if (!m) return false;
+  return !ctx?.sabe?.has(m[1]);
+}
+
+function visivel(linhas, lado = 0, ctx = null) {
   const out = [];
   for (let i = 0; i < linhas.length; i++) {
     const l = linhas[i];
@@ -97,7 +108,7 @@ function visivel(linhas, lado = 0) {
   }
   // quem vê pelo lado 2 enxerga a si mesmo como "p1" (o cliente sempre desenha o próprio time como p1)
   const persp = lado === 1 ? (l) => (l ?? "").replace(/\bp([12])([ab]?)(?=:)/g, (_m, n, ab) => `p${3 - Number(n)}${ab}`) : (l) => l;
-  return out.map(persp).filter((l) => l && l !== "|" && !l.startsWith("|t:|") && !/^\|move\|p1a: [^|]*\|Splash\|/.test(l) && !/^\|(upkeep|teamsize|gen|tier|clearpoke|poke|teampreview|rule|raw|gametype|player)\b/.test(l) && !/^\|-nothing/.test(l));
+  return out.map(persp).filter((l) => l && l !== "|" && !l.startsWith("|t:|") && !splashEscondido(l, ctx) && !/^\|(upkeep|teamsize|gen|tier|clearpoke|poke|teampreview|rule|raw|gametype|player)\b/.test(l) && !/^\|-nothing/.test(l));
 }
 
 function pedido(b, ld = 0) {
@@ -107,7 +118,7 @@ function pedido(b, ld = 0) {
   const lado = b.sides[ld].pokemon;
   return {
     trocar: !!r.forceSwitch,
-    golpes: ativo ? ativo.moves.filter((m) => m.id !== "splash").map((m, i) => ({ n: i + 1, id: m.id, nome: m.move, pp: m.pp, maxpp: m.maxpp, desativado: !!m.disabled })) : [],
+    golpes: ativo ? ativo.moves.map((m, i) => ({ n: i + 1, id: m.id, nome: m.move, pp: m.pp, maxpp: m.maxpp, desativado: !!m.disabled, oculto: slotOculto(lado[0], i) })).filter((m) => !m.oculto).map(({ oculto, ...m }) => m) : [],
     preso: !!(ativo && (ativo.trapped || ativo.maybeTrapped)),
     time: lado.map((p, i) => ({ n: i + 1, orig: p.set.happiness - 100, nome: p.name, ativo: p.isActive, hp: p.hp, maxhp: p.maxhp, status: p.status || null })),
   };
@@ -117,11 +128,11 @@ function resultado(b, desde, ld = 0) {
   const fim = b.ended ? (b.winner === b.sides[ld].name ? "vitoria" : "derrota") : null;
   const dados = (lado) => lado.pokemon.map((p) => ({
     orig: p.set.happiness - 100, hp: p.hp, maxhp: p.maxhp, status: p.status || null,
-    pp: p.moveSlots.filter((s) => s.id !== "splash").map((s) => s.pp),
+    pp: p.moveSlots.filter((s, i) => !slotOculto(p, i)).map((s) => s.pp),
     nome: p.name, nivel: p.level, especie: p.species.name, num: p.species.num, ativo: p.isActive,
   }));
   return {
-    estado: salvar(b), linhas: visivel(b.log.slice(desde), ld), logLen: b.log.length, pedido: fim ? null : pedido(b, ld), fim,
+    estado: salvar(b), linhas: visivel(b.log.slice(desde), ld, { sabe: new Set(b.sides[ld].pokemon.filter((q) => (q.set.moves ?? []).some((x) => String(x).toLowerCase().replace(/[^a-z]/g, "") === "splash")).map((q) => q.name)) }), logLen: b.log.length, pedido: fim ? null : pedido(b, ld), fim,
     jogador: dados(b.sides[ld]), adversario: dados(b.sides[1 - ld]),
   };
 }
