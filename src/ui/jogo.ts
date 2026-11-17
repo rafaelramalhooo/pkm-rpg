@@ -7,6 +7,7 @@ import {
   nomePokemon, todasEspecies, type PokemonRow,
 } from "./dados";
 import { carregarMissao, conversarNpc, conversarPedra, type MissaoEstado } from "./missao";
+import { criarDiario } from "./quests";
 import { abrirSocial, carregarPendencias } from "./social";
 import { resolverPendencias } from "./momentos";
 import { fichaEspecie, painelBusca } from "./pokedex";
@@ -106,12 +107,14 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   let paMax = 30;
   let missaoAtual: MissaoEstado | null = null;
   const hudMissao = el("button", { type: "button", class: "hud-missao", hidden: "", "aria-label": "Missão ativa" });
+  const diario = criarDiario((q) => {
+    void abrirMapaMundi(modal, (m) => controle?.viajar(m) ?? Promise.resolve(false), mostrarAviso, q.mapa_id ? { mapa_id: q.mapa_id, mapa_nome: q.mapa ?? "", nome: q.titulo, objetivo: q.passo ?? "" } : undefined);
+  });
   const atualizarMissao = async (): Promise<void> => {
     try { missaoAtual = await carregarMissao(); } catch { missaoAtual = null; }
-    const m = missaoAtual;
-    if (!m || m.estado !== "ativa") { hudMissao.hidden = true; return; }
-    hudMissao.replaceChildren(el("strong", {}, `Missão: ${m.nome}`), el("span", {}, m.objetivo ?? ""), el("em", {}, `${m.feitas}/${m.total} concluídas`));
-    hudMissao.hidden = false;
+    void diario.atualizar();
+    void controle?.atualizarMarcas();
+    hudMissao.hidden = true; // substituído pelo Diário de Quests
   };
   hudMissao.addEventListener("click", () => void abrirMapaMundi(modal, (m) => controle?.viajar(m) ?? Promise.resolve(false), mostrarAviso, missaoAtual?.estado === "ativa" && missaoAtual.mapa_id ? { mapa_id: missaoAtual.mapa_id, mapa_nome: missaoAtual.mapa_nome ?? "", nome: missaoAtual.nome, objetivo: missaoAtual.objetivo ?? "" } : null));
 
@@ -209,7 +212,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   cartaoTreinador.setAttribute("role", "button"); cartaoTreinador.setAttribute("tabindex", "0"); cartaoTreinador.title = "Abrir o menu";
   cartaoTreinador.addEventListener("click", () => abrirMenuAvatar());
   cartaoTreinador.addEventListener("keydown", (ev) => { if (ev.key === "Enter") abrirMenuAvatar(); });
-  tela.append(aviso, hudMissao, reserva.faixa, acoes, cartaoOferta, dpad);
+  tela.append(aviso, hudMissao, diario.raiz, reserva.faixa, acoes, cartaoOferta, dpad);
 
   // ---------- painéis ----------
   const msgPainel = (): HTMLElement => el("p", { class: "msg", role: "status" });
@@ -821,6 +824,9 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       if (p.tipo === "casa_jogador") nos.push(botao("🏠 Minha casa e ovos", () => void abrirCasa(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }), "sec"));
       if (p.tipo === "centro") nos.push(botao("Acessar as Caixas", () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud), "sec"));
       if (p.tipo === "centro" && j.mapa_id !== "pallet" && j.mapa_id !== "porto") nos.push(botao("🔄 Resetar golpes (₽ 1.000)", () => { modal.voltarPara(() => void abrirPoi(p)); void abrirResetGolpes(modal, j.id, j.dinheiro ?? 0, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }); }, "sec"));
+    } else if (p.acao === "reserva") {
+      await reserva.abrir();
+      return;
     } else if (p.acao === "dica" || p.acao === "quadro") {
       const lista = p.acao === "dica" ? p.dicas : p.textos;
       if (lista?.length) nos.push(el("p", { class: "sub" }, `“${lista[Math.floor(Math.random() * lista.length)]}”`));
@@ -888,6 +894,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       return;
     }
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if ((e.key === "j" || e.key === "J") && !e.ctrlKey && !e.metaKey && !e.altKey) { if (!emBatalha) { diario.alternar(); e.preventDefault(); } return; }
     if ((e.key === "m" || e.key === "M") && !e.ctrlKey && !e.metaKey && !e.altKey) {
       if (modal.aberto() && modal.raiz.querySelector(".mm-fundo")) { modal.fechar(); e.preventDefault(); }
       else if (!emBatalha && !modal.aberto() && !document.querySelector(".classe-obrig, .manut-tela")) { abrirMundi(); e.preventDefault(); }
@@ -1028,6 +1035,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       },
       aviso: mostrarAviso,
       treinadores: listarTreinadores,
+      marcas: async () => { const { data } = await supabase.rpc("quests_marcas"); return (data ?? {}) as Record<string, string>; },
       pistas: carregarPistas,
       aoTreinador,
       aoClicarJogador: (id) => chatUi.abrirCartao(id),
@@ -1064,7 +1072,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     atualizarHud();
     void atualizarMissao();
     void resolverPendencias();
-    void supabase.from("pokemons").select("id", { count: "exact", head: true }).eq("dono", j.id).not("evo_pend", "is", null).then(({ count }) => { if (count) mostrarAviso("Você tem pontos de atributo para distribuir: abra o Time e toque no ⭐ do Pokémon.", 8000); });
+    void supabase.from("pokemons").select("id", { count: "exact", head: true }).eq("dono", j.id).not("evo_pend", "is", null).then(({ count }) => { if (count) mostrarAviso("Você tem pontos de atributo para distribuir: abra o Time (ou a Caixa Principal) e toque no ⭐ do Pokémon.", 8000); });
     void verificarSocial();
     if (!temRef) {
       mostrarAviso(j.papel === "mestre" ? "Mestre: abra Menu e clique em \"Importar dados do jogo\" e depois \"Importar sprites\"." : "O mundo ainda está sendo preparado. Tente de novo em instantes.", 8000);

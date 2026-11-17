@@ -58,6 +58,8 @@ export interface Ganchos {
   aviso(texto: string): void;
   /** Treinadores NPC do mapa (com a marca de quais o jogador já venceu). */
   treinadores?(mapaId: string): Promise<TreinadorMapa[]>;
+  /** Marcas de quest sobre os NPCs: "!" (tem quest) e "?" (precisa falar com ele). Mapa id do NPC → marca. */
+  marcas?(): Promise<Record<string, string>>;
   /** Rumores do Fofoqueiro e do Mural (balões automáticos). */
   pistas?(): Promise<{ fofoca: string[]; mural: string[] }>;
   /** Um treinador viu o jogador. Resolve com true se o jogador o venceu. */
@@ -82,6 +84,8 @@ export interface Controle {
   viajar(mapa: string): Promise<boolean>;
   /** O jogador falou com um treinador ao lado dele (ele só desafia se o jogador puxar conversa). */
   conversar(id: string): Promise<void>;
+  /** Relê as marcas "!" / "?" dos NPCs do mapa. */
+  atualizarMarcas(): Promise<void>;
   /** +1 aproxima, -1 afasta, 0 volta ao automático. */
   zoom(passo: -1 | 0 | 1): void;
 }
@@ -105,6 +109,7 @@ interface Ficha {
   sprite: Phaser.GameObjects.Sprite;
   nome: Phaser.GameObjects.Text;
   balao?: Phaser.GameObjects.Text;
+  marca?: Phaser.GameObjects.Text;
   balaoTimer?: Phaser.Time.TimerEvent;
   x: number;
   y: number;
@@ -413,6 +418,24 @@ class CenaMundo extends Phaser.Scene {
       this.npcs.set(d.id, { d, ficha });
     }
     void this.carregarPistas();
+    void this.atualizarMarcas();
+  }
+
+  /** "!" amarelo = quest disponível; "?" cinza-azulado = precisa falar com ele para avançar. */
+  async atualizarMarcas(): Promise<void> {
+    if (!this.ganchos.marcas) return;
+    let m: Record<string, string> = {};
+    try { m = await this.ganchos.marcas(); } catch { return; }
+    for (const [id, n] of this.npcs) {
+      const v = m[id];
+      const f = n.ficha;
+      if (v !== "!" && v !== "?") { if (f.marca) { this.tweens.killTweensOf(f.marca); f.marca.destroy(); f.marca = undefined; } continue; }
+      const cor = v === "!" ? "#ffd24a" : "#9fd0ff";
+      if (f.marca) { f.marca.setText(v).setColor(cor); continue; }
+      f.marca = this.add.text(0, 0, v, { fontFamily: "monospace", fontSize: "11px", fontStyle: "bold", color: cor, stroke: "#0b1020", strokeThickness: 3 }).setOrigin(0.5, 1).setResolution(4);
+      this.tweens.add({ targets: f.marca, scale: { from: 0.9, to: 1.25 }, duration: 520, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+      this.posicionarAcessorios(f);
+    }
   }
 
   private pistas: { fofoca: string[]; mural: string[] } = { fofoca: [], mural: [] };
@@ -521,6 +544,7 @@ class CenaMundo extends Phaser.Scene {
     f.sprite.setDepth(10 + f.sprite.y);
     f.nome.setPosition(f.sprite.x, f.sprite.y - 17).setDepth(2000);
     f.balao?.setPosition(f.sprite.x, f.sprite.y - 24).setDepth(2001);
+    f.marca?.setPosition(f.sprite.x, f.sprite.y - 23).setDepth(2002);
   }
 
   private colocar(f: Ficha, x: number, y: number): void {
@@ -562,6 +586,7 @@ class CenaMundo extends Phaser.Scene {
     f.sprite.destroy();
     f.nome.destroy();
     f.balao?.destroy();
+    f.marca?.destroy();
   }
 
   private mostrarBalao(f: Ficha, texto: string, duracao = 5000, max = 60): void {
@@ -1055,6 +1080,7 @@ export async function iniciarMundo(pai: HTMLElement, jogador: Jogador, ganchos: 
     recarregarJogador: () => cena.recarregar(),
     zoom: (p) => cena.zoom(p),
     conversar: (id) => cena.conversar(id),
+    atualizarMarcas: () => cena.atualizarMarcas(),
     destravar: () => cena.destravar(),
     atualizarSeguidor: () => cena.atualizarSeguidor(),
     viajar: (m) => cena.viajar(m),

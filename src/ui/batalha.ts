@@ -112,12 +112,11 @@ export function abrirBatalha(inicial: ResultadoBatalha, meuId: string, opcoes: O
       const cartaoAtivo = (l: "jog" | "adv"): HTMLElement => {
         const a = ativos[l];
         if (!a.nome) return el("div", { class: "sd-hist-cartao" }, el("strong", {}, l === "jog" ? "Você" : "Adversário"), el("p", { class: "sub" }, "—"));
-        const pc = pctHp(a.hp, a.max);
         const mods = Object.entries(a.bufs).filter(([, v]) => v !== 0).map(([k, v]) => `${STAT_CURTO[k] ?? k} ${v > 0 ? "+" : ""}${v}`);
         const cond = [a.status ? (STATUS_SIGLA[a.status] ?? a.status) : "", ...volateis[l]].filter(Boolean);
         return el("div", { class: "sd-hist-cartao" },
           el("strong", {}, `${l === "jog" ? "Seu" : "Inimigo"}: ${a.nome} Lv${a.nivel}`),
-          el("p", {}, `PV: ${l === "jog" ? `${a.hp}/${a.max}` : `${Math.round(pc.pct)}%`}`),
+          el("p", {}, `PV: ${`${a.hp}/${a.max}`}`),
           el("p", {}, `Modificadores: ${mods.length ? mods.join(", ") : "nenhum"}`),
           el("p", {}, `Condições: ${cond.length ? cond.join(", ") : "nenhuma"}`),
           el("p", {}, `No lado: ${ladoCond[l].size ? [...ladoCond[l]].join(", ") : "nada"}`));
@@ -250,7 +249,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, meuId: string, opcoes: O
       const b = pctHp(a.hp, a.max);
       c.fill.style.width = `${b.pct}%`;
       c.fill.className = `sd-hp-fill ${b.classe}`;
-      c.num.textContent = l === "jog" ? `${a.hp}/${a.max}` : `${Math.round(b.pct)}%`;
+      c.num.textContent = `${a.hp}/${a.max}`;
       c.bufs.replaceChildren(...Object.entries(a.bufs).filter(([, v]) => v !== 0).map(([k, v]) => el("span", { class: `sd-buf ${v > 0 ? "up" : "down"}` }, `${STAT_CURTO[k] ?? k} ${v > 0 ? "+" : ""}${v}`)));
     }
     const selvBrilha = Boolean((inicial.batalha as { selvagem?: { brilhante?: boolean } }).selvagem?.brilhante);
@@ -422,7 +421,8 @@ export function abrirBatalha(inicial: ResultadoBatalha, meuId: string, opcoes: O
           const h = lerHp(p[3]);
           volateis[l].clear();
           ativos[l] = { nome, nivel, hp: h.hp, max: h.max ?? m?.maxhp ?? Math.max(1, h.hp), status: h.st, num: m?.num ?? 0, bufs: {} };
-          if (l === "adv" && ativos.adv.max > 0 && tipoBatalha === "selvagem") ativos.adv.max = 100, ativos.adv.hp = Math.round((h.hp / (h.max ?? 1)) * 100) || 100;
+          // o log mostra o PV do adversário em %; usamos o máximo real (vem do servidor) para exibir em números
+          if (l === "adv" && m?.maxhp) { ativos.adv.max = m.maxhp; ativos.adv.hp = h.hp <= 0 ? 0 : h.max ? Math.max(1, Math.round((h.hp / h.max) * m.maxhp)) : h.hp; }
           trocarSprite(l, ativos[l].num);
           pintar(l);
           if (l === "jog") await dizer(`Vai, ${nome}!`, 800);
@@ -441,8 +441,9 @@ export function abrirBatalha(inicial: ResultadoBatalha, meuId: string, opcoes: O
           const { l, nome } = ident(p[1]);
           const h = lerHp(p[2]);
           const a = ativos[l];
-          const max = tipoBatalha === "selvagem" && l === "adv" ? 100 : (h.max ?? a.max);
-          const novo = tipoBatalha === "selvagem" && l === "adv" ? (h.max ? Math.round((h.hp / h.max) * 100) : 0) : h.hp;
+          const porPct = l === "adv" && h.max === 100 && a.max !== 100 && a.max > 1; // log do adversário vem em %; converte pelo máximo real
+          const max = porPct ? a.max : (h.max ?? a.max);
+          const novo = porPct ? (h.hp <= 0 ? 0 : Math.max(1, Math.round((h.hp / 100) * a.max))) : h.hp;
           a.max = max;
           a.hp = novo;
           a.status = h.st ?? (h.hp === 0 ? null : a.status);
@@ -638,6 +639,8 @@ export function abrirBatalha(inicial: ResultadoBatalha, meuId: string, opcoes: O
       // garante que a caixa reflita o estado final (por segurança)
       const j = r.jogador.find((m) => m.ativo);
       if (j && ativos.jog.nome && !r.fim) { ativos.jog.hp = j.hp; ativos.jog.max = j.maxhp; ativos.jog.status = j.status; pintar("jog"); }
+      const ad = r.adversario.find((m) => m.ativo);
+      if (ad && ativos.adv.nome && ativos.adv.nome === ad.nome) { ativos.adv.hp = ad.hp; ativos.adv.max = ad.maxhp; pintar("adv"); } // valor exato do servidor
     }
 
     async function agir(corpo: Record<string, unknown>): Promise<void> {
@@ -722,8 +725,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, meuId: string, opcoes: O
           for (const l of ["jog", "adv"] as const) {
             const m = (l === "jog" ? r.jogador : r.adversario).find((x) => x.ativo);
             if (!m) continue;
-            const selv = l === "adv" && tipoBatalha === "selvagem";
-            ativos[l] = { nome: m.nome, nivel: m.nivel, hp: selv ? Math.round((m.hp / m.maxhp) * 100) : m.hp, max: selv ? 100 : m.maxhp, status: m.status, num: m.num, bufs: {} };
+            ativos[l] = { nome: m.nome, nivel: m.nivel, hp: m.hp, max: m.maxhp, status: m.status, num: m.num, bufs: {} };
             trocarSprite(l, m.num);
             pintar(l);
           }

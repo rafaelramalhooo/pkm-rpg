@@ -21,7 +21,26 @@ export function criarAtalhos(
   raiz.append(toggle, slots, editar);
 
   const achar = (id: string | null): AcaoAtalho | undefined => (id ? acoes().find((a) => a.id === id) : undefined);
-  const salvar = (): void => { void supabase.rpc("atalhos_salvar", { p_atalhos: lista }); };
+  const CHAVE_LISTA = `pkm_atalhos_${jogadorId}`;
+  const salvarLocal = (): void => { try { localStorage.setItem(CHAVE_LISTA, JSON.stringify(lista)); } catch { /* sem storage */ } };
+  const lerLocal = (): (string | null)[] | null => {
+    try {
+      const v = JSON.parse(localStorage.getItem(CHAVE_LISTA) ?? "null") as unknown;
+      if (Array.isArray(v)) return Array.from({ length: 10 }, (_, i) => (typeof v[i] === "string" ? (v[i] as string) : null));
+    } catch { /* ignora */ }
+    return null;
+  };
+  const salvar = (): void => {
+    salvarLocal(); // cópia local: garante que os atalhos não somem mesmo se o servidor falhar
+    void supabase.rpc("atalhos_salvar", { p_atalhos: lista }).then(({ error }) => {
+      if (error) { console.error("atalhos_salvar", error); avisarErro(`Não consegui salvar os atalhos no servidor (${error.message}). Ficaram salvos só neste aparelho.`); }
+    });
+  };
+  const avisarErro = (t: string): void => {
+    const d = el("div", { class: "aviso erro" }, t);
+    document.body.append(d);
+    window.setTimeout(() => d.remove(), 6000);
+  };
   const desenhar = (): void => {
     raiz.classList.toggle("oculta", !visivel);
     raiz.classList.toggle("editando", editando);
@@ -48,9 +67,14 @@ export function criarAtalhos(
   toggle.addEventListener("click", alternar);
   editar.addEventListener("click", () => { editando = !editando; desenhar(); });
   desenhar();
-  void supabase.from("jogadores").select("atalhos").eq("id", jogadorId).maybeSingle().then(({ data }) => {
+  const local = lerLocal();
+  if (local) { lista = local; desenhar(); }
+  void supabase.from("jogadores").select("atalhos").eq("id", jogadorId).maybeSingle().then(({ data, error }) => {
+    if (error) { console.error("atalhos_carregar", error); return; }
     const a = (data as { atalhos?: unknown } | null)?.atalhos;
-    if (Array.isArray(a)) { lista = Array.from({ length: 10 }, (_, i) => (typeof a[i] === "string" ? (a[i] as string) : null)); desenhar(); }
+    // o servidor vence se tiver algo; senão fica a cópia local (e é reenviada ao servidor)
+    if (Array.isArray(a) && a.some((x) => typeof x === "string")) { lista = Array.from({ length: 10 }, (_, i) => (typeof a[i] === "string" ? (a[i] as string) : null)); salvarLocal(); desenhar(); }
+    else if (local && local.some((x) => x)) salvar();
   });
   return {
     raiz,

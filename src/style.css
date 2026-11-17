@@ -1643,3 +1643,20 @@ body[data-clima="sun"]::after { background: radial-gradient(circle at 85% 8%, rg
 .lg-lado.venc { background: #d7f5d5; }
 .lg-lado.perd { opacity: .5; text-decoration: line-through; }
 .lg-jogo small { display: block; padding: 2px 8px; font-size: 11px; opacity: .7; }
+
+/* ===== Diário de Quests ===== */
+.diario { position: absolute; right: 10px; top: 108px; z-index: 4; width: min(62vw, 290px); border-radius: 14px; background: #0b1530ee; border: 1px solid #ffb70399; box-shadow: 0 6px 18px #0008; color: #dbe6ff; overflow: hidden; }
+.diario-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin: 0; padding: 8px 12px; border-radius: 0; background: #14234a; color: #ffd27a; font-weight: 800; font-size: .85rem; border: 0; }
+.diario-topo i { font-style: normal; font-size: .72rem; color: #9fb4d8; }
+.diario-corpo { display: flex; flex-direction: column; gap: 6px; padding: 8px; max-height: min(46dvh, 360px); overflow-y: auto; }
+.diario.minimizado .diario-corpo { display: none; }
+.dq { display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 10px; background: #101c3d; border: 1px solid #2a3a6a; }
+.dq strong { font-size: .82rem; color: #ffd27a; }
+.dq-passo { font-size: .76rem; line-height: 1.3; color: #fff; }
+.dq-onde, .dq-prog, .dq-rec { font-size: .7rem; color: #9fd0ff; }
+.dq-prog { color: #7ae7c7; font-weight: 700; }
+.dq-mapa { margin: 4px 0 0; padding: 5px 10px; font-size: .72rem; border-radius: 99px; }
+.dq-semana { opacity: .9; }
+.dq-semana-cab { margin: 0; padding: 6px 10px; font-size: .75rem; text-align: left; border-radius: 10px; background: #14234a; color: #dbe6ff; border: 1px solid #2a3a6a; }
+.diario .sub { margin: 0; font-size: .75rem; color: #c7d4f0; }
+@media (max-height: 520px) { .diario { top: 56px; width: min(40vw, 260px); } .diario-corpo { max-height: 34dvh; } }

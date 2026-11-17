@@ -17,6 +17,7 @@ interface Resposta { msg?: string; capturou?: boolean; fugiu?: boolean; estado: 
 export interface Reserva {
   faixa: HTMLElement;
   aoMapa: (mapaId: string) => void;
+  abrir: () => Promise<void>;
   observar: () => Promise<void>;
 }
 
@@ -46,7 +47,7 @@ export function criarReserva(modal: Modal, aviso: Aviso, aoMudar: () => void): R
   const pintar = (): void => {
     const s = est;
     if (!s) { faixa.hidden = true; return; }
-    faixa.hidden = false;
+    faixa.hidden = !s.ativa; // a faixa só aparece durante uma visita ativa
     faixa.classList.toggle("ativa", s.ativa);
     if (s.ativa) faixa.textContent = `🦓 Safári · ${s.passos} passos · ${s.bolas} bolas · ${s.capturas?.length ?? 0} capturado(s)`;
     else if (s.visitou_hoje) faixa.textContent = "🦓 Reserva Dourada · visita de hoje já feita";
@@ -127,13 +128,23 @@ export function criarReserva(modal: Modal, aviso: Aviso, aoMudar: () => void): R
     desenharEncontro(null, s);
   };
 
+  let mapaAnterior = "";
+  const abrirPortal = async (): Promise<void> => {
+    await atualizar();
+    abrirEntrada();
+  };
   const aoMapa = (mapaId: string): void => {
     window.clearInterval(timer);
+    const entrou = mapaId === "reserva" && mapaAnterior !== "reserva";
+    mapaAnterior = mapaId;
     if (mapaId !== "reserva") { faixa.hidden = true; est = null; return; }
-    void atualizar();
+    void atualizar().then(() => {
+      // Ao entrar no mapa: explica o que é a Reserva e oferece a visita (o servidor valida tudo)
+      if (entrou && est && !est.ativa && !est.fim && !modal.aberto()) abrirEntrada();
+    });
     let tick = 0;
     timer = window.setInterval(() => { tick += 1; if (!document.hidden && (est?.ativa || tick % 4 === 0)) void atualizar(); }, 1500);
   };
 
-  return { faixa, aoMapa, observar };
+  return { faixa, aoMapa, abrir: abrirPortal, observar };
 }
