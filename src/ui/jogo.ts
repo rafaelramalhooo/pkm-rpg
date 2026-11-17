@@ -479,18 +479,12 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       nos.push(el("label", {}, "Criar segundo personagem"), nome, gradeA, criar);
     }
 
-    const reiniciar = confirmar(botao("Reiniciar o jogo deste personagem", () => undefined, "sec"), "Reiniciar o jogo deste personagem", "Confirmar: apagar time, mochila e Pokédex?", async () => {
-      const { error } = await supabase.rpc("reiniciar_meu_jogo");
-      if (error) return void mensagem(msg, error.message);
-      location.reload();
-    });
     const zerar = confirmar(botao("Apagar todos os meus personagens", () => undefined, "sec"), "Apagar todos os meus personagens", "Confirmar: apagar TUDO e criar do zero?", async () => {
       const { error } = await supabase.rpc("apagar_todos_meus_personagens");
       if (error) return void mensagem(msg, error.message);
       location.reload();
     });
-    nos.push(el("label", {}, "Recomeçar"), el("p", { class: "sub" }, "Apaga time, mochila, Pokédex e vitórias do personagem atual e volta ao Laboratório. O nome e o visual ficam."), reiniciar,
-      el("label", {}, "Começar do zero"), el("p", { class: "sub" }, "Apaga TODOS os seus personagens (o atual e o reserva), com time, mochila, Pokédex e dinheiro, e leva você à criação de um novo personagem. Não dá para desfazer."), zerar, msg);
+    nos.push(el("label", {}, "Começar do zero"), el("p", { class: "sub" }, "Apaga TUDO: seus personagens (o atual e o reserva), nome, visual, classe, time, mochila, Pokédex, dinheiro e progresso. Você volta à criação de personagem e escolhe tudo de novo. Não dá para desfazer."), zerar, msg);
     modal.abrir("Meus personagens", ...nos);
   }
 
@@ -513,9 +507,6 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   async function abrirReset(): Promise<void> {
     const { data } = await supabase.from("jogadores").select("id, nome, papel").is("conta", null).order("nome");
     const msg = msgPainel();
-    const caixaMissao = el("input", { type: "checkbox", id: "reset-missao", checked: "" }) as HTMLInputElement;
-    caixaMissao.checked = true;
-    const optMissao = el("label", { class: "sub", for: "reset-missao", style: "display:flex;gap:8px;align-items:center;cursor:pointer" }, caixaMissao, "Limpar também a missão (história volta ao início)");
     const linhas = ((data ?? []) as { id: string; nome: string; papel: string }[]).map((p) => {
       const b = el("button", { type: "button", class: "sec" }, `${p.nome}${p.papel === "mestre" ? " (Mestre)" : ""}`);
       let armado = false;
@@ -531,14 +522,14 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
           }, 5000);
           return;
         }
-        const { error } = await supabase.rpc("resetar_jogador", { p_jogador: p.id, p_limpar_missao: caixaMissao.checked });
+        const { error } = await supabase.rpc("resetar_jogador", { p_jogador: p.id });
         if (error) return void mensagem(msg, error.message);
-        mensagem(msg, `${p.nome} voltou ao começo.`, "ok");
+        mensagem(msg, `${p.nome} foi apagado por completo e criará o personagem de novo ao entrar.`, "ok");
         if (p.id === j.id) window.setTimeout(() => location.reload(), 900);
       });
       return b;
     });
-    modal.abrir("Resetar jogador", el("p", { class: "sub" }, "Volta para o Laboratório, apaga time, mochila, Pokédex e batalha; devolve PA e dinheiro. O login e o personagem ficam."), optMissao, ...linhas, msg);
+    modal.abrir("Resetar jogador", el("p", { class: "sub" }, "Apaga TUDO do jogador: nome, visual, classe, time, mochila, Pokédex, missões e progresso. Só o login fica; ao entrar, ele escolhe nome, visual e classe de novo."), ...linhas, msg);
   }
 
   // ---------- missões: desistir (jogador) e remover (Mestre) ----------

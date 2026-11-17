@@ -264,17 +264,17 @@ export async function abrirGestao(modal: Modal, aviso: (t: string) => void): Pro
       const { data: n, error: e2 } = await supabase.rpc("mestre_resetar_todos", { p_codigo: entrada.value.trim() });
       if (e2) { dizer(e2.message, false); return; }
       resetCaixa.hidden = true; resetCaixa.replaceChildren();
-      dizer(`Reset concluído: ${String(n)} personagem(ns) recomeçaram do zero. A manutenção foi ligada; desligue-a quando quiser reabrir o jogo.`);
+      dizer(`Reset concluído: ${String(n)} jogador(es) apagado(s) por completo. A manutenção foi ligada; desligue-a quando quiser reabrir o jogo.`);
       const { data: l } = await supabase.rpc("mestre_jogadores");
       jogadores = (l ?? []) as Resumo[]; desenharLista();
     });
     resetCaixa.replaceChildren(
-      el("p", { class: "sub" }, "Isto apaga Pokémon, itens, Pokédex, insígnias, missões e progresso de TODOS os jogadores (menos o Mestre). Ficam só o nome e a aparência de cada personagem, que voltam à cidade inicial. Não dá para desfazer."),
+      el("p", { class: "sub" }, "Isto apaga TUDO de TODOS os jogadores (menos o Mestre): nome, visual, classe, Pokémon, itens, Pokédex, insígnias, missões, ranking e progresso. Também zera rivais, ranking, Mundo vivo e desafios da semana, e recomeça o check-in hoje. Só o login fica: cada um cria o personagem de novo ao entrar. Não dá para desfazer."),
       el("p", {}, "Para confirmar, digite o código: ", el("strong", { class: "mg-reset-cod" }, String(cod))), entrada, el("div", { class: "mg-linha" }, ir, cancelar));
     resetCaixa.hidden = false; entrada.focus();
   });
   const painelReset = el("details", { class: "mg-manut mg-reset" }, el("summary", {}, "⚠ Reiniciar o jogo (zona de perigo)"),
-    el("p", { class: "sub" }, "Recomeça todos os jogadores do zero, mantendo só o personagem criado. O Mestre não é afetado."), resetBotao, resetCaixa);
+    el("p", { class: "sub" }, "Apaga todos os jogadores por completo (nome, visual e classe inclusive) e zera o mundo. O Mestre não é afetado."), resetBotao, resetCaixa);
 
   desenharLista();
   modal.abrir("Gestão do Mestre", painelManut, painelReset, el("div", { class: "mg-wrap mg-solo" }, el("div", { class: "mg-esq" }, el("div", { class: "mg-online" }, contador, filtro), busca, esq), dir), msg);
