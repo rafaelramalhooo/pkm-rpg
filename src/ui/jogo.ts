@@ -24,6 +24,7 @@ import { criarAtalhos, type AcaoAtalho } from "./atalhos";
 import { blocoInsignias } from "./cartao";
 import { abrirOrganizar } from "./organizar";
 import { criarReserva } from "./reserva";
+import { abrirCreditos } from "./creditos";
 import { aparenciasLiberadas, preencherGrade } from "./personagem";
 import { abrirResetGolpes } from "./resetgolpes";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
@@ -417,7 +418,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const menus = el("div", { class: "dash-menus" },
       secao("Progresso", [["🏅 Conquistas", () => void abrirConquistas(modal, mostrarAviso)], ["📊 Ranking", () => void abrirRanking(modal, mostrarAviso)], ["🎯 Desafios da semana", () => void abrirMiniquests(modal, mostrarAviso)], ["📅 Check-in diário", () => void abrirCheckin(modal, mostrarAviso, recarregar)], ["🎖 Títulos e molduras", () => void abrirCosmeticos(modal, mostrarAviso)]]),
       secao("Treinador", [["Habilidades", () => void abrirHabilidades(modal, mostrarAviso, atualizarHud)], ["Ações (PA)", () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador())], ["Organizar time / Seguidor", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor())], ["🏠 Minha casa e ovos", () => void abrirCasa(modal, mostrarAviso, recarregar)]]),
-      secao("Social e conta", [["Jogadores (desafios e trocas)", () => void abrirSocial(modal, j.id, mostrarAviso, recarregar, lutarDesafio)], ["Meus personagens / Reiniciar", () => void abrirPersonagens()]]));
+      secao("Social e conta", [["Jogadores (desafios e trocas)", () => void abrirSocial(modal, j.id, mostrarAviso, recarregar, lutarDesafio)], ["Meus personagens / Reiniciar", () => void abrirPersonagens()], ["📜 Créditos", () => void abrirCreditos(modal)]]));
     modal.abrir("Painel do treinador", el("div", { class: "dash-wide" },
       el("div", { class: "dash-esq" }, cab, grade, insBloco),
       el("div", { class: "dash-dir" }, el("label", {}, "Time ativo"),

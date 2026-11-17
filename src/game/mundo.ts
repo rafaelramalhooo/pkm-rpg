@@ -3,7 +3,7 @@
 import Phaser from "phaser";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { supabase, type Direcao, type Jogador } from "../supabase";
-import { urlSprite } from "../ui/dados";
+import { metaSeguidor, urlBucket, urlSprite } from "../ui/dados";
 
 export interface Poi {
   id: string;
@@ -153,11 +153,13 @@ class CenaMundo extends Phaser.Scene {
   private npcs = new Map<string, { d: TreinadorMapa; ficha: Ficha }>();
   private desafiando = false;
   private matos: { s: Phaser.GameObjects.Image; fase: number; ate: number }[] = [];
-  private seg?: Phaser.GameObjects.Image;
+  private seg?: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
+  private segAnim?: { chave: string; n: number };
   private segId = "";
   private sombraSeg?: Phaser.GameObjects.Ellipse;
   private segTween?: Phaser.Tweens.Tween;
   private segTex?: { f: string; b: string };
+  private segDir?: Direcao;
 
   constructor(jogador: Jogador, ganchos: Ganchos) {
     super("mundo");
@@ -646,9 +648,10 @@ class CenaMundo extends Phaser.Scene {
     const { data } = await supabase.rpc("meu_seguidor");
     if (this.encerrada) return;
     const d = data as { id: string; especie_id: number; brilhante?: boolean } | null;
-    if (!d) { this.parouSeg(); this.seg?.destroy(); this.sombraSeg?.destroy(); this.seg = undefined; this.sombraSeg = undefined; this.segId = ""; return; }
+    if (!d) { this.parouSeg(); this.seg?.destroy(); this.sombraSeg?.destroy(); this.seg = undefined; this.segAnim = undefined; this.sombraSeg = undefined; this.segId = ""; return; }
     const kf = `seg-f-${d.especie_id}`, kb = `seg-b-${d.especie_id}`;
     if (this.segId === `${d.id}` && this.seg) return;
+    if (await this.seguidorAnimado(d)) return;
     const [uf, ub] = await Promise.all([urlSprite("frente", d.especie_id), urlSprite("costas", d.especie_id)]);
     if (!uf || this.encerrada) return;
     const pronto = () => {
@@ -656,6 +659,7 @@ class CenaMundo extends Phaser.Scene {
       this.parouSeg();
       this.seg?.destroy();
       this.sombraSeg?.destroy();
+      this.segAnim = undefined;
       this.segTex = { f: kf, b: this.textures.exists(kb) ? kb : kf };
       this.sombraSeg = this.add.ellipse(px(this.jogador.x), py(this.jogador.y), 12, 4, 0x000000, 0.28);
       const img = this.add.image(px(this.jogador.x), py(this.jogador.y), kf).setOrigin(0.5, 1);
@@ -674,6 +678,43 @@ class CenaMundo extends Phaser.Scene {
     this.load.start();
   }
 
+  /** Tenta montar o seguidor animado (folha de caminhada com 4 direções). Devolve false para cair no sprite estático. */
+  private async seguidorAnimado(d: { id: string; especie_id: number; brilhante?: boolean }): Promise<boolean> {
+    const meta = (await metaSeguidor())[String(d.especie_id)];
+    if (!meta || this.encerrada) return false;
+    const sh = !!d.brilhante && meta.s === 1;
+    const chave = `segw-${d.especie_id}${sh ? "s" : ""}`;
+    const n = meta.d.length;
+    if (!this.textures.exists(chave)) {
+      const u = await urlBucket(`seguidor/${d.especie_id}${sh ? "s" : ""}.png`);
+      if (!u || this.encerrada) return false;
+      const ok = await new Promise<boolean>((res) => {
+        this.load.crossOrigin = "anonymous";
+        this.load.spritesheet(chave, u, { frameWidth: meta.w, frameHeight: meta.h });
+        this.load.once(Phaser.Loader.Events.COMPLETE, () => res(true));
+        this.load.once(Phaser.Loader.Events.FILE_LOAD_ERROR, () => res(false));
+        this.load.start();
+      });
+      if (!ok || !this.textures.exists(chave) || this.encerrada) return false;
+    }
+    (["baixo", "direita", "cima", "esquerda"] as const).forEach((dir, row) => {
+      const k = `${chave}-${dir}`;
+      if (this.anims.exists(k)) return;
+      this.anims.create({ key: k, frames: meta.d.map((duration, c) => ({ key: chave, frame: row * n + c, duration })), repeat: -1 });
+    });
+    this.parouSeg();
+    this.seg?.destroy();
+    this.sombraSeg?.destroy();
+    this.segTex = undefined;
+    this.segAnim = { chave, n };
+    this.sombraSeg = this.add.ellipse(px(this.jogador.x), py(this.jogador.y), 12, 4, 0x000000, 0.28);
+    const sp = this.add.sprite(px(this.jogador.x), py(this.jogador.y), chave, 0).setOrigin(0.5, 0.78);
+    sp.setScale(Math.min(0.75, 26 / meta.h));
+    this.seg = sp; this.segId = d.id;
+    this.posicionarSeguidor(this.jogador.x, this.jogador.y, 0, this.jogador.direcao);
+    return true;
+  }
+
   private parouSeg(): void {
     this.segTween?.stop();
     this.segTween = undefined;
@@ -684,7 +725,15 @@ class CenaMundo extends Phaser.Scene {
     if (!this.seg) return;
     this.parouSeg();
     const alvoX = px(x), alvoY = py(y) + 1;
-    if (dir && this.segTex) {
+    const a = this.segAnim;
+    const sp = this.seg instanceof Phaser.GameObjects.Sprite ? this.seg : null;
+    if (a && sp) {
+      const ordem = ["baixo", "direita", "cima", "esquerda"] as const;
+      const dd = dir ?? this.segDir ?? "baixo";
+      this.segDir = dd;
+      if (ms > 0) sp.play(`${a.chave}-${dd}`, true);
+      else { sp.anims.stop(); sp.setFrame(ordem.indexOf(dd) * a.n); }
+    } else if (dir && this.segTex) {
       // costas ao subir; de frente nas demais; espelha ao ir para a direita
       this.seg.setTexture(dir === "cima" ? this.segTex.b : this.segTex.f);
       this.seg.setFlipX(dir === "direita");
@@ -695,15 +744,24 @@ class CenaMundo extends Phaser.Scene {
       return;
     }
     const ix = this.seg.x, iy = this.seg.y, c = { t: 0 };
-    this.segTween = this.tweens.add({
+    const tw = this.segTween = this.tweens.add({
       targets: c, t: 1, duration: ms, ease: "Linear",
       onUpdate: () => {
         if (!this.seg) return;
         const bx = ix + (alvoX - ix) * c.t, by = iy + (alvoY - iy) * c.t;
-        this.seg.setPosition(bx, by - Math.abs(Math.sin(c.t * Math.PI)) * 3).setDepth(9 + by);
+        this.seg.setPosition(bx, by - (a ? 0 : Math.abs(Math.sin(c.t * Math.PI)) * 3)).setDepth(9 + by);
         this.sombraSeg?.setPosition(bx, by - 1).setDepth(8 + by);
       },
-      onComplete: () => { this.seg?.setPosition(alvoX, alvoY).setDepth(9 + alvoY); this.sombraSeg?.setPosition(alvoX, alvoY - 1); },
+      onComplete: () => {
+        this.seg?.setPosition(alvoX, alvoY).setDepth(9 + alvoY); this.sombraSeg?.setPosition(alvoX, alvoY - 1);
+        if (a && sp) {
+          // parado: volta ao 1º quadro da direção, a menos que um novo passo já tenha começado
+          this.time.delayedCall(140, () => {
+            if (this.segTween !== tw || !sp.active) return;
+            sp.anims.stop(); sp.setFrame((["baixo", "direita", "cima", "esquerda"] as const).indexOf(this.segDir ?? "baixo") * a.n);
+          });
+        }
+      },
     });
   }
 

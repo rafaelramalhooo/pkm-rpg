@@ -77,7 +77,11 @@ const urls = new Map<string, Promise<string | null>>();
 export type LadoSprite = "frente" | "costas";
 
 export function urlSprite(lado: LadoSprite, id: number): Promise<string | null> {
-  const caminho = `${lado}/${id}.gif`;
+  return urlBucket(`${lado}/${id}.gif`);
+}
+
+/** URL assinada (temporária) de qualquer arquivo do bucket privado "sprites". */
+export function urlBucket(caminho: string): Promise<string | null> {
   let p = urls.get(caminho);
   if (!p) {
     p = supabase.storage
@@ -161,4 +165,23 @@ export function chipsTipo(especieId: number): HTMLElement {
     c.style.background = COR_TIPO[t] ?? "#888"; c.style.color = textoSobre(COR_TIPO[t] ?? "#888"); w.append(c);
   }
   return w;
+}
+
+// ---------- seguidor animado (PMDCollab SpriteCollab, no bucket privado: sprites/seguidor/) ----------
+
+export interface MetaSeguidor { w: number; h: number; d: number[]; s: 0 | 1 }
+let metaSeg: Promise<Record<string, MetaSeguidor>> | null = null;
+/** Medidas das folhas de caminhada (tamanho do quadro, duração de cada quadro em ms, se existe versão brilhante). */
+export function metaSeguidor(): Promise<Record<string, MetaSeguidor>> {
+  if (!metaSeg) {
+    metaSeg = urlBucket("seguidor/meta.json")
+      .then((u) => (u ? fetch(u).then((r) => (r.ok ? r.json() : {})) : {}))
+      .catch(() => ({}));
+  }
+  return metaSeg;
+}
+export async function creditosSeguidor(): Promise<{ autores: string[]; fonte: string } | null> {
+  const u = await urlBucket("seguidor/creditos.json");
+  if (!u) return null;
+  try { const r = await fetch(u); return r.ok ? await r.json() : null; } catch { return null; }
 }
