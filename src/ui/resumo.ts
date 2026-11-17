@@ -2,7 +2,8 @@ import { el } from "./dom";
 import { supabase } from "../supabase";
 import { fichaEspecie } from "./pokedex";
 import { dicaPorId, dicaGolpe } from "./dica";
-import { barraHp, COR_TIPO, especie, golpe, imagemPokemon, NOME_TIPO, nomePokemon, type PokemonRow } from "./dados";
+import { barraHp, COR_TIPO, especie, golpe, imagemPokemon, nomeItem, NOME_TIPO, nomePokemon, type PokemonRow } from "./dados";
+import { abrirItemSeguro } from "./itemseguro";
 
 type Modal = { abrir: (titulo: string, ...nos: Node[]) => void; fechar: () => void };
 const NS = "http://www.w3.org/2000/svg";
@@ -39,7 +40,9 @@ export function hexagono(p: PokemonRow): SVGElement {
 }
 
 /** Tela de resumo do Pokémon (estilo Arceus): retrato, tipos, hexágono de atributos, golpes, experiência. */
-export function abrirResumo(modal: Modal, p: PokemonRow, voltar?: () => void, aba: "resumo" | "dex" = "resumo"): void {
+export type ItemCtx = { uid: string; aviso: (t: string, ms?: number, erro?: boolean) => void; aoMudar: () => void };
+
+export function abrirResumo(modal: Modal, p: PokemonRow, voltar?: () => void, aba: "resumo" | "dex" = "resumo", itemCtx?: ItemCtx): void {
   const e = especie(p.especie_id);
   const hp = barraHp(p.hp_atual, p.hp_max);
   const hpFill = el("div", { class: `hp-fill ${hp.classe}` });
@@ -69,11 +72,22 @@ export function abrirResumo(modal: Modal, p: PokemonRow, voltar?: () => void, ab
   const abas = el("div", { class: "rs-abas" });
   for (const [k, t] of [["resumo", "📋 Resumo"], ["dex", "📖 Dex & Golpes"]] as const) {
     const b = el("button", { type: "button", class: `rs-aba${k === aba ? " ativa" : ""}` }, t);
-    b.addEventListener("click", () => { if (k !== aba) abrirResumo(modal, p, voltar, k); });
+    b.addEventListener("click", () => { if (k !== aba) abrirResumo(modal, p, voltar, k, itemCtx); });
     abas.append(b);
   }
   const corpo: Node = aba === "dex" ? abaDex(p) : el("div", { class: "rs-tela" }, esq, dir);
   const nos: Node[] = [abas, corpo];
+  if (itemCtx && aba === "resumo") {
+    const ib = el("button", { type: "button", class: "sec" }, p.item_seguro ? "🎒 " + nomeItem(p.item_seguro) : "🎒 Item");
+    ib.title = "Item que o Pokémon segura na batalha";
+    ib.addEventListener("click", () => void abrirItemSeguro(modal, itemCtx.uid, p, itemCtx.aviso, itemCtx.aoMudar, () => {
+      void supabase.from("pokemons").select("item_seguro").eq("id", p.id).maybeSingle().then(({ data }) => {
+        p.item_seguro = (data as { item_seguro: string | null } | null)?.item_seguro ?? null;
+        abrirResumo(modal, p, voltar, "resumo", itemCtx);
+      });
+    }));
+    nos.push(ib);
+  }
   if (voltar) { const b = el("button", { type: "button", class: "sec" }, "◀ Voltar"); b.addEventListener("click", voltar); nos.push(b); }
   modal.abrir(`${e.nome} — Resumo`, ...nos);
 }

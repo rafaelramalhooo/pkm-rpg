@@ -271,7 +271,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       c.querySelector(".cartao-info")?.append(pt);
     }
     c.querySelector(".cartao-info")?.append(el("div", { class: "cartao-acoes" },
-      btn("Resumo", () => abrirResumo(modal, p, () => void abrirTime())),
+      btn("Resumo", () => abrirResumo(modal, p, () => void abrirTime(), "resumo", { uid: j.id, aviso: mostrarAviso, aoMudar: () => void controle?.atualizarSeguidor() })),
       btn("Treinar · 1 PA", () => void acaoPA("acao_treinar", { p_pokemon: p.id }, j.id, mostrarAviso, refrescar, (d) => `${nomePokemon(p)} treinou! ${textoEventos((d.eventos ?? []) as Parameters<typeof textoEventos>[0])}`)),
       btn("Cuidar · 1 PA", () => void acaoPA("acao_cuidar", { p_pokemon: p.id }, j.id, mostrarAviso, refrescar, (d) => `Você cuidou de ${nomePokemon(p)}! Amizade ${d.amizade}. ${textoEventos((d.eventos ?? []) as Parameters<typeof textoEventos>[0])}`))));
     return c;
