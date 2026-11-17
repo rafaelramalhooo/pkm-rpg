@@ -39,11 +39,11 @@ export async function abrirCaixas(modal: Modal, uid: string, aviso: (t: string, 
   function desenhar(): void {
     const ocPr = todos.filter((p) => p.caixa === PRINCIPAL).length;
     const abPr = el("button", { type: "button", class: `sec${atual === PRINCIPAL ? " ativo" : ""}` }, `⭐ Principal (${ocPr}/6)`);
-    abPr.addEventListener("click", () => { atual = PRINCIPAL; sel = null; desenhar(); });
+    abPr.addEventListener("click", () => { atual = PRINCIPAL; desenhar(); });
     const abas = el("div", { class: "cx-abas" }, abPr, ...Array.from({ length: qtd }, (_, i) => {
       const n = i + 1; const ocupados = todos.filter((p) => p.caixa === n).length;
       const b = el("button", { type: "button", class: `sec${n === atual ? " ativo" : ""}` }, `Caixa ${n} (${ocupados}/${tam})`);
-      b.addEventListener("click", () => { atual = n; sel = null; desenhar(); });
+      b.addEventListener("click", () => { atual = n; desenhar(); });
       return b;
     }));
     const grade = el("div", { class: "cx-grade" }, ...Array.from({ length: atual === PRINCIPAL ? 6 : tam }, (_, i) => {
@@ -71,7 +71,7 @@ export async function abrirCaixas(modal: Modal, uid: string, aviso: (t: string, 
         detalhe.append(levar);
         if (time.length >= 6) detalhe.append(el("span", { class: "sub" }, "Time cheio: troque com um Pokémon do time abaixo."));
       }
-    } else detalhe.append(el("span", { class: "sub" }, podeMexer ? "Toque em um Pokémon. Depois toque em outro espaço para mover." : "Toque em um Pokémon para ver os dados."));
+    } else detalhe.append(el("span", { class: "sub" }, podeMexer ? "Toque em um Pokémon. Depois escolha a caixa (ou a ⭐ Principal) e toque em um espaço livre para movê-lo." : "Toque em um Pokémon para ver os dados."));
 
     const equipe = el("div", { class: "cx-time" }, ...time.map((p) => {
       const b = el("div", { class: "cx-membro" }, mini(p), el("span", { class: "cx-nome" }, nomePokemon(p)));

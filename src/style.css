@@ -1661,3 +1661,13 @@ body[data-clima="sun"]::after { background: radial-gradient(circle at 85% 8%, rg
 .rs-hab { display: block; margin-top: 4px; }
 .dx-habs { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
 .dx-habs small { opacity: .8; }
+
+/* Caixas: janela mais larga e sem cortes */
+.modal:has(.cx-corpo) { width: min(96vw, 720px) !important; max-width: 96vw !important; }
+.modal:has(.cx-corpo) .modal-corpo { overflow-x: hidden; }
+.cx-corpo, .cx-corpo > * { min-width: 0; }
+.cx-grade { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.cx-abas { gap: 6px; }
+.cx-abas button { margin: 0 !important; padding: 7px 12px; font-size: .82rem; }
+.cx-detalhe { align-items: center; }
+.cx-detalhe > span { min-width: 0; overflow-wrap: anywhere; }
