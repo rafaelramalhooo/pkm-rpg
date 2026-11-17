@@ -876,7 +876,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .hud-missao[hidden] { display: none; }
 .fala-npc { font-size: 1.02rem; line-height: 1.45; }
 .rec-lista { display: flex; flex-wrap: wrap; gap: 6px; }
-.rec-lista span { padding: 4px 10px; border-radius: 99px; background: #14234a; border: 1px solid var(--borda); font-size: .85rem; }
+.rec-lista span { padding: 4px 10px; border-radius: 99px; background: #14234a; border: 1px solid var(--borda); font-size: .85rem; color: #fff; }
 
 /* ===== jogadores: desafios e trocas ===== */
 .soc-card { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 14px; background: #101c3d; border: 1px solid #ffb70366; }
