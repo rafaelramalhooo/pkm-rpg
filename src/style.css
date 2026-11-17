@@ -1671,3 +1671,8 @@ body[data-clima="sun"]::after { background: radial-gradient(circle at 85% 8%, rg
 .cx-abas button { margin: 0 !important; padding: 7px 12px; font-size: .82rem; }
 .cx-detalhe { align-items: center; }
 .cx-detalhe > span { min-width: 0; overflow-wrap: anywhere; }
+
+/* Quests: contraste dos títulos (a janela é clara em alguns temas; os cartões são escuros) */
+.qd .qd-cartao .qd-topo strong { color: #ffe08a !important; }
+.qd .qd-cartao .qd-passo { color: #ffffff !important; }
+.qd .qd-grupo h4, .qd .qd-grupo summary { color: #ffd27a !important; }
