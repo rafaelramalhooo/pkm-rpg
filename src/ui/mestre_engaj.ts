@@ -30,7 +30,7 @@ const entrada = (tipo: string, valor: string | number | undefined, extra: Record
 const grade = (...nos: Node[]): HTMLElement => el("div", { class: "eg-campos" }, ...nos);
 const bloco = (titulo: string, ...nos: Node[]): HTMLElement => el("div", { class: "eg-bloco" }, el("strong", { class: "eg-bloco-tit" }, titulo), ...nos);
 
-async function catalogo(): Promise<Catalogo> {
+export async function catalogo(): Promise<Catalogo> {
   const { data } = await supabase.rpc("mestre_catalogo_premios");
   return (data ?? { itens: [], cosmeticos: [] }) as Catalogo;
 }

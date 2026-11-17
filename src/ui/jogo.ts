@@ -29,6 +29,7 @@ import { aparenciasLiberadas, preencherGrade } from "./personagem";
 import { abrirResetGolpes } from "./resetgolpes";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
 import { carregarMvMapa, carregarPistas, ehDesafiante, interagirMv, mostrarPistas, mostrarPremiosNovos, observarPokemon } from "./mundovivo";
+import { abrirLiga, abrirInscricaoLiga, verificarLiga } from "./liga";
 import { abrirCasa, abrirCheckin, abrirConquistas, abrirCosmeticos, abrirMiniquests, abrirRanking, verificarNovidades } from "./engajamento";
 
 function botao(texto: string, fn: () => void, classe = "sec"): HTMLButtonElement {
@@ -697,6 +698,14 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   };
   const tempoSocial = window.setInterval(() => void verificarSocial(), 6000);
   const tempoMissao = window.setInterval(() => { if (!document.hidden) { void atualizarMissao(); void verificarNovidades(mostrarAviso); void recarregarJogador(); void verificarMundoVivo(); } }, 30000);
+  const vigiarLiga = (): void => {
+    if (document.hidden) return;
+    void verificarLiga(mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }).then((e) => {
+      if (e?.minha?.em_batalha && e.na_arena && !emBatalha) void lutarDesafio();
+    });
+  };
+  const tempoLiga = window.setInterval(vigiarLiga, 15000);
+  window.setTimeout(vigiarLiga, 5000);
   window.setTimeout(() => void recarregarJogador(), 1500);
   window.setTimeout(() => void verificarNovidades(mostrarAviso), 3000);
 
@@ -719,7 +728,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const mv = await carregarMvMapa(mapaId); // gera o turno/dia se preciso e limpa os desafiantes antigos antes de listar
     custoDesafiante = mv.desafiante_pa ?? 2;
     const [{ data: ts }, { data: vs }, { data: rev }, { data: mqs }] = await Promise.all([
-      supabase.from("treinadores").select("id, x, y, direcao, visao, nome, classe, aparencia, falas").eq("mapa_id", mapaId),
+      supabase.from("treinadores").select("id, x, y, direcao, visao, nome, classe, aparencia, falas").eq("mapa_id", mapaId).not("id", "like", "lgn_%"),
       supabase.from("treinadores_vencidos").select("treinador").eq("jogador", j.id),
       supabase.rpc("revanche_disponivel"),
       supabase.rpc("miniquests_mapa", { p_mapa: mapaId }),
@@ -807,6 +816,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       nos.push(botao("Acessar as Caixas", () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud), "sec"));
     } else if (p.tipo === "centro" || p.tipo === "casa_jogador" || p.acao === "cura") {
       nos.push(botao("Curar meu time", () => void curar(msg), ""));
+      if (p.tipo === "centro") nos.push(botao("🏆 Liga Pokémon (inscrição)", () => void abrirInscricaoLiga(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }), "sec"));
       if (p.tipo === "centro") nos.push(botao("📅 Check-in diário", () => void abrirCheckin(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }), "sec"));
       if (p.tipo === "casa_jogador") nos.push(botao("🏠 Minha casa e ovos", () => void abrirCasa(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }), "sec"));
       if (p.tipo === "centro") nos.push(botao("Acessar as Caixas", () => void abrirCaixas(modal, j.id, mostrarAviso, atualizarHud), "sec"));
@@ -916,6 +926,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
         itens: () => [
           { rotulo: "Mapa Mundi (tecla M)", fn: abrirMundi, oculto: emBatalha },
           { rotulo: "Check-in diário", fn: () => void abrirCheckin(modal, mostrarAviso, () => { atualizarHud(); void recarregarJogador(); }) },
+          { rotulo: "🏆 Liga Pokémon", fn: () => void abrirLiga(modal, mostrarAviso, () => void lutarDesafio(), () => { atualizarHud(); void recarregarJogador(); }) },
           { rotulo: "Buscar Pokémon (1 PA)", fn: () => void procurar(), oculto: !oferta },
           { rotulo: "Interagir", fn: () => { interagir(); }, oculto: !(lugar?.poi || lugar?.npc) },
           { rotulo: "Desistir da missão", fn: abrirDesistirMissao, oculto: missaoAtual?.estado !== "ativa" },
@@ -953,6 +964,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
             { rotulo: "Ranking (configurar)", fn: () => void import("./mestre_engaj").then((m) => m.abrirMestreRanking(modal, mostrarAviso)) },
             { rotulo: "Desafios da semana (editar)", fn: () => void import("./mestre_engaj").then((m) => m.abrirMestreMiniquests(modal, mostrarAviso)) },
             { rotulo: "Mundo vivo (NPCs, desafiantes)", fn: () => void import("./mestre_mundo").then((m) => m.abrirMestreMundo(modal, mostrarAviso)) },
+            { rotulo: "🏆 Liga Pokémon (torneio)", fn: () => void import("./mestre_liga").then((m) => m.abrirMestreLiga(modal, mostrarAviso)) },
             { rotulo: "Missões dos jogadores", fn: () => void abrirMissoesMestre() },
             { rotulo: "Ferramentas (importar, repor PA)", fn: abrirMenu },
           ] }]
@@ -1039,6 +1051,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     sairDoPing();
     window.clearInterval(tempoSocial);
     window.clearInterval(tempoMissao);
+    window.clearInterval(tempoLiga);
     window.removeEventListener("keydown", aoTecla);
     chatUi.encerrar();
     iniciado.encerrar();
