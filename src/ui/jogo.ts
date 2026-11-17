@@ -23,6 +23,7 @@ import { iniciarChat } from "./chat";
 import { criarAtalhos, type AcaoAtalho } from "./atalhos";
 import { blocoInsignias } from "./cartao";
 import { abrirOrganizar } from "./organizar";
+import { criarReserva } from "./reserva";
 import { aparenciasLiberadas, preencherGrade } from "./personagem";
 import { abrirResetGolpes } from "./resetgolpes";
 import { abrirEventos, iniciarFaixaEventos } from "./eventos";
@@ -143,6 +144,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   atualizarHud();
 
   const modal = criarModal();
+  const reserva = criarReserva(modal, mostrarAviso, () => { void recarregarJogador(); atualizarHud(); });
 
   // ---------- botões de ação sobre o mapa ----------
   const btnInteragir = el("button", { type: "button", class: "acao", hidden: "" }, "Interagir");
@@ -162,7 +164,8 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   };
   const mostrarOferta = (o: Oferta) => {
     oferta = o;
-    const buscar = el("button", { type: "button", class: "oferta-buscar" }, "Buscar (1 PA)");
+    const safari = j.mapa_id === "reserva" && o.bioma !== "agua";
+    const buscar = el("button", { type: "button", class: "oferta-buscar" }, safari ? "Observar (Safári)" : "Buscar (1 PA)");
     buscar.addEventListener("click", () => void procurar());
     const ignorar = el("button", { type: "button", class: "oferta-ignorar" }, "Ignorar");
     ignorar.addEventListener("click", limparOferta);
@@ -204,7 +207,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   cartaoTreinador.setAttribute("role", "button"); cartaoTreinador.setAttribute("tabindex", "0"); cartaoTreinador.title = "Abrir o menu";
   cartaoTreinador.addEventListener("click", () => abrirMenuAvatar());
   cartaoTreinador.addEventListener("keydown", (ev) => { if (ev.key === "Enter") abrirMenuAvatar(); });
-  tela.append(aviso, hudMissao, acoes, cartaoOferta, dpad);
+  tela.append(aviso, hudMissao, reserva.faixa, acoes, cartaoOferta, dpad);
 
   // ---------- painéis ----------
   const msgPainel = (): HTMLElement => el("p", { class: "msg", role: "status" });
@@ -272,7 +275,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     }
     c.querySelector(".cartao-info")?.append(el("div", { class: "cartao-acoes" },
       btn("Resumo", () => abrirResumo(modal, p, () => void abrirTime(), "resumo", { uid: j.id, aviso: mostrarAviso, aoMudar: () => void controle?.atualizarSeguidor() })),
-      btn("Treinar · 1 PA", () => void acaoPA("acao_treinar", { p_pokemon: p.id }, j.id, mostrarAviso, refrescar, (d) => `${nomePokemon(p)} treinou! ${textoEventos((d.eventos ?? []) as Parameters<typeof textoEventos>[0])}`)),
+      btn("Treinar · 2 PA", () => void acaoPA("acao_treinar", { p_pokemon: p.id }, j.id, mostrarAviso, refrescar, (d) => `${nomePokemon(p)} treinou! ${textoEventos((d.eventos ?? []) as Parameters<typeof textoEventos>[0])}`)),
       btn("Cuidar · 1 PA", () => void acaoPA("acao_cuidar", { p_pokemon: p.id }, j.id, mostrarAviso, refrescar, (d) => `Você cuidou de ${nomePokemon(p)}! Amizade ${d.amizade}. ${textoEventos((d.eventos ?? []) as Parameters<typeof textoEventos>[0])}`))));
     return c;
   }
@@ -761,6 +764,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
   });
   async function procurar(): Promise<void> {
     if (emBatalha || !oferta) return;
+    if (j.mapa_id === "reserva" && oferta.bioma !== "agua") { limparOferta(); await reserva.observar(); return; }
     cartaoOferta.querySelectorAll("button").forEach((b) => ((b as HTMLButtonElement).disabled = true));
     const gratis = pescaGratis; pescaGratis = false;
     const { data, error } = await supabase.rpc("procurar_pokemon");
@@ -1007,6 +1011,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
       aoLugar: (l) => {
         lugar = l;
         j = { ...j, mapa_id: l.mapa_id, x: l.x, y: l.y };
+        reserva.aoMapa(l.mapa_id);
         btnInteragir.hidden = !(l.poi || l.npc);
         btnInteragir.textContent = l.npc ? `Falar com ${l.npc.nome}` : "Interagir";
         agendarOferta(l);

@@ -1618,3 +1618,12 @@ body[data-clima="sun"]::after { background: radial-gradient(circle at 85% 8%, rg
 .cj-acoes{display:flex;flex-direction:column;gap:6px}
 @media (max-width:520px){.chat-mini{bottom:58px;max-width:88%}.ch-painel{height:min(58vh,440px)}}
 .tela-jogo{position:relative}
+
+/* ===== Reserva Dourada (Safári) ===== */
+.reserva-faixa { position: absolute; left: 10px; top: 96px; z-index: 4; max-width: min(60vw, 300px); margin: 0; padding: 7px 12px; border-radius: 999px; font-size: .78rem; font-weight: 800; background: #3b2a05ee; color: #ffe08a; border: 1px solid #ffb703aa; box-shadow: 0 6px 18px #0008; cursor: pointer; text-align: left; line-height: 1.25; }
+.reserva-faixa.ativa { background: #0f3b1fee; color: #b8f5c8; border-color: #4ade80aa; }
+.reserva-faixa[hidden] { display: none; }
+.reserva-cena { display: grid; place-items: center; padding: 8px; border-radius: 16px; background: linear-gradient(180deg, #e8d79a, #b9a24a); }
+.reserva-cena img, .reserva-cena canvas { max-height: 170px; width: auto; image-rendering: pixelated; }
+.reserva-bts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px; }
+.reserva-bts button { margin: 0; }

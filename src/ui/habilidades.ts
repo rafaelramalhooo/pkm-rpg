@@ -13,7 +13,8 @@ export async function acaoPA(rpc: string, args: Record<string, unknown>, uid: st
   const { data, error } = await supabase.rpc(rpc, args);
   if (error) { aviso(error.message, 4000, true); return false; }
   const { data: j } = await supabase.from("jogadores").select("pa").eq("id", uid).maybeSingle();
-  const pa = j ? ` · −1 PA (restam ${(j as { pa: number }).pa})` : " · −1 PA";
+  const custo = rpc === "acao_treinar" ? 2 : 1;
+  const pa = j ? ` · −${custo} PA (restam ${(j as { pa: number }).pa})` : ` · −${custo} PA`;
   aviso(`${texto((data ?? {}) as Record<string, unknown>)}${pa}`, 5000);
   aoMudar();
   await processarEventos((data as { eventos?: { t: string }[] } | null)?.eventos);
@@ -223,7 +224,7 @@ export async function abrirAcoes(modal: Modal, uid: string, aviso: Aviso, aoMuda
   const info = (titulo: string, ...linhas: string[]) => el("p", { class: "acao-info" }, el("strong", {}, `${titulo} `), linhas.join(" "));
   const paAjuda = el("details", { class: "hab-ajuda", open: "" }, el("summary", {}, "❓ O que é PA e para que servem as ações"),
     el("p", {}, el("strong", {}, "PA (Pontos de Aventura): "), "é a sua energia do dia. Você começa com 30 e o Mestre repõe os PA. Andar e viajar NÃO gastam PA."),
-    el("p", {}, el("strong", {}, "Onde se gasta: "), "1 PA para buscar um Pokémon selvagem na prévia de encontro e 1 PA para cada ação abaixo. Em eventos de “buscas grátis”, a busca não gasta PA."),
+    el("p", {}, el("strong", {}, "Onde se gasta: "), "1 PA para buscar um Pokémon selvagem na prévia de encontro e 1 PA para cada ação abaixo (Treinar custa 2 PA). Em eventos de “buscas grátis”, a busca não gasta PA."),
     info("Treinar:", "escolha um Pokémon do time. Ele ganha 25 de XP-base (+8 por rank de Mestre de Treino e +10% por rank de Treino Intenso), multiplicado por eventos de XP. Pode subir de nível, evoluir e aprender golpes."),
     info("Cuidar:", "+1 de amizade no Pokémon (máx. 255), até 3 vezes por dia por Pokémon (+1 por rank de Afeto). Com Alimentador, também rende XP. A amizade será usada em evoluções por amizade (em breve)."),
     info("Pesquisar:", "estude uma espécie que você já viu (1 vez por espécie): +40 XP de treinador e ₽150 (+10 XP e +₽25 por rank de Olhar Atento). A cada 10 espécies pesquisadas, bônus de ₽500."),
@@ -231,10 +232,10 @@ export async function abrirAcoes(modal: Modal, uid: string, aviso: Aviso, aoMuda
     info("Pescar:", "exige a Vara de Pesca (vendida em portos e feiras) e estar ao lado de água (lago, rio ou mar). Pode fisgar um Pokémon aquático da região (luta sem custo extra), um item ou nada; Rede de Pesca aumenta a chance. +10 XP de treinador ao pescar com sucesso."),
     info("Barganhar:", "40% de chance de conseguir 10% de desconto na sua próxima compra em loja (o desconto é usado na compra seguinte)."));
 
-  modal.abrir("Ações (gastam 1 PA)",
+  modal.abrir("Ações (gastam PA)",
     paAjuda,
     msg,
-    lista("Treinar (+25 XP)", "acao_treinar", (d) => eventosTxt(d) || "Treino concluído!"),
+    lista("Treinar (+25 XP · 2 PA)", "acao_treinar", (d) => eventosTxt(d) || "Treino concluído!"),
     lista("Cuidar (+1 amizade, até 3 vezes por dia por Pokémon)", "acao_cuidar", (d) => `Você cuidou do Pokémon! Amizade ${d.amizade}. ${eventosTxt(d)}`),
     pesq,
     el("div", { class: "acao-linha" },
