@@ -58,6 +58,7 @@ export function criarReserva(modal: Modal, aviso: Aviso, aoMudar: () => void): R
     if (!s) return;
     est = s; pintar();
     if (s.fim) mostrarFim(s.fim);
+    else if (s.ativa && s.enc && !modal.aberto()) desenharEncontro(null, s); // o servidor sorteia por passo: o encontro abre sozinho
   };
 
   const abrirEntrada = (): void => {
@@ -66,7 +67,7 @@ export function criarReserva(modal: Modal, aviso: Aviso, aoMudar: () => void): R
     if (s.ativa) {
       modal.abrir("🦓 Reserva Dourada — visita em andamento",
         el("p", { class: "sub" }, `Passos restantes: ${s.passos}/${s.passos_max} · Bolas Safári: ${s.bolas}/${s.bolas_max}.`),
-        el("p", { class: "sub" }, "Ande pela grama e pelo campo: quando aparecer um Pokémon, toque em “Observar”. Andar aqui não gasta PA."),
+        el("p", { class: "sub" }, "Ande pelo campo e pela estrada: a cada passo pode aparecer um Pokémon, e o encontro abre sozinho. Andar aqui não gasta PA."),
         ...(s.capturas?.length ? [el("p", { class: "sub" }, "Capturados até agora (chegam ao fim da visita):"), listaCap(s.capturas)] : []));
       return;
     }
@@ -130,7 +131,8 @@ export function criarReserva(modal: Modal, aviso: Aviso, aoMudar: () => void): R
     window.clearInterval(timer);
     if (mapaId !== "reserva") { faixa.hidden = true; est = null; return; }
     void atualizar();
-    timer = window.setInterval(() => { if (!document.hidden) void atualizar(); }, 4000);
+    let tick = 0;
+    timer = window.setInterval(() => { tick += 1; if (!document.hidden && (est?.ativa || tick % 4 === 0)) void atualizar(); }, 1500);
   };
 
   return { faixa, aoMapa, observar };
