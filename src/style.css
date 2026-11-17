@@ -1660,3 +1660,8 @@ body[data-clima="sun"]::after { background: radial-gradient(circle at 85% 8%, rg
 .dq-semana-cab { margin: 0; padding: 6px 10px; font-size: .75rem; text-align: left; border-radius: 10px; background: #14234a; color: #dbe6ff; border: 1px solid #2a3a6a; }
 .diario .sub { margin: 0; font-size: .75rem; color: #c7d4f0; }
 @media (max-height: 520px) { .diario { top: 56px; width: min(40vw, 260px); } .diario-corpo { max-height: 34dvh; } }
+
+/* Habilidades dos Pokémon */
+.rs-hab { display: block; margin-top: 4px; }
+.dx-habs { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
+.dx-habs small { opacity: .8; }

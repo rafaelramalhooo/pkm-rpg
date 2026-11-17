@@ -40,18 +40,18 @@ const CLASSES: { nome: string; texto: string; estilo: string }[] = [
 ];
 
 const semEfeito = (h: { descricao: string }): boolean => /em breve/i.test(h.descricao); // liberada para comprar, mas sem efeito ligado no jogo
-const PONTOS_ESCADA = "Cada habilidade tem 3 ranks. O custo do próximo rank é (tier − 1) + rank: Tier I custa 1/2/3, Tier II 2/3/4, Tier III 3/4/5 e Mestria 4/5/6. O bônus soma a cada rank.";
+const PONTOS_ESCADA = "Cada talento tem 3 ranks. O custo do próximo rank é (tier − 1) + rank: Tier I custa 1/2/3, Tier II 2/3/4, Tier III 3/4/5 e Mestria 4/5/6. O bônus soma a cada rank.";
 
 /** Quadro "como funciona" (classes, XP de treinador, pontos e ranks). */
 function quadroComoFunciona(): HTMLElement {
   const li = (t: string) => el("li", {}, t);
-  return el("details", { class: "hab-ajuda" }, el("summary", {}, "❓ Como funcionam classes, pontos e habilidades"),
-    el("p", {}, el("strong", {}, "Classe: "), "define qual árvore de habilidades você desenvolve. É escolhida uma vez só (só o Mestre pode redefinir)."),
+  return el("details", { class: "hab-ajuda" }, el("summary", {}, "❓ Como funcionam classes, pontos e talentos"),
+    el("p", {}, el("strong", {}, "Classe: "), "define qual árvore de talentos você desenvolve. É escolhida uma vez só (só o Mestre pode redefinir)."),
     el("p", {}, el("strong", {}, "XP de treinador: "), "é diferente do XP dos Pokémon e sobe seu nível de treinador. Você ganha XP de treinador ao:"),
     el("ul", {}, li("Vencer um treinador pela primeira vez: +40 XP"), li("Registrar uma espécie nova na Pokédex (captura): +30 XP (+5 por rank de Pokédex Viva)"), li("Pesquisar uma espécie (ação de PA): +40 XP (+10 por rank de Olhar Atento)"), li("Explorar: +10 XP · Pescar com sucesso: +10 XP"), li("Concluir etapas de missão (valor varia por missão)")),
-    el("p", {}, el("strong", {}, "Pontos de habilidade: "), "você ganha 1 ponto a cada 2 níveis de treinador e mais 1 a cada 10 níveis somados dos seus 6 Pokémon mais fortes (ex.: soma 50 = +5 pontos). Subir o time também rende pontos!"),
+    el("p", {}, el("strong", {}, "Pontos de talento: "), "você ganha 1 ponto a cada 2 níveis de treinador e mais 1 a cada 10 níveis somados dos seus 6 Pokémon mais fortes (ex.: soma 50 = +5 pontos). Subir o time também rende pontos!"),
     el("p", {}, el("strong", {}, "Ranks: "), PONTOS_ESCADA),
-    el("p", {}, el("strong", {}, "“Liberada para teste”: "), "estas habilidades já podem ser aprendidas (fase de testes), mas o efeito delas ainda não está ligado no jogo."),
+    el("p", {}, el("strong", {}, "“Liberada para teste”: "), "estes talentos já podem ser aprendidos (fase de testes), mas o efeito delas ainda não está ligado no jogo."),
     el("p", { class: "sub" }, "Nível de treinador: o nível 2 exige 50 XP, o 3 exige 150, o 4 exige 300, e assim por diante (cada nível pede mais que o anterior)."));
 }
 
@@ -68,11 +68,11 @@ export async function exigirClasse(aviso: Aviso, aoEscolher: () => void): Promis
   const lista = () => {
     raiz.replaceChildren(el("div", { class: "painel classe-caixa" },
       el("h1", {}, "Escolha a sua classe"),
-      el("p", { class: "sub" }, "Antes de aventurar-se por Rafar, escolha como você quer evoluir. A classe define as habilidades que você desenvolve e a escolha é definitiva (só o Mestre pode redefinir)."),
+      el("p", { class: "sub" }, "Antes de aventurar-se por Rafar, escolha como você quer evoluir. A classe define os talentos que você desenvolve e a escolha é definitiva (só o Mestre pode redefinir)."),
       el("div", { class: "hab-classes" }, ...CLASSES.map((c) => {
         const ativas = habs.filter((h) => h.classe === c.nome && !semEfeito(h));
         const b = el("button", { type: "button", class: "hab-classe" }, el("strong", {}, c.nome), el("span", {}, c.texto), el("span", { class: "classe-estilo" }, c.estilo),
-          el("small", {}, `Habilidades com efeito no jogo (${ativas.length} de 15): ${ativas.map((h) => h.nome).join(", ")}`));
+          el("small", {}, `Talentos com efeito no jogo (${ativas.length} de 15): ${ativas.map((h) => h.nome).join(", ")}`));
         b.addEventListener("click", () => confirmar(c.nome));
         return b;
       }))));
@@ -87,7 +87,7 @@ export async function exigirClasse(aviso: Aviso, aoEscolher: () => void): Promis
       const { error } = await supabase.rpc("escolher_classe", { p_classe: nome });
       if (error) { ok.disabled = false; aviso(error.message, 4000, true); return; }
       fechar();
-      aviso(`Você agora é ${nome}! Abra Treinador → Habilidades para usar seus pontos.`, 6000);
+      aviso(`Você agora é ${nome}! Abra Treinador → Talentos para usar seus pontos.`, 6000);
       aoEscolher();
     });
     raiz.replaceChildren(el("div", { class: "painel classe-caixa" }, el("h1", {}, `Confirmar: ${nome}`), el("p", {}, c.texto), el("p", { class: "classe-estilo" }, c.estilo),
@@ -107,7 +107,7 @@ const UNIDADE: Record<string, string> = {
 };
 const fmt = (n: number): string => (Number.isInteger(n) ? String(n) : n.toFixed(1).replace(".", ","));
 
-/** Tela do Treinador: classe, nível, pontos e árvore de habilidades (compra validada no servidor). */
+/** Tela do Treinador: classe, nível, pontos e árvore de talentos (compra validada no servidor). */
 export async function abrirHabilidades(modal: Modal, aviso: Aviso, aoMudar: () => void): Promise<void> {
   const [{ data: est, error }, { data: cat }] = await Promise.all([
     supabase.rpc("estado_treino"),
@@ -130,7 +130,7 @@ export async function abrirHabilidades(modal: Modal, aviso: Aviso, aoMudar: () =
   const cab = el("div", { class: "hab-cab" },
     el("div", {}, el("strong", {}, `${e.classe} · Nível ${e.nivel}`), el("span", { class: "sub" }, e.xp_prox ? ` XP ${e.xp}/${e.xp_prox}` : ` XP ${e.xp} (nível máximo)`)),
     barra,
-    el("div", { class: "hab-pontos" }, `Pontos de habilidade: ${livres}`, el("small", {}, ` (${e.pontos_total} ganhos no total, ${e.pontos_gastos} já gastos)`)));
+    el("div", { class: "hab-pontos" }, `Pontos de talento: ${livres}`, el("small", {}, ` (${e.pontos_total} ganhos no total, ${e.pontos_gastos} já gastos)`)));
 
   const nomes = new Map(habs.map((h) => [h.id, h.nome]));
   const cabecalho = el("div", {}, cab, quadroComoFunciona());
@@ -150,7 +150,7 @@ export async function abrirHabilidades(modal: Modal, aviso: Aviso, aoMudar: () =
       aoMudar();
       void abrirHabilidades(modal, aviso, aoMudar);
     });
-    const reqTxt = [...faltam.map((r) => `${nomes.get(r.id)} rank ${r.rank}`), ...(semOutra ? ["1 habilidade de outra classe no rank 2"] : [])];
+    const reqTxt = [...faltam.map((r) => `${nomes.get(r.id)} rank ${r.rank}`), ...(semOutra ? ["1 talento de outra classe no rank 2"] : [])];
     const req = reqTxt.length ? el("small", { class: "hab-req" }, `Requer: ${reqTxt.join(", ")}`) : null;
     const card = el("div", { class: `hab-card${semEfeito(h) ? " breve" : ""}` }, el("div", { class: "hab-topo" }, el("strong", {}, h.nome), bolas), el("span", { class: semEfeito(h) ? "hab-selo" : "hab-selo ativa" }, semEfeito(h) ? "🧪 Liberada para teste (efeito ainda não implementado)" : "✔ Ativa no jogo"), el("p", {}, h.descricao.replace(/ \(em breve\)\.?$/, ".")));
     const un = UNIDADE[h.id];
@@ -184,8 +184,8 @@ export async function abrirHabilidades(modal: Modal, aviso: Aviso, aoMudar: () =
       return b;
     }));
     blocos.push(el("h3", { class: "hab-classe-titulo" }, "Classe secundária"), msg2, linha);
-  } else blocos.push(el("p", { class: "sub" }, "🔒 Classe secundária: libera no nível de treinador 5. As Mestrias exigem 1 habilidade (rank 2) de outra classe."));
-  modal.abrir("Habilidades do treinador", cabecalho, ...blocos);
+  } else blocos.push(el("p", { class: "sub" }, "🔒 Classe secundária: libera no nível de treinador 5. As Mestrias exigem 1 talento (rank 2) de outra classe."));
+  modal.abrir("Talentos do treinador", cabecalho, ...blocos);
 }
 
 /** Menu de ações que gastam PA: Treinar, Cuidar, Pesquisar, Explorar, Pescar, Barganhar. */

@@ -1,4 +1,5 @@
 // Pokédex: busca por nome, onde cada Pokémon aparece (e a chance), fraquezas e resistências. Também usada dentro da batalha.
+import { descHab, habilidadesDe, nomeHab } from "./habilidades_pokemon";
 import { supabase } from "../supabase";
 import { el } from "./dom";
 import { COR_TIPO, NOME_TIPO, carregarReferencias, especie, imagemPokemon, textoSobre, todasEspecies } from "./dados";
@@ -74,6 +75,11 @@ export async function fichaEspecie(id: number, opcoes: { locais?: boolean; nota?
     grupo("Imune a", (m) => m === 0, () => "×0", "imune"),
   ].filter(Boolean) as HTMLElement[];
   caixa.append(...gs);
+  const hs = await habilidadesDe(id);
+  if (Object.keys(hs).length) {
+    caixa.append(el("div", { class: "dx-grupo" }, el("strong", {}, "Habilidades"),
+      el("ul", { class: "dx-habs" }, ...[1, 2, 3].filter((k) => hs[k]).map((k) => el("li", {}, el("b", {}, `${nomeHab(hs[k])}${k === 3 ? " (oculta)" : ""}`), el("small", {}, ` — ${descHab(hs[k])}`))))));
+  }
   if (opcoes.locais !== false) {
     const ls = locaisDe(id);
     caixa.append(el("div", { class: "dx-grupo" }, el("strong", {}, "Onde aparece"),

@@ -7,6 +7,7 @@ export interface GolpeSlot { id: number; pp: number }
 export interface PokemonRow {
   id: string;
   item_seguro?: string | null;
+  hab_slot?: number | null;
   especie_id: number;
   apelido: string | null;
   nivel: number;

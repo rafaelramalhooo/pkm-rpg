@@ -421,7 +421,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     const recarregar = () => { atualizarHud(); void recarregarJogador(); };
     const menus = el("div", { class: "dash-menus" },
       secao("Progresso", [["🏅 Conquistas", () => void abrirConquistas(modal, mostrarAviso)], ["📊 Ranking", () => void abrirRanking(modal, mostrarAviso)], ["🎯 Desafios da semana", () => void abrirMiniquests(modal, mostrarAviso)], ["📅 Check-in diário", () => void abrirCheckin(modal, mostrarAviso, recarregar)], ["🎖 Títulos e molduras", () => void abrirCosmeticos(modal, mostrarAviso)]]),
-      secao("Treinador", [["Habilidades", () => void abrirHabilidades(modal, mostrarAviso, atualizarHud)], ["Ações (PA)", () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador())], ["Organizar time / Seguidor", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor())], ["🏠 Minha casa e ovos", () => void abrirCasa(modal, mostrarAviso, recarregar)]]),
+      secao("Treinador", [["Talentos", () => void abrirHabilidades(modal, mostrarAviso, atualizarHud)], ["Ações (PA)", () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador())], ["Organizar time / Seguidor", () => void abrirOrganizar(modal, j.id, mostrarAviso, () => void controle?.atualizarSeguidor())], ["🏠 Minha casa e ovos", () => void abrirCasa(modal, mostrarAviso, recarregar)]]),
       secao("Social e conta", [["Jogadores (desafios e trocas)", () => void abrirSocial(modal, j.id, mostrarAviso, recarregar, lutarDesafio)], ["Meus personagens / Reiniciar", () => void abrirPersonagens()], ["📜 Créditos", () => void abrirCreditos(modal)]]));
     modal.abrir("Painel do treinador", el("div", { class: "dash-wide" },
       el("div", { class: "dash-esq" }, cab, grade, insBloco),
@@ -946,7 +946,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
         rotulo: "Treinador",
         itens: () => [
           { rotulo: "Painel do treinador", fn: () => void abrirDashboard() },
-          { rotulo: "Habilidades", fn: () => void abrirHabilidades(modal, mostrarAviso, atualizarHud) },
+          { rotulo: "Talentos", fn: () => void abrirHabilidades(modal, mostrarAviso, atualizarHud) },
           { rotulo: "Ações (PA)", fn: () => void abrirAcoes(modal, j.id, mostrarAviso, () => void recarregarJogador()) },
           { rotulo: "Chat (global e privado)", fn: () => chatUi.abrir() },
           { rotulo: "Amigos", fn: () => chatUi.abrirAmigos() },
@@ -998,7 +998,7 @@ export async function telaJogo(inicial: Jogador): Promise<void> {
     return [...porGrupo.entries()].map(([g, as]) => el("section", { class: "menu-sec" }, el("h2", {}, g), el("div", { class: "menu-grade" }, ...as.map((a) => botao(a.rotulo, () => aoEscolher(a), "menu-item")))));
   };
   /** Itens que vivem dentro do Painel do Treinador (continuam disponíveis como atalho). */
-  const NO_PAINEL = new Set(["Habilidades", "Ações (PA)", "Jogadores (desafios e trocas)", "Conquistas", "Ranking de Treinadores", "Desafios da semana", "Minha casa e ovos", "Títulos e molduras", "Organizar time / Seguidor", "Check-in diário", "Onde estou", "Meus personagens / Reiniciar"]);
+  const NO_PAINEL = new Set(["Talentos", "Ações (PA)", "Jogadores (desafios e trocas)", "Conquistas", "Ranking de Treinadores", "Desafios da semana", "Minha casa e ovos", "Títulos e molduras", "Organizar time / Seguidor", "Check-in diário", "Onde estou", "Meus personagens / Reiniciar"]);
   function abrirMenuAvatar(): void {
     if (emBatalha) return;
     modal.abrir(j.nome, ...secoesMenu(todasAcoes().filter((a) => !a.oculto && !NO_PAINEL.has(a.id)), (a) => { modal.aoFechar(null); if (a.grupo === "Jogar") { modal.fechar(); a.fn(); } else { modal.voltarPara(abrirMenuAvatar); a.fn(); } }));

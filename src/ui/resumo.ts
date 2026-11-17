@@ -1,3 +1,4 @@
+import { descHab, habilidadesDe, nomeHab } from "./habilidades_pokemon";
 import { el } from "./dom";
 import { supabase } from "../supabase";
 import { fichaEspecie } from "./pokedex";
@@ -66,8 +67,15 @@ export function abrirResumo(modal: Modal, p: PokemonRow, voltar?: () => void, ab
     el("div", { class: "tipos" }, ...tipos),
     el("div", { class: "hp" }, el("span", { class: "hp-rot" }, "HP"), el("div", { class: "hp-trilho" }, hpFill), el("span", { class: "hp-num" }, `${p.hp_atual}/${p.hp_max}`)),
     el("div", { class: "rs-exp" }, el("small", {}, `EXP ${p.exp} · faltam ${Math.max(0, prox - p.exp)} para o nível ${p.nivel + 1}`), el("div", { class: "exp-trilho" }, expFill)));
+  const habLinha = el("small", { class: "rs-info rs-hab" }, "");
+  void habilidadesDe(p.especie_id).then((h) => {
+    const slug = h[p.hab_slot ?? 1] ?? h[1];
+    if (!slug) { habLinha.hidden = true; return; }
+    habLinha.textContent = `Habilidade: ${nomeHab(slug)}${p.hab_slot === 3 ? " (oculta)" : ""} — ${descHab(slug)}`;
+  });
   const dir = el("div", { class: "rs-dir" }, hexagono(p),
     el("small", { class: "rs-info" }, `Natureza: ${p.natureza ?? "—"} · Amizade: ${p.amizade ?? "—"}/255`),
+    habLinha,
     el("div", { class: "rs-golpes" }, ...golpes));
   const abas = el("div", { class: "rs-abas" });
   for (const [k, t] of [["resumo", "📋 Resumo"], ["dex", "📖 Dex & Golpes"]] as const) {

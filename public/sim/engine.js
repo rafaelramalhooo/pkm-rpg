@@ -41,7 +41,7 @@ function conjunto(m, i) {
   for (const k of IVS) ivs[k] = m.ivs?.[k] ?? 31;
   return {
     name: m.apelido || m.nome, species: m.especie, level: m.nivel, nature: cap(m.natureza),
-    ability: "No Ability", item: m.item ? m.item : (m.lente ? "widelens" : ""), moves: m.golpes.map((g) => g.slug).slice(0, 4), gender: "",
+    ability: m.habilidade || "No Ability", item: m.item ? m.item : (m.lente ? "widelens" : ""), moves: m.golpes.map((g) => g.slug).slice(0, 4), gender: "",
     happiness: 100 + i, // guarda a posição original do Pokémon (a ordem do time muda ao trocar)
     evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }, ivs,
   };

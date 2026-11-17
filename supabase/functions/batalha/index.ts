@@ -25,6 +25,17 @@ async function bonusDe(uid: string): Promise<{ instinto: number; foco: number; c
   } catch { return { instinto: 0, foco: 0, campeao: 0, captura: 0, domador: 0, guardiao: 0 }; }
 }
 
+// Habilidades dos Pokémon: slug por espécie/slot (config.habilidades_pokemon = false desliga tudo)
+async function mapaHab(ids: number[]): Promise<Map<number, Record<number, string>>> {
+  const m = new Map<number, Record<number, string>>();
+  const { data: cfg } = await admin.from("config").select("valor").eq("chave", "habilidades_pokemon").maybeSingle();
+  if (cfg && (cfg.valor === false || cfg.valor === "false" || cfg.valor === 0)) return m;
+  const { data } = await admin.from("especie_habilidades").select("especie_id,slot,nome").in("especie_id", [...new Set(ids)]);
+  for (const r of data ?? []) { const x = m.get(r.especie_id) ?? {}; x[r.slot] = String(r.nome).replace(/-/g, ""); m.set(r.especie_id, x); }
+  return m;
+}
+const habDe = (m: Map<number, Record<number, string>>, esp: number, slot?: number | null) => { const x = m.get(esp); return x ? (x[slot ?? 1] ?? x[1]) : undefined; };
+
 async function montar(b: Any, uid: string) {
   const { data: pks } = await admin.from("pokemons").select("*").eq("dono", uid).not("posicao", "is", null).gt("hp_atual", 0).order("posicao");
   if (!pks?.length) throw new Error("Você não tem Pokémon aptos a lutar.");
@@ -42,16 +53,24 @@ async function montar(b: Any, uid: string) {
   const slug = new Map((gs ?? []).map((g: Any) => [g.id, g.slug]));
   const { data: es } = await admin.from("especies").select("id,nome").in("id", [...new Set([...lista.map((p: Any) => p.especie_id), ...adv.map((a: Any) => a.especie_id)])]);
   const nome = new Map((es ?? []).map((e: Any) => [e.id, e.nome]));
+  const hab = await mapaHab([...lista.map((p: Any) => p.especie_id), ...adv.map((a: Any) => a.especie_id)]);
+  const slotNpc = (esp: number, oculta: boolean): number => { const x = hab.get(esp); if (!x) return 1; if (oculta && x[3] && Math.random() < 0.05) return 3; return 1 + sorteio(x[2] ? 2 : 1); };
   const ivs = (p: Any) => ({ hp: p.iv_hp, atk: p.iv_atk, def: p.iv_def, spa: p.iv_spa, spd: p.iv_spd, spe: p.iv_spe });
   // bônus do RPG: pontos distribuídos na evolução (ajuste) e habilidades de classe (Instinto, Campeão, Foco)
   const bon = await bonusDe(uid);
   const mu = (k: string) => 1 + ((k === "atk" || k === "spa" ? bon.instinto : 0) + bon.campeao) / 100;
   const time = lista.map((p: Any) => ({
     especie: nomeEspecie(p.especie_id), nome: nome.get(p.especie_id), apelido: p.apelido, nivel: p.nivel, natureza: p.natureza, item: p.item_seguro ? String(p.item_seguro).replace(/-/g, "") : "",
-    ivs: ivs(p), hp: p.hp_atual, golpes: p.golpes.map((g: Any) => ({ slug: slug.get(g.id), pp: g.pp })),
+    ivs: ivs(p), hp: p.hp_atual, golpes: p.golpes.map((g: Any) => ({ slug: slug.get(g.id), pp: g.pp })), habilidade: habDe(hab, p.especie_id, p.hab_slot),
     aj: p.ajuste ?? {}, mult: { atk: mu("atk"), def: mu("def"), spa: mu("spa"), spd: mu("spd"), spe: mu("spe") },
   }));
+  let slotSelvagem: number | null = null;
+  if (b.tipo === "selvagem") {
+    slotSelvagem = b.selvagem?.hab_slot ?? slotNpc(b.selvagem.especie_id, true);
+    if (!b.selvagem?.hab_slot && hab.size) await admin.from("batalhas").update({ selvagem: { ...b.selvagem, hab_slot: slotSelvagem } }).eq("id", b.id); // a captura herda este slot
+  }
   const inimigos = adv.map((a: Any) => ({
+    habilidade: habDe(hab, a.especie_id, b.tipo === "selvagem" ? slotSelvagem : slotNpc(a.especie_id, false)),
     especie: nomeEspecie(a.especie_id), nome: a.nome, nivel: a.nivel, natureza: a.natureza ?? "hardy",
     ivs: a.ivs ?? { hp: sorteio(32), atk: sorteio(32), def: sorteio(32), spa: sorteio(32), spd: sorteio(32), spe: sorteio(32) },
     hp: 9999, golpes: a.golpes.map((g: Any) => ({ slug: slug.get(g.id), pp: g.pp })),
@@ -100,6 +119,7 @@ async function timeDuelo(uid: string, amistoso: boolean) {
   const { data: es } = await admin.from("especies").select("id,nome,exp_base").in("id", [...new Set(pks.map((p: Any) => p.especie_id))]);
   const nome = new Map((es ?? []).map((e: Any) => [e.id, e.nome]));
   const expB = new Map((es ?? []).map((e: Any) => [e.id, e.exp_base]));
+  const hab = await mapaHab(pks.map((p: Any) => p.especie_id));
   const bon = await bonusDe(uid);   // classes: Instinto, Campeão e Foco também valem nos duelos
   const mu = (k: string) => 1 + ((k === "atk" || k === "spa" ? bon.instinto : 0) + bon.campeao) / 100;
   return {
@@ -110,6 +130,7 @@ async function timeDuelo(uid: string, amistoso: boolean) {
       especie: nomeEspecie(p.especie_id), nome: nome.get(p.especie_id), apelido: p.apelido, nivel: p.nivel, natureza: p.natureza, item: p.item_seguro ? String(p.item_seguro).replace(/-/g, "") : "",
       ivs: { hp: p.iv_hp, atk: p.iv_atk, def: p.iv_def, spa: p.iv_spa, spd: p.iv_spd, spe: p.iv_spe },
       aj: p.ajuste ?? {},
+      habilidade: habDe(hab, p.especie_id, p.hab_slot),
       mult: { atk: mu("atk"), def: mu("def"), spa: mu("spa"), spd: mu("spd"), spe: mu("spe") },
       ...(amistoso ? {} : { hp: p.hp_atual }),
       golpes: p.golpes.map((g: Any) => (amistoso ? { slug: slug.get(g.id) } : { slug: slug.get(g.id), pp: g.pp })),   // amistoso: HP e PP cheios

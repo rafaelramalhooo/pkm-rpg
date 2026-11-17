@@ -1,5 +1,6 @@
 // Tela de batalha no estilo do Pokémon Showdown. Quem decide tudo é o servidor (Edge Function "batalha",
 // que roda o simulador oficial do Showdown). Aqui só enviamos a intenção do jogador e tocamos o que volta.
+import { nomeHab } from "./habilidades_pokemon";
 import { supabase } from "../supabase";
 import { el } from "./dom";
 import { dicaGolpe } from "./dica";
@@ -513,6 +514,7 @@ export function abrirBatalha(inicial: ResultadoBatalha, meuId: string, opcoes: O
         case "-sideend": { const l = lado(p[1].slice(0, 2)); const n = tr(p[2]); ladoCond[l].delete(n); registrar(`${n} acabou no lado ${l === "jog" ? "do seu time" : "inimigo"}.`); break; }
         case "-start": { const { l, nome } = ident(p[1]); const n = tr(p[2]); volateis[l].add(n); await dizer(`${quem(l, nome)}: ${n}.`, 700); break; }
         case "-end": { const { l, nome } = ident(p[1]); const n = tr(p[2]); volateis[l].delete(n); registrar(`${quem(l, nome)}: ${n} acabou.`); break; }
+        case "-ability": { const { l, nome } = ident(p[1]); await dizer(`${quem(l, nome)}: ${nomeHab(p[2])}!`, 800); break; }
         case "-heal-info": break;
         default: break;
       }
