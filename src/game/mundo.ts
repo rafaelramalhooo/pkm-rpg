@@ -88,6 +88,9 @@ export interface Controle {
 
 const T = 16;
 const PASSO_MS = 150;
+/** Pokémon que voam ou flutuam: o seguidor fica acima do chão (a sombra fica no chão). Borboleta, pássaros, morcegos, gases, ímãs, aves lendárias etc. */
+const FLUTUAM = new Set([12, 16, 17, 18, 21, 22, 41, 42, 49, 81, 82, 92, 93, 94, 109, 110, 120, 121, 130, 137, 142, 144, 145, 146, 150, 151]);
+const ALTURA_VOO = 5;
 // p0–p11: aparências dos jogadores; p12–p48: NPCs (recolorações, ver sprites-novos/catalogo.json)
 const TOTAL_SPRITES = 49;
 const QUADROS: Record<Direcao, number> = { baixo: 0, esquerda: 3, direita: 6, cima: 9 };
@@ -160,6 +163,7 @@ class CenaMundo extends Phaser.Scene {
   private segTween?: Phaser.Tweens.Tween;
   private segTex?: { f: string; b: string };
   private segDir?: Direcao;
+  private segVoo = 0;
 
   constructor(jogador: Jogador, ganchos: Ganchos) {
     super("mundo");
@@ -659,7 +663,7 @@ class CenaMundo extends Phaser.Scene {
       this.parouSeg();
       this.seg?.destroy();
       this.sombraSeg?.destroy();
-      this.segAnim = undefined;
+      this.segAnim = undefined; this.segVoo = 0;
       this.segTex = { f: kf, b: this.textures.exists(kb) ? kb : kf };
       this.sombraSeg = this.add.ellipse(px(this.jogador.x), py(this.jogador.y), 12, 4, 0x000000, 0.28);
       const img = this.add.image(px(this.jogador.x), py(this.jogador.y), kf).setOrigin(0.5, 1);
@@ -707,6 +711,7 @@ class CenaMundo extends Phaser.Scene {
     this.sombraSeg?.destroy();
     this.segTex = undefined;
     this.segAnim = { chave, n };
+    this.segVoo = FLUTUAM.has(d.especie_id) ? ALTURA_VOO : 0;
     this.sombraSeg = this.add.ellipse(px(this.jogador.x), py(this.jogador.y), 12, 4, 0x000000, 0.28);
     const sp = this.add.sprite(px(this.jogador.x), py(this.jogador.y), chave, 0).setOrigin(0.5, meta.b != null ? Math.min(1, (meta.b + 1) / meta.h) : 0.78);
     sp.setScale(Math.min(0.75, 26 / meta.h));
@@ -738,8 +743,9 @@ class CenaMundo extends Phaser.Scene {
       this.seg.setTexture(dir === "cima" ? this.segTex.b : this.segTex.f);
       this.seg.setFlipX(dir === "direita");
     }
+    const voo = this.segVoo;
     if (ms <= 0) {
-      this.seg.setPosition(alvoX, alvoY).setDepth(9 + alvoY);
+      this.seg.setPosition(alvoX, alvoY - voo).setDepth(9 + alvoY);
       this.sombraSeg?.setPosition(alvoX, alvoY - 1).setDepth(8 + alvoY);
       return;
     }
@@ -749,11 +755,11 @@ class CenaMundo extends Phaser.Scene {
       onUpdate: () => {
         if (!this.seg) return;
         const bx = ix + (alvoX - ix) * c.t, by = iy + (alvoY - iy) * c.t;
-        this.seg.setPosition(bx, by - (a ? 0 : Math.abs(Math.sin(c.t * Math.PI)) * 3)).setDepth(9 + by);
+        this.seg.setPosition(bx, by - voo - (a ? 0 : Math.abs(Math.sin(c.t * Math.PI)) * 3)).setDepth(9 + by);
         this.sombraSeg?.setPosition(bx, by - 1).setDepth(8 + by);
       },
       onComplete: () => {
-        this.seg?.setPosition(alvoX, alvoY).setDepth(9 + alvoY); this.sombraSeg?.setPosition(alvoX, alvoY - 1);
+        this.seg?.setPosition(alvoX, alvoY - voo).setDepth(9 + alvoY); this.sombraSeg?.setPosition(alvoX, alvoY - 1);
         if (a && sp) {
           // parado: volta ao 1º quadro da direção, a menos que um novo passo já tenha começado
           this.time.delayedCall(140, () => {
